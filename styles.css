@@ -22,6 +22,7 @@ button { font: inherit; }
 button, a, summary { touch-action: manipulation; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; }
+[hidden] { display: none !important; }
 button:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid #bd843c; outline-offset: 4px; }
 h1, h2, h3, p { margin: 0; }
 h1, h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; letter-spacing: -.04em; }
@@ -42,6 +43,8 @@ h1, h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; lette
 .button { border: 1px solid transparent; display: inline-flex; justify-content: center; align-items: center; gap: 14px; min-height: 45px; padding: 11px 21px; border-radius: 7px; font-weight: 600; transition: background .15s, border-color .15s; }
 .button-primary { background: var(--green); color: #fff; }
 .button-primary:hover { background: #28604d; }
+.button-secondary { background: #f4f6ef; border-color: #cbd5c4; color: var(--green); }
+.button-secondary:hover { background: #e8eee1; border-color: #95ab8c; }
 .button-primary:disabled { background: #e2e6df; color: #707c72; }
 .button-quiet { background: transparent; color: var(--ink); padding: 8px 10px; font-size: 13px; gap: 8px; }
 .button-quiet:hover { background: var(--green-pale); }

@@ -1,6 +1,6 @@
 # Policy-Maker Game: build plan
 
-Status: the three-turn vertical slice is implemented locally. The full-term milestones below remain the proposed expansion plan. See README.md to run the game and its checks.
+Status: the three-turn introduction and full first term are implemented locally, including replay, election outcomes, and saves. Further terms and scoring remain expansion ideas. See README.md to run the game and its checks.
 
 ## First playable target
 
@@ -39,7 +39,7 @@ Leave additional terms, a leaderboard, factions, a map, cabinet appointments, ac
 | International Standing | Influences diplomatic support and external shocks | Diplomatic isolation |
 | Stability | Measures unrest and institutional strain | Government loses control |
 
-Start each main meter at 60, with values bounded from 0 to 100. Warn below 20. Gains above 100 are wasted; the preview should show the actual gain after the cap.
+Start each main meter at 60, except Treasury: the full term uses 45 after balance comparisons, and the quick scenario uses 24. Values are bounded from 0 to 100. Warn below 20. Gains above 100 are wasted; the preview shows the actual gain after the cap.
 
 Donor Confidence is the least natural instant-defeat condition. Keep it for the first test to preserve the proposed six-meter survival rule, but explain the governing coalition's dependence on funding. If this feels arbitrary in play, make zero trigger a funding crisis instead of direct defeat in a later revision.
 
@@ -184,6 +184,8 @@ Done when a player can complete three turns and understand why every meter chang
 
 Add the 12-turn limit, four-card hand, deterministic shuffling, collapse outcomes, and election result. Expand to 12 events and 16 policies.
 
+The next milestone is detailed in [FIRST_TERM_PLAN.md](FIRST_TERM_PLAN.md), including preservation of the quick scenario, opening-hand coverage, save/restore, and balance checks.
+
 Done when a fresh run can reach each of the three outcomes without console errors or stuck phases.
 
 ### 3. Fiscal consequences and fairness
@@ -226,4 +228,4 @@ Manually verify the responsive layout, keyboard flow, low-meter warnings, report
 4. **Future costs feel like a trick.** Advertise timing and show obligations persistently.
 5. **The game accidentally declares a political ideology correct.** Make consequences depend on fictional conditions, include benefits and risks across approaches, and evaluate several successful strategies.
 
-The next concrete implementation task is milestone 1: a three-turn playable loop in the empty workspace, with spending and borrowing that already demonstrate the game's central tradeoff.
+The three-turn prototype and full first term are complete. The next work is human playtesting and balance refinement before adding further terms or a combined score.
