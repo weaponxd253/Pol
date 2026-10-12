@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#173f36">
+  <meta name="description" content="Lead a fictional government through its first 90 days. Every promise has a price.">
+  <title>Policy-Maker — The First 90 Days</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23173f36'/%3E%3Cpath d='M14 25 32 14l18 11M17 28h30M20 31v15m12-15v15m12-15v15M15 50h34' fill='none' stroke='%23f4e9c9' stroke-width='4'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#phase-heading">Skip to your decision</a>
+  <header class="masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="./" aria-label="Policy-Maker home">
+        <span class="brand-seal" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M5 12 16 5l11 7M6 15h20M9 18v7m7-7v7m7-7v7M5 28h22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>POLICY<span class="brand-dash">—</span>MAKER<small>REPUBLIC OF ARDEN</small></span>
+      </a>
+      <div class="masthead-actions"><span class="scenario-tag">OPENING CRISIS</span><button class="button button-quiet" type="button" data-action="restart" data-focus-key="restart">↻ <span>Restart</span></button></div>
+    </div>
+  </header>
+  <main class="page">
+    <section class="introduction" aria-labelledby="game-title">
+      <div><p class="eyebrow"><span class="small-rule"></span> YOUR GOVERNMENT. YOUR CONSEQUENCES.</p><h1 id="game-title">The First <em>90 Days.</em></h1><p class="intro-copy">Every promise has a price. Keep your nation standing through three turns of competing pressures.</p></div>
+      <details class="briefing"><summary>How to play <span aria-hidden="true">+</span></summary><div class="briefing-content"><strong>Your opening brief</strong><ol><li>Respond to the event, then choose one unused policy.</li><li>Inspect the preview before resolving the turn.</li><li>Keep every meter above zero. Debt and promises affect later budgets.</li></ol><p>All six policies are available once. Survive three turns to complete the opening crisis.</p></div></details>
+    </section>
+    <div id="app"><p class="loading">Preparing your briefing…</p></div>
+    <noscript><p class="no-script">Enable JavaScript to play Policy-Maker.</p></noscript>
+    <footer class="page-footer"><span>REPUBLIC OF ARDEN <span aria-hidden="true">/</span> OFFICE OF THE EXECUTIVE</span><span>A fictional nation. Every choice counts.</span></footer>
+  </main>
+  <div id="announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>

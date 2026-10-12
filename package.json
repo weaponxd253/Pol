@@ -1,0 +1,11 @@
+{
+  "name": "policy-maker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node dev-server.mjs",
+    "test": "node --test",
+    "check": "node --check js/content.js && node --check js/engine.js && node --check js/main.js && node --check dev-server.mjs"
+  }
+}
