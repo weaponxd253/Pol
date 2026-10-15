@@ -1,0 +1,275 @@
+{
+  "rulesVersion": 2,
+  "contentVersion": 3,
+  "resultSummary": {
+    "legacy": "What your government leaves behind\n\nThe election ends this term. These commitments and conditions remain; future decisions have not been made.\n\nDebt 42 · Interest at the current debt balance: 3 Treasury per turn.\n\nRemaining payments and benefits\n\nNo scheduled commitments. Debt interest, if any, continues separately.\n\nNation conditions\n\nConditional effects on future events.\n\nACTIVE\nEmergency preparedness\nTurns 10–13 · Expires before turn 14\nFrom Upgrade emergency services · Enacted turn 9\n\nA flood response costs 3 less Treasury, or relying on local capacity loses 3 less Stability.\n\nExtends beyond this term\nSTARTS NEXT TURN\nProcurement oversight\nTurns 13–16 · Expires before turn 17\nFrom Procurement reform · Enacted turn 12\n\nA scandal inquiry costs 2 less Treasury and gains 2 extra Approval. Defending the coalition receives no protection.\n\nExtends beyond this term",
+    "meters": {
+      "approval": 93,
+      "donors": 54,
+      "economy": 73,
+      "international": 59,
+      "stability": 95,
+      "treasury": 13
+    },
+    "seed": "0BC01312",
+    "title": "You have been re-elected."
+  },
+  "uiRuns": [
+    {
+      "turn": 1,
+      "event": "Unexpected tax surplus",
+      "response": "rebate",
+      "policy": "bonds",
+      "same": true,
+      "actual": {
+        "approval": 67,
+        "donors": 60,
+        "economy": 60,
+        "international": 60,
+        "stability": 62,
+        "treasury": 66
+      }
+    },
+    {
+      "turn": 2,
+      "event": "Economic slowdown",
+      "response": "relief",
+      "policy": "infrastructure",
+      "same": true,
+      "actual": {
+        "approval": 75,
+        "donors": 60,
+        "economy": 56,
+        "international": 60,
+        "stability": 64,
+        "treasury": 46
+      }
+    },
+    {
+      "turn": 3,
+      "event": "Donor coalition demands",
+      "response": "concessions",
+      "policy": "wages",
+      "same": true,
+      "actual": {
+        "approval": 78,
+        "donors": 70,
+        "economy": 56,
+        "international": 57,
+        "stability": 67,
+        "treasury": 40
+      }
+    },
+    {
+      "turn": 4,
+      "event": "Cost-of-living squeeze",
+      "response": "subsidies",
+      "policy": "taxes",
+      "same": true,
+      "actual": {
+        "approval": 84,
+        "donors": 61,
+        "economy": 62,
+        "international": 57,
+        "stability": 67,
+        "treasury": 40
+      }
+    },
+    {
+      "turn": 5,
+      "event": "Infrastructure maintenance review",
+      "response": "maintain",
+      "policy": "credit",
+      "same": true,
+      "actual": {
+        "approval": 82,
+        "donors": 64,
+        "economy": 62,
+        "international": 57,
+        "stability": 69,
+        "treasury": 50
+      }
+    },
+    {
+      "turn": 6,
+      "event": "Public workers demand relief",
+      "response": "settlement",
+      "policy": "cuts",
+      "same": true,
+      "actual": {
+        "approval": 79,
+        "donors": 64,
+        "economy": 62,
+        "international": 57,
+        "stability": 70,
+        "treasury": 46
+      }
+    },
+    {
+      "turn": 7,
+      "event": "Wage support review",
+      "response": "extend",
+      "policy": "aid",
+      "notes": [
+        "−3 Treasury on turn 8; −3 Treasury on turn 9. New payments start after this review."
+      ],
+      "same": true,
+      "actual": {
+        "approval": 79,
+        "donors": 60,
+        "economy": 62,
+        "international": 64,
+        "stability": 70,
+        "treasury": 51
+      }
+    },
+    {
+      "turn": 8,
+      "event": "Diplomatic dispute",
+      "response": "firm",
+      "policy": "regulations",
+      "notes": [],
+      "same": true,
+      "actual": {
+        "approval": 80,
+        "donors": 65,
+        "economy": 67,
+        "international": 52,
+        "stability": 70,
+        "treasury": 45
+      }
+    },
+    {
+      "turn": 9,
+      "event": "Credit-market freeze",
+      "response": "guarantee",
+      "policy": "responders",
+      "notes": [
+        "Debt of 30 or more adds a 5 Treasury financing cost. Applies: debt is 42.",
+        "Debt of 30 or more adds a 3 Treasury financing cost. Applies: debt is 42."
+      ],
+      "same": true,
+      "actual": {
+        "approval": 81,
+        "donors": 69,
+        "economy": 73,
+        "international": 52,
+        "stability": 80,
+        "treasury": 22
+      }
+    },
+    {
+      "turn": 10,
+      "event": "Procurement scandal",
+      "response": "inquiry",
+      "policy": "consultation",
+      "notes": [],
+      "same": true,
+      "actual": {
+        "approval": 93,
+        "donors": 60,
+        "economy": 73,
+        "international": 52,
+        "stability": 90,
+        "treasury": 13
+      }
+    },
+    {
+      "turn": 11,
+      "event": "International funding review",
+      "response": "oversight",
+      "policy": "outreach",
+      "notes": [
+        "Debt of 30 or more adds a 5 Treasury financing cost. Applies: debt is 42."
+      ],
+      "same": true,
+      "actual": {
+        "approval": 84,
+        "donors": 60,
+        "economy": 73,
+        "international": 66,
+        "stability": 90,
+        "treasury": 15
+      }
+    },
+    {
+      "turn": 12,
+      "event": "Humanitarian assistance request",
+      "response": "domestic",
+      "policy": "reform",
+      "notes": [],
+      "same": true,
+      "actual": {
+        "approval": 93,
+        "donors": 54,
+        "economy": 73,
+        "international": 59,
+        "stability": 95,
+        "treasury": 13
+      }
+    }
+  ],
+  "uiReloads": [
+    {
+      "turn": 1,
+      "phase": "policy",
+      "same": true
+    },
+    {
+      "turn": 7,
+      "phase": "review-event",
+      "same": true
+    },
+    {
+      "turn": 12,
+      "phase": "result",
+      "same": true
+    }
+  ],
+  "quickChecks": [
+    {
+      "same": true,
+      "actual": {
+        "approval": 75,
+        "donors": 60,
+        "economy": 56,
+        "international": 60,
+        "stability": 64,
+        "treasury": 7
+      }
+    },
+    {
+      "same": true,
+      "actual": {
+        "approval": 80,
+        "donors": 60,
+        "economy": 56,
+        "international": 60,
+        "stability": 70,
+        "treasury": 12
+      }
+    },
+    {
+      "same": true,
+      "actual": {
+        "approval": 66,
+        "donors": 60,
+        "economy": 56,
+        "international": 64,
+        "stability": 65,
+        "treasury": 25
+      }
+    }
+  ],
+  "keptOldSave": true,
+  "mobileCheck": {
+    "clientWidth": 305,
+    "conditionWidth": 273,
+    "scrollWidth": 305
+  },
+  "tabletCheck": {
+    "clientWidth": 765,
+    "scrollWidth": 765
+  },
+  "appLogs": []
+}

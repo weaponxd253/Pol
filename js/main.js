@@ -22,7 +22,8 @@ function persist() {
   if (state?.mode !== 'term') return;
   const result = saveGame(state);
   savedGame = structuredClone(state);
-  storageStatus = { available: result.ok, message: result.ok ? null : result.message };
+  storageStatus = { ...storageStatus, available: result.ok, message: result.ok ? null : result.message,
+    hasStoredGame: storageStatus.hasStoredGame || result.ok, replacementRequired: result.ok ? false : storageStatus.replacementRequired };
 }
 function launch(mode, seed) {
   state = createInitialState({ mode, seed: seed || newSeed() });
@@ -32,16 +33,18 @@ function launch(mode, seed) {
 }
 function requestLaunch(mode, seed) {
   const active = state?.mode === 'term' ? state : savedGame;
-  if (mode === 'term' && active && !active.outcome) {
+  if (mode === 'term' && ((active && !active.outcome) || storageStatus.replacementRequired)) {
     replacement = { mode, seed };
-    document.getElementById('replacement-copy').textContent = 'This replaces your saved term at turn ' + active.turn + ' of 12. Keep the saved term to continue where you left off.';
+    document.getElementById('replacement-copy').textContent = storageStatus.replacementRequired
+      ? 'Your stored run uses older rules or cannot be restored. Starting a fresh term replaces it with the new consequence rules. Cancel to keep the stored data.'
+      : 'This replaces your saved term at turn ' + active.turn + ' of 12. Keep the saved term to continue where you left off.';
     dialog.showModal();
   } else launch(mode, seed);
 }
 function menuMarkup() {
   const resume = savedGame ? '<section class="resume-card"><div><span class="eyebrow">YOUR SAVED TERM</span><h3>Turn ' + savedGame.turn + ' of 12</h3><p>' + (savedGame.outcome ? 'The result and your decisions are saved.' : 'Approval ' + savedGame.meters.approval + ' · Treasury ' + savedGame.meters.treasury + ' · Your hand and choices are saved.') + '</p></div><button class="button button-primary" data-action="resume" data-focus-key="resume">Resume term →</button></section>' : '';
   return '<section class="mode-selection"><p class="eyebrow">THE EXECUTIVE OFFICE</p><h2 id="phase-heading" tabindex="-1">Take office.</h2><p class="panel-description">Choose your briefing. Every decision helps something and costs something else.</p>' + resume +
-    '<div class="mode-grid"><article class="mode-card mode-featured"><span class="eyebrow">THE FULL EXPERIENCE</span><h3>Your First Term</h3><p>Keep six competing pressures in balance, carry the cost of your promises, and face the electorate.</p><ul><li>12 turns · Four-card policy hand</li><li>Shuffled events and repeatable runs</li><li>Autosave · Election target: 50 Approval</li></ul><button class="button button-primary" data-action="new-term" data-focus-key="new-term">Play a full term →</button></article>' +
+    '<div class="mode-grid"><article class="mode-card mode-featured"><span class="eyebrow">THE FULL EXPERIENCE</span><h3>Your First Term</h3><p>Keep six competing pressures in balance, carry the cost of your promises, and face the electorate.</p><ul><li>12 turns · Four-card policy hand</li><li>Lasting conditions · Follow-up decisions</li><li>Autosave · Election target: 50 Approval</li></ul><button class="button button-primary" data-action="new-term" data-focus-key="new-term">Play a full term →</button></article>' +
     '<article class="mode-card"><span class="eyebrow">A QUICK INTRODUCTION</span><h3>The First 90 Days</h3><p>A short, fixed crisis. Learn the tradeoffs between public support, spending, and debt.</p><ul><li>3 turns · Six single-use policies</li><li>Same scenario every time</li><li>A fresh start on each reload</li></ul><button class="button button-secondary" data-action="quick" data-focus-key="quick">Try the three-turn scenario →</button></article></div></section>';
 }
 function render({ focusHeading = false } = {}) {
@@ -53,7 +56,7 @@ function render({ focusHeading = false } = {}) {
   document.querySelector('.scenario-tag').textContent = state ? quick ? 'OPENING CRISIS' : 'FIRST TERM' : 'REPUBLIC OF ARDEN';
   document.querySelector('[data-action="restart"]').hidden = !state;
   document.querySelector('[data-action="menu"]').hidden = !state;
-  document.getElementById('briefing-extra').textContent = quick ? 'All six policies are available once. Survive three turns to complete the opening crisis.' : 'Keep three policy cards and draw a replacement after playing one. Survive twelve turns and finish with at least 50 Approval to win re-election.';
+  document.getElementById('briefing-extra').textContent = quick ? 'All six policies are available once. Survive three turns to complete the opening crisis.' : 'Keep three policy cards and draw a replacement after playing one. Earlier policies can change future events or reserve a follow-up decision within your twelve turns. Inspect conditions and commitments before choosing. Finish with at least 50 Approval to win re-election.';
   const notice = storageStatus.message && (!state || state.mode === 'term') ? '<p class="storage-notice" role="status">' + escape(storageStatus.message) + '</p>' : '';
   app.innerHTML = notice + (state ? renderGame(state, { saveEnabled: storageStatus.available }) : menuMarkup());
   if (focusHeading) {

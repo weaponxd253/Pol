@@ -29,14 +29,14 @@ export function validateSavedState(raw) {
 export function loadGame(providedStorage) {
   let text;
   try { text = (providedStorage ?? globalThis.localStorage).getItem(SAVE_KEY); }
-  catch { return { state: null, available: false, message: storageMessage }; }
-  if (!text) return { state: null, available: true, message: null };
+  catch { return { state: null, available: false, hasStoredGame: false, replacementRequired: false, message: storageMessage }; }
+  if (!text) return { state: null, available: true, hasStoredGame: false, replacementRequired: false, message: null };
   try {
     if (text.length > 500000) throw new Error('Oversized save.');
     const saved = JSON.parse(text);
     if (saved.saveVersion !== SAVE_VERSION || saved.rulesVersion !== RULES_VERSION || saved.contentVersion !== CONTENT_VERSION) throw new Error('Incompatible save version.');
-    return { state: validateSavedState(saved.state), available: true, message: null };
-  } catch { return { state: null, available: true, message: 'The saved term is invalid or belongs to an older version. Start a fresh term to create a new save.' }; }
+    return { state: validateSavedState(saved.state), available: true, hasStoredGame: true, replacementRequired: false, message: null };
+  } catch { return { state: null, available: true, hasStoredGame: true, replacementRequired: true, message: 'The saved term is invalid or uses older rules. These consequences require a fresh term. Your stored run is kept until you choose to replace it.' }; }
 }
 
 export function saveGame(state, providedStorage) {

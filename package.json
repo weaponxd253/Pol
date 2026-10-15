@@ -1,12 +1,12 @@
 {
   "name": "policy-maker",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "scripts": {
     "start": "node dev-server.mjs",
     "test": "node --test",
-    "check": "node --check js/content.js && node --check js/engine.js && node --check js/main.js && node --check js/view.js && node --check js/storage.js && node --check dev-server.mjs",
+    "check": "node --check js/content.js && node --check js/engine.js && node --check js/main.js && node --check js/view.js && node --check js/storage.js && node --check scripts/strategies.mjs && node --check scripts/balance.mjs && node --check dev-server.mjs",
     "balance": "node scripts/balance.mjs"
   }
 }

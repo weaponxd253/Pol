@@ -228,4 +228,6 @@ Manually verify the responsive layout, keyboard flow, low-meter warnings, report
 4. **Future costs feel like a trick.** Advertise timing and show obligations persistently.
 5. **The game accidentally declares a political ideology correct.** Make consequences depend on fictional conditions, include benefits and risks across approaches, and evaluate several successful strategies.
 
-The three-turn prototype and full first term are complete. The next work is human playtesting and balance refinement before adding further terms or a combined score.
+The three-turn prototype, full first term, and [consequences system](CONSEQUENCES_PLAN.md) are implemented locally. Four lasting nation conditions and two scheduled review events now have visible causes, timing, and save/replay support. Playtest their balance and clarity before adding further terms or a combined score.
+
+The implemented first consequence slice is documented in [NATION_CONDITIONS_PLAN.md](NATION_CONDITIONS_PLAN.md), covering condition rules, previews and reports, save/replay support, and focused verification.

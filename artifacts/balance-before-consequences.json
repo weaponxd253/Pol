@@ -1,0 +1,5212 @@
+{
+  "contentVersion": 2,
+  "rulesVersion": 1,
+  "startingTreasury": 45,
+  "electionTarget": 50,
+  "seeds": 20,
+  "runs": 80,
+  "summary": [
+    {
+      "strategy": "public",
+      "reelected": 17,
+      "electionLost": 0,
+      "collapsed": 3,
+      "averageApproval": 99,
+      "averageTreasury": 7,
+      "averageDebt": 30
+    },
+    {
+      "strategy": "fiscal",
+      "reelected": 0,
+      "electionLost": 20,
+      "collapsed": 0,
+      "averageApproval": 27,
+      "averageTreasury": 69,
+      "averageDebt": 41
+    },
+    {
+      "strategy": "investment",
+      "reelected": 18,
+      "electionLost": 0,
+      "collapsed": 2,
+      "averageApproval": 89,
+      "averageTreasury": 14,
+      "averageDebt": 40
+    },
+    {
+      "strategy": "adaptive",
+      "reelected": 20,
+      "electionLost": 0,
+      "collapsed": 0,
+      "averageApproval": 74,
+      "averageTreasury": 33,
+      "averageDebt": 41
+    }
+  ],
+  "samples": [
+    {
+      "seed": "ARDEN-1",
+      "strategy": "public",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 97,
+        "treasury": 7,
+        "donors": 39,
+        "economy": 82,
+        "international": 68,
+        "stability": 83
+      },
+      "debt": 32,
+      "choices": [
+        {
+          "responseId": "domestic",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "decline",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "training"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "repayment"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "cuts"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-2",
+      "strategy": "public",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 1,
+        "donors": 30,
+        "economy": 64,
+        "international": 70,
+        "stability": 97
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "decline",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "services"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "training"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-3",
+      "strategy": "public",
+      "outcome": "collapsed",
+      "turns": 11,
+      "meters": {
+        "approval": 100,
+        "treasury": 0,
+        "donors": 29,
+        "economy": 56,
+        "international": 65,
+        "stability": 98
+      },
+      "debt": 14,
+      "choices": [
+        {
+          "responseId": "firm",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "repayment"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "services"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "training"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "consultation"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-4",
+      "strategy": "public",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 3,
+        "donors": 27,
+        "economy": 76,
+        "international": 61,
+        "stability": 100
+      },
+      "debt": 18,
+      "choices": [
+        {
+          "responseId": "emergency",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "services"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "decline",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "consultation"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-5",
+      "strategy": "public",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 12,
+        "donors": 42,
+        "economy": 87,
+        "international": 80,
+        "stability": 100
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "guarantee",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "training"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "responders"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-6",
+      "strategy": "public",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 6,
+        "donors": 40,
+        "economy": 83,
+        "international": 76,
+        "stability": 93
+      },
+      "debt": 32,
+      "choices": [
+        {
+          "responseId": "emergency",
+          "policyId": "training"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "repayment"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "consultation"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-7",
+      "strategy": "public",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 12,
+        "donors": 43,
+        "economy": 70,
+        "international": 80,
+        "stability": 100
+      },
+      "debt": 32,
+      "choices": [
+        {
+          "responseId": "inquiry",
+          "policyId": "services"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "training"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "repayment"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "bonds"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-8",
+      "strategy": "public",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 17,
+        "donors": 43,
+        "economy": 78,
+        "international": 55,
+        "stability": 100
+      },
+      "debt": 32,
+      "choices": [
+        {
+          "responseId": "guarantee",
+          "policyId": "services"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "training"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "repayment"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "wages"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-9",
+      "strategy": "public",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 95,
+        "treasury": 7,
+        "donors": 33,
+        "economy": 64,
+        "international": 64,
+        "stability": 86
+      },
+      "debt": 32,
+      "choices": [
+        {
+          "responseId": "rebate",
+          "policyId": "services"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "repayment"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "consultation"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-10",
+      "strategy": "public",
+      "outcome": "collapsed",
+      "turns": 10,
+      "meters": {
+        "approval": 100,
+        "treasury": 0,
+        "donors": 41,
+        "economy": 72,
+        "international": 53,
+        "stability": 91
+      },
+      "debt": 32,
+      "choices": [
+        {
+          "responseId": "inquiry",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "decline",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "services"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "repayment"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "training"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-11",
+      "strategy": "public",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 22,
+        "donors": 22,
+        "economy": 65,
+        "international": 55,
+        "stability": 97
+      },
+      "debt": 18,
+      "choices": [
+        {
+          "responseId": "inquiry",
+          "policyId": "training"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "services"
+        },
+        {
+          "responseId": "decline",
+          "policyId": "bonds"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-12",
+      "strategy": "public",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 3,
+        "donors": 30,
+        "economy": 77,
+        "international": 76,
+        "stability": 100
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "guarantee",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "decline",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "consultation"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-13",
+      "strategy": "public",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 6,
+        "donors": 42,
+        "economy": 78,
+        "international": 61,
+        "stability": 97
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "settlement",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "services"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "training"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "decline",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "trade"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-14",
+      "strategy": "public",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 98,
+        "treasury": 1,
+        "donors": 35,
+        "economy": 73,
+        "international": 73,
+        "stability": 93
+      },
+      "debt": 32,
+      "choices": [
+        {
+          "responseId": "guarantee",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "decline",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "training"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "repayment"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "reform"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-15",
+      "strategy": "public",
+      "outcome": "collapsed",
+      "turns": 9,
+      "meters": {
+        "approval": 100,
+        "treasury": 0,
+        "donors": 24,
+        "economy": 63,
+        "international": 55,
+        "stability": 98
+      },
+      "debt": 0,
+      "choices": [
+        {
+          "responseId": "domestic",
+          "policyId": "services"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "responders"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-16",
+      "strategy": "public",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 15,
+        "donors": 57,
+        "economy": 73,
+        "international": 68,
+        "stability": 99
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "domestic",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "training"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "services"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "credit"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-17",
+      "strategy": "public",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 98,
+        "treasury": 10,
+        "donors": 37,
+        "economy": 69,
+        "international": 70,
+        "stability": 100
+      },
+      "debt": 32,
+      "choices": [
+        {
+          "responseId": "emergency",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "services"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "repayment"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "training"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "aid"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-18",
+      "strategy": "public",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 10,
+        "donors": 21,
+        "economy": 73,
+        "international": 66,
+        "stability": 98
+      },
+      "debt": 18,
+      "choices": [
+        {
+          "responseId": "rebate",
+          "policyId": "services"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "training"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "decline",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "taxes"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-19",
+      "strategy": "public",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 5,
+        "donors": 37,
+        "economy": 74,
+        "international": 73,
+        "stability": 100
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "rebate",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "training"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "services"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-20",
+      "strategy": "public",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 3,
+        "donors": 42,
+        "economy": 84,
+        "international": 68,
+        "stability": 100
+      },
+      "debt": 32,
+      "choices": [
+        {
+          "responseId": "guarantee",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "training"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "decline",
+          "policyId": "repayment"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "wages"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-1",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 25,
+        "treasury": 51,
+        "donors": 65,
+        "economy": 44,
+        "international": 68,
+        "stability": 49
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "domestic",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "local",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "services"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-2",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 31,
+        "treasury": 58,
+        "donors": 59,
+        "economy": 47,
+        "international": 68,
+        "stability": 65
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "oversight",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "wages"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-3",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 35,
+        "treasury": 57,
+        "donors": 62,
+        "economy": 53,
+        "international": 68,
+        "stability": 65
+      },
+      "debt": 24,
+      "choices": [
+        {
+          "responseId": "firm",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "training"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "aid"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-4",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 23,
+        "treasury": 86,
+        "donors": 59,
+        "economy": 55,
+        "international": 68,
+        "stability": 64
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "emergency",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "consultation"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-5",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 29,
+        "treasury": 58,
+        "donors": 62,
+        "economy": 50,
+        "international": 58,
+        "stability": 50
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "protect",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "local",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "training"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "wages"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-6",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 37,
+        "treasury": 85,
+        "donors": 62,
+        "economy": 61,
+        "international": 58,
+        "stability": 57
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "emergency",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "training"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "wages"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-7",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 21,
+        "treasury": 71,
+        "donors": 68,
+        "economy": 61,
+        "international": 68,
+        "stability": 59
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "defend",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "training"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "trade"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-8",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 20,
+        "treasury": 64,
+        "donors": 68,
+        "economy": 50,
+        "international": 68,
+        "stability": 45
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "protect",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "local",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "training"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "outreach"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-9",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 21,
+        "treasury": 40,
+        "donors": 57,
+        "economy": 45,
+        "international": 87,
+        "stability": 50
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "reserve",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "local",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "training"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "consultation"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-10",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 30,
+        "treasury": 47,
+        "donors": 66,
+        "economy": 50,
+        "international": 61,
+        "stability": 50
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "defend",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "local",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "training"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "cuts"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-11",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 20,
+        "treasury": 99,
+        "donors": 66,
+        "economy": 61,
+        "international": 68,
+        "stability": 59
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "defend",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "training"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "credit"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-12",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 22,
+        "treasury": 74,
+        "donors": 59,
+        "economy": 44,
+        "international": 68,
+        "stability": 50
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "protect",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "local",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "consultation"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-13",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 26,
+        "treasury": 69,
+        "donors": 71,
+        "economy": 53,
+        "international": 68,
+        "stability": 50
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "freeze",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "training"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "local",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "wages"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-14",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 30,
+        "treasury": 69,
+        "donors": 59,
+        "economy": 45,
+        "international": 62,
+        "stability": 50
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "protect",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "training"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "local",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "wages"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-15",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 14,
+        "treasury": 89,
+        "donors": 59,
+        "economy": 52,
+        "international": 68,
+        "stability": 49
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "domestic",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "local",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "bonds"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-16",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 35,
+        "treasury": 69,
+        "donors": 71,
+        "economy": 56,
+        "international": 68,
+        "stability": 65
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "domestic",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "training"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "credit"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-17",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 38,
+        "treasury": 58,
+        "donors": 62,
+        "economy": 53,
+        "international": 58,
+        "stability": 65
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "emergency",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "training"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "aid"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-18",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 16,
+        "treasury": 98,
+        "donors": 62,
+        "economy": 50,
+        "international": 68,
+        "stability": 47
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "reserve",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "training"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "local",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "credit"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-19",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 35,
+        "treasury": 57,
+        "donors": 63,
+        "economy": 44,
+        "international": 61,
+        "stability": 54
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "reserve",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "local",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "services"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-20",
+      "strategy": "fiscal",
+      "outcome": "election-lost",
+      "turns": 12,
+      "meters": {
+        "approval": 22,
+        "treasury": 80,
+        "donors": 59,
+        "economy": 44,
+        "international": 68,
+        "stability": 50
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "protect",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "local",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "wages"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-1",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 76,
+        "treasury": 1,
+        "donors": 55,
+        "economy": 87,
+        "international": 96,
+        "stability": 79
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "mission",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "training"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "responders"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-2",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 80,
+        "treasury": 1,
+        "donors": 52,
+        "economy": 74,
+        "international": 100,
+        "stability": 86
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "oversight",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "training"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "outreach"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-3",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 84,
+        "treasury": 4,
+        "donors": 49,
+        "economy": 86,
+        "international": 99,
+        "stability": 95
+      },
+      "debt": 24,
+      "choices": [
+        {
+          "responseId": "negotiate",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "training"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "wages"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-4",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 97,
+        "treasury": 26,
+        "donors": 42,
+        "economy": 81,
+        "international": 90,
+        "stability": 100
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "emergency",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "consultation"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-5",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 5,
+        "donors": 45,
+        "economy": 87,
+        "international": 96,
+        "stability": 100
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "guarantee",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "training"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "wages"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-6",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 4,
+        "donors": 45,
+        "economy": 87,
+        "international": 96,
+        "stability": 97
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "emergency",
+          "policyId": "training"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "services"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-7",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 9,
+        "donors": 51,
+        "economy": 87,
+        "international": 96,
+        "stability": 100
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "inquiry",
+          "policyId": "training"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "services"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "trade"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-8",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 88,
+        "treasury": 14,
+        "donors": 51,
+        "economy": 87,
+        "international": 96,
+        "stability": 93
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "guarantee",
+          "policyId": "training"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "trade"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-9",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 93,
+        "treasury": 5,
+        "donors": 41,
+        "economy": 74,
+        "international": 99,
+        "stability": 86
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "rebate",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "training"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "services"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "consultation"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-10",
+      "strategy": "investment",
+      "outcome": "collapsed",
+      "turns": 11,
+      "meters": {
+        "approval": 100,
+        "treasury": 0,
+        "donors": 49,
+        "economy": 87,
+        "international": 74,
+        "stability": 100
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "inquiry",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "training"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "consultation"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-11",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 74,
+        "treasury": 43,
+        "donors": 49,
+        "economy": 87,
+        "international": 100,
+        "stability": 90
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "inquiry",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "training"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "credit"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-12",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 14,
+        "donors": 45,
+        "economy": 87,
+        "international": 96,
+        "stability": 100
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "guarantee",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "training"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "consultation"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-13",
+      "strategy": "investment",
+      "outcome": "collapsed",
+      "turns": 10,
+      "meters": {
+        "approval": 76,
+        "treasury": 0,
+        "donors": 60,
+        "economy": 82,
+        "international": 96,
+        "stability": 85
+      },
+      "debt": 24,
+      "choices": [
+        {
+          "responseId": "settlement",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "training"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "services"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-14",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 100,
+        "treasury": 16,
+        "donors": 42,
+        "economy": 82,
+        "international": 85,
+        "stability": 100
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "guarantee",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "training"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "wages"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-15",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 70,
+        "treasury": 28,
+        "donors": 56,
+        "economy": 81,
+        "international": 100,
+        "stability": 79
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "mission",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "bonds"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-16",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 97,
+        "treasury": 17,
+        "donors": 51,
+        "economy": 89,
+        "international": 90,
+        "stability": 100
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "mission",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "training"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "credit"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-17",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 92,
+        "treasury": 2,
+        "donors": 45,
+        "economy": 79,
+        "international": 96,
+        "stability": 96
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "emergency",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "training"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "aid"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-18",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 83,
+        "treasury": 36,
+        "donors": 54,
+        "economy": 90,
+        "international": 91,
+        "stability": 95
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "rebate",
+          "policyId": "training"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "credit"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-19",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 84,
+        "treasury": 11,
+        "donors": 40,
+        "economy": 74,
+        "international": 99,
+        "stability": 95
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "rebate",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "training"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "cuts"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-20",
+      "strategy": "investment",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 91,
+        "treasury": 34,
+        "donors": 45,
+        "economy": 86,
+        "international": 96,
+        "stability": 100
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "guarantee",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "training"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "infrastructure"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "wages"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-1",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 64,
+        "treasury": 19,
+        "donors": 50,
+        "economy": 74,
+        "international": 100,
+        "stability": 74
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "mission",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "training"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "outreach"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-2",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 80,
+        "treasury": 17,
+        "donors": 61,
+        "economy": 64,
+        "international": 62,
+        "stability": 90
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "oversight",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "services"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "outreach"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-3",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 63,
+        "treasury": 35,
+        "donors": 51,
+        "economy": 61,
+        "international": 84,
+        "stability": 93
+      },
+      "debt": 24,
+      "choices": [
+        {
+          "responseId": "negotiate",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "training"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "aid"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-4",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 69,
+        "treasury": 43,
+        "donors": 57,
+        "economy": 68,
+        "international": 84,
+        "stability": 95
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "emergency",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "consultation"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-5",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 72,
+        "treasury": 33,
+        "donors": 62,
+        "economy": 78,
+        "international": 62,
+        "stability": 93
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "guarantee",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "training"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "trade"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-6",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 97,
+        "treasury": 35,
+        "donors": 53,
+        "economy": 66,
+        "international": 62,
+        "stability": 92
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "emergency",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "training"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "services"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-7",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 79,
+        "treasury": 41,
+        "donors": 63,
+        "economy": 74,
+        "international": 58,
+        "stability": 92
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "inquiry",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "training"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "services"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "trade"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-8",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 66,
+        "treasury": 32,
+        "donors": 71,
+        "economy": 78,
+        "international": 78,
+        "stability": 92
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "guarantee",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "training"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "services"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "trade"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-9",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 74,
+        "treasury": 16,
+        "donors": 55,
+        "economy": 60,
+        "international": 75,
+        "stability": 84
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "rebate",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "services"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "absorb",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "consultation"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-10",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 60,
+        "treasury": 19,
+        "donors": 56,
+        "economy": 55,
+        "international": 77,
+        "stability": 83
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "inquiry",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "services"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "cuts"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-11",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 75,
+        "treasury": 57,
+        "donors": 61,
+        "economy": 74,
+        "international": 68,
+        "stability": 90
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "inquiry",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "training"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "credit"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-12",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 92,
+        "treasury": 31,
+        "donors": 62,
+        "economy": 79,
+        "international": 62,
+        "stability": 98
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "guarantee",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "training"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "consultation"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-13",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 85,
+        "treasury": 30,
+        "donors": 66,
+        "economy": 77,
+        "international": 58,
+        "stability": 97
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "settlement",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "training"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "services"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "wages"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-14",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 74,
+        "treasury": 28,
+        "donors": 72,
+        "economy": 74,
+        "international": 72,
+        "stability": 90
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "guarantee",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "training"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "services"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-15",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 51,
+        "treasury": 43,
+        "donors": 60,
+        "economy": 56,
+        "international": 77,
+        "stability": 63
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "mission",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "defend",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "local",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "services"
+        },
+        {
+          "responseId": "decline",
+          "policyId": "bonds"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-16",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 73,
+        "treasury": 48,
+        "donors": 66,
+        "economy": 77,
+        "international": 68,
+        "stability": 93
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "domestic",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "training"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "credit"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-17",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 77,
+        "treasury": 27,
+        "donors": 59,
+        "economy": 72,
+        "international": 62,
+        "stability": 97
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "emergency",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "guarantee",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "reserve",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "services"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "aid"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-18",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 62,
+        "treasury": 57,
+        "donors": 53,
+        "economy": 62,
+        "international": 87,
+        "stability": 71
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "rebate",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "training"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "services"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "local",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "mission",
+          "policyId": "credit"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-19",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 67,
+        "treasury": 16,
+        "donors": 61,
+        "economy": 57,
+        "international": 81,
+        "stability": 73
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "rebate",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "subsidies",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "negotiate",
+          "policyId": "taxes"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "corridor",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "local",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "concessions",
+          "policyId": "wages"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "freeze",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "protect",
+          "policyId": "services"
+        }
+      ]
+    },
+    {
+      "seed": "ARDEN-20",
+      "strategy": "adaptive",
+      "outcome": "reelected",
+      "turns": 12,
+      "meters": {
+        "approval": 93,
+        "treasury": 42,
+        "donors": 46,
+        "economy": 77,
+        "international": 71,
+        "stability": 93
+      },
+      "debt": 42,
+      "choices": [
+        {
+          "responseId": "guarantee",
+          "policyId": "regulations"
+        },
+        {
+          "responseId": "domestic",
+          "policyId": "consultation"
+        },
+        {
+          "responseId": "reject",
+          "policyId": "cuts"
+        },
+        {
+          "responseId": "rebate",
+          "policyId": "bonds"
+        },
+        {
+          "responseId": "emergency",
+          "policyId": "outreach"
+        },
+        {
+          "responseId": "relief",
+          "policyId": "credit"
+        },
+        {
+          "responseId": "firm",
+          "policyId": "trade"
+        },
+        {
+          "responseId": "limited",
+          "policyId": "responders"
+        },
+        {
+          "responseId": "inquiry",
+          "policyId": "aid"
+        },
+        {
+          "responseId": "oversight",
+          "policyId": "training"
+        },
+        {
+          "responseId": "settlement",
+          "policyId": "reform"
+        },
+        {
+          "responseId": "withdraw",
+          "policyId": "wages"
+        }
+      ]
+    }
+  ]
+}
