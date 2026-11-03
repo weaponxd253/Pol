@@ -1,0 +1,13 @@
+<!-- In <head>, BEFORE the existing <script type="module" src="./js/main.js"></script>: -->
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+
+<!-- In <body>, immediately before the existing <div id="app">: -->
+<button id="enter-office" class="button button-secondary" type="button">Enter Executive Office</button>
+<section id="office-screen" hidden>
+  <div class="office-toolbar">
+    <h2>Executive Office</h2>
+    <button id="office-back" class="button button-secondary" type="button">Return to Briefing</button>
+  </div>
+  <div id="office-game" aria-label="Explorable executive office"></div>
+  <p id="office-message" role="status">WASD/arrows: move. E: interact. C: collisions. Esc: return.</p>
+</section>

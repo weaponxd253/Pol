@@ -343,3 +343,157 @@ h2:focus { outline: none; }
   .choice-card.selected { border: 3px solid Highlight; }
   .effect { border: 1px solid CanvasText; }
 }
+
+/* Executive Office */
+
+#office-screen[hidden],
+#app[hidden],
+#enter-office[hidden] {
+  display: none !important;
+}
+
+#office-screen {
+  width: 100%;
+  max-width: 1000px;
+  margin: 24px auto;
+}
+
+.office-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+#office-game {
+  width: 100%;
+  max-width: 960px;
+  aspect-ratio: 4 / 3;
+  background: #17251f;
+  border: 3px solid #a58a52;
+  overflow: hidden;
+}
+
+#office-game canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+#office-message {
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+
+/* =========================================
+   RPG DIALOGUE SYSTEM
+   ========================================= */
+
+/* Makes the Phaser container the positioning reference. */
+#office-game {
+    position: relative;
+}
+
+/* Ensure the hidden dialogue stays hidden. */
+.office-dialogue[hidden] {
+    display: none !important;
+}
+
+/* Dialogue panel over the bottom of the office. */
+.office-dialogue {
+    position: absolute;
+
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+
+    z-index: 100;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+
+    padding: 20px;
+
+    background: rgba(16, 42, 36, 0.97);
+    border: 3px solid #c5a66b;
+    border-radius: 8px;
+
+    color: #f4e9d4;
+
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* Temporary advisor portrait. */
+.office-dialogue-portrait {
+    width: 80px;
+    height: 100px;
+
+    flex-shrink: 0;
+
+    background: #315246;
+    border: 2px solid #c5a66b;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 26px;
+    font-weight: bold;
+    color: #e9d09a;
+}
+
+/* Dialogue content. */
+.office-dialogue-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.office-dialogue-content h3 {
+    margin: 0 0 10px;
+
+    color: #e7c680;
+    font-size: 20px;
+}
+
+.office-dialogue-content p {
+    margin: 0 0 16px;
+
+    color: #f4e9d4;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Make sure buttons remain readable. */
+.office-dialogue-content button {
+    background: #e4cca0;
+    color: #173f36;
+    border-color: #e4cca0;
+}
+
+@media (max-width: 600px) {
+    .office-dialogue {
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .office-dialogue-portrait {
+        width: 48px;
+        height: 64px;
+        font-size: 17px;
+    }
+
+    .office-dialogue-content h3 {
+        font-size: 16px;
+    }
+
+    .office-dialogue-content p {
+        font-size: 13px;
+    }
+}

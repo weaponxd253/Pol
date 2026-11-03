@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Policy-Maker — Executive Office Prototype</title>
+  <link rel="stylesheet" href="office.css">
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+  <script type="module" src="js/office.js"></script>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="heading">
+      <div><p class="eyebrow">REPUBLIC OF ARDEN / POLICY—MAKER</p><h1>The Executive Office</h1><p class="subtitle">A walkable interface to the existing government simulation.</p></div>
+      <div class="status"><span id="turn">NOT IN OFFICE</span><span id="phase">Approach the briefing desk</span></div>
+    </header>
+    <section class="game-shell" aria-label="Executive office game">
+      <div id="game"></div>
+      <div class="game-bottom"><div id="hint" role="status" aria-live="polite">Arrow keys or WASD: move · E: interact</div><button id="interact-button" type="button" disabled>Interact (E)</button></div>
+    </section>
+    <section class="footer-bar"><span>Walk up to highlighted furniture to open its associated decision panel.</span><span id="meterline">Six national meters · Every choice has consequences</span></section>
+  </main>
+  <dialog id="office-dialog" aria-labelledby="modal-title"><div class="dialog-head"><div><p class="eyebrow">EXECUTIVE BRIEFING</p><h2 id="modal-title">Briefing</h2></div><button id="close-dialog" type="button" aria-label="Close window">×</button></div><div id="modal-content"></div><div class="dialog-foot">Close: Escape or X · Move between office stations to continue the turn</div></dialog>
+</body>
+</html>
