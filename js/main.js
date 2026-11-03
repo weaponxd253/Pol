@@ -4,6 +4,8 @@ import { validateContent } from './content.js';
 import {
   createInitialState,
   getEvent,
+  getPolicies,
+  policyDetails,
   selectResponse,
   beginPolicyPhase,
   selectPolicy,
@@ -25,6 +27,8 @@ validateContent();
 const app = document.getElementById('app');
 const announcer = document.getElementById('announcer');
 const dialog = document.getElementById('replacement-dialog');
+const policyDossierOptions =
+  document.getElementById('policy-dossier-options');
 
 let storageStatus = loadGame();
 let savedGame = storageStatus.state;
@@ -539,6 +543,8 @@ function enterOffice() {
       officeGame.scene.resume('OfficeScene');
     }
   }
+
+  populatePolicyDossier();
 }
 
 // Return to existing policy screens.
@@ -564,6 +570,95 @@ function returnToBriefing() {
 // ==========================================
 // RPG DIALOGUE FUNCTIONS
 // ==========================================
+
+function populatePolicyDossier() {
+
+    // Remove any policy cards from a previous visit.
+    policyDossierOptions.replaceChildren();
+
+    // Display an explanation when policies cannot be reviewed.
+    if (!state || state.phase !== 'policy') {
+        const message = document.createElement('p');
+
+        message.className = 'policy-dossier-placeholder';
+
+        message.textContent = !state
+            ? 'Begin or resume a presidency to review policies.'
+            : 'Complete your advisor briefing before reviewing policies.';
+
+        policyDossierOptions.appendChild(message);
+        return;
+    }
+
+    // Get policies from the existing simulation engine.
+    const policies = getPolicies(state)
+        .filter(policy =>
+            state.mode === 'quick' ||
+            state.hand.includes(policy.id)
+        )
+        .map(policy => policyDetails(state, policy));
+
+    // Create one document card per policy.
+    for (const policy of policies) {
+
+        const card = document.createElement('article');
+        card.className = 'policy-dossier-card';
+
+        const title = document.createElement('h4');
+        title.textContent = policy.title;
+
+        const description = document.createElement('p');
+        description.textContent = policy.description;
+
+        // Format the immediate effects.
+        const effects = document.createElement('div');
+        effects.className = 'policy-dossier-effects';
+
+        for (const [meter, amount] of Object.entries(policy.effects)) {
+
+            if (amount === 0) continue;
+
+            const chip = document.createElement('span');
+
+            chip.className = amount > 0
+                ? 'policy-effect-positive'
+                : 'policy-effect-negative';
+
+            const name = meter.charAt(0).toUpperCase() +
+                meter.slice(1);
+
+            const value = amount > 0
+                ? `+${amount}`
+                : String(amount);
+
+            chip.textContent = `${name} ${value}`;
+
+            effects.appendChild(chip);
+        }
+
+        // Display future consequences.
+        const consequence = document.createElement('p');
+        consequence.className = 'policy-dossier-consequence';
+
+        consequence.textContent = policy.consequence;
+
+        card.append(title, description, effects, consequence);
+
+        // Explain restrictions without changing the game state.
+        if (policy.disabledReason) {
+            card.classList.add('policy-dossier-disabled');
+
+            const restriction = document.createElement('p');
+            restriction.className = 'policy-dossier-restriction';
+            restriction.textContent = policy.disabledReason;
+
+            card.appendChild(restriction);
+        }
+
+        policyDossierOptions.appendChild(card);
+    }
+}
+
 
 function showAdvisorEvent() {
 
@@ -733,32 +828,32 @@ officeDialogueClose.addEventListener(
 
 advisorContinue.addEventListener('click', () => {
 
-    // Make sure a valid response has been selected.
-    if (
-        !state ||
-        state.phase !== 'event' ||
-        !state.selectedResponseId
-    ) {
-        return;
-    }
+  // Make sure a valid response has been selected.
+  if (
+    !state ||
+    state.phase !== 'event' ||
+    !state.selectedResponseId
+  ) {
+    return;
+  }
 
-    try {
-        // Lock in the event response and enter policy phase.
-        state = beginPolicyPhase(state);
+  try {
+    // Lock in the event response and enter policy phase.
+    state = beginPolicyPhase(state);
 
-        // Save progress.
-        persist();
+    // Save progress.
+    persist();
 
-        // Hide the advisor dialogue.
-        officeDialogue.hidden = true;
+    // Hide the advisor dialogue.
+    officeDialogue.hidden = true;
 
-        // Open the existing policy selection screen.
-        returnToBriefing();
+    // Open the existing policy selection screen.
+    returnToBriefing();
 
-    } catch (error) {
-        advisorFeedback.textContent = error.message;
-        console.error(error);
-    }
+  } catch (error) {
+    advisorFeedback.textContent = error.message;
+    console.error(error);
+  }
 });
 
 // ==========================================
@@ -767,12 +862,12 @@ advisorContinue.addEventListener('click', () => {
 
 document.addEventListener('keydown', event => {
 
-    if (
-        event.key === 'Escape' &&
-        !officeDialogue.hidden
-    ) {
-        closeAdvisorDialogue();
-    }
+  if (
+    event.key === 'Escape' &&
+    !officeDialogue.hidden
+  ) {
+    closeAdvisorDialogue();
+  }
 });
 
 // Also support Escape.

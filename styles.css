@@ -551,3 +551,230 @@ h2:focus { outline: none; }
 #advisor-continue {
     margin-right: 8px;
 }
+
+/* ======================================
+   PRESIDENTIAL POLICY DOSSIER
+   ====================================== */
+
+/* Cover the Phaser office when the dossier opens. */
+.policy-dossier-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 110;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0, 0, 0, 0.65);
+}
+
+/* Prevent the hidden panel from showing. */
+.policy-dossier-overlay[hidden] {
+    display: none !important;
+}
+
+/* Use the generated policy dossier image. */
+.policy-dossier-frame {
+    position: relative;
+
+    width: min(94%, 880px);
+    aspect-ratio: 1448 / 1086;
+
+    background-image: url('./assets/policy-dossier.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+}
+
+/* Position the seal inside the top circle. */
+.policy-dossier-seal {
+    position: absolute;
+
+    top: 1.5%;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 10%;
+    height: auto;
+
+    object-fit: contain;
+}
+
+/* Position HTML inside the parchment area. */
+.policy-dossier-paper {
+    position: absolute;
+
+    top: 23%;
+    left: 8%;
+    right: 8%;
+    bottom: 16%;
+
+    overflow-y: auto;
+
+    padding: 8px 12px;
+
+    color: #283d33;
+    text-align: center;
+}
+
+/* Small document heading. */
+.policy-dossier-kicker {
+    margin: 0 0 6px;
+
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 2px;
+
+    color: #876c3a;
+}
+
+/* Main title. */
+#policy-dossier-title {
+    margin: 0 0 8px;
+
+    font-family: Georgia, serif;
+    font-size: 25px;
+
+    color: #233b32;
+}
+
+/* Description below heading. */
+.policy-dossier-subtitle {
+    margin: 0 0 18px;
+    font-size: 13px;
+
+    color: #71624e;
+}
+
+/* Grid for the policy documents. */
+.policy-dossier-options {
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+
+    text-align: left;
+}
+
+/* Temporary placeholder. */
+.policy-dossier-placeholder {
+    grid-column: 1 / -1;
+
+    padding: 30px 12px;
+
+    border: 1px dashed #b6a580;
+    border-radius: 4px;
+
+    text-align: center;
+    font-size: 14px;
+    color: #75674e;
+}
+
+/* Position footer inside the green bar. */
+.policy-dossier-footer {
+    position: absolute;
+
+    left: 7%;
+    right: 7%;
+    bottom: 3%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    color: #f4e9c9;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+/* Dossier close button. */
+#policy-dossier-close {
+    padding: 9px 15px;
+
+    background: #e9d6a3;
+    border: 1px solid #bd9b5b;
+    border-radius: 4px;
+
+    color: #173f36;
+    font-size: 12px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+#policy-dossier-close:hover {
+    background: #ffffff;
+}
+
+/* Individual government policy document */
+.policy-dossier-card {
+    background: rgba(255, 250, 235, 0.88);
+    border: 1px solid #c4ae80;
+    border-radius: 4px;
+
+    padding: 12px;
+    text-align: left;
+
+    color: #263c32;
+}
+
+.policy-dossier-card h4 {
+    margin: 0 0 8px;
+    font-family: Georgia, serif;
+    font-size: 16px;
+    color: #234639;
+}
+
+.policy-dossier-card p {
+    margin: 0 0 10px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.policy-dossier-effects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.policy-dossier-effects span {
+    padding: 4px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+}
+
+.policy-effect-positive {
+    background: #dcebdd;
+    color: #245d38;
+}
+
+.policy-effect-negative {
+    background: #f5e0d1;
+    color: #8c4323;
+}
+
+.policy-dossier-card .policy-dossier-consequence {
+    border-top: 1px solid #d6c8a9;
+    padding-top: 8px;
+    color: #766044;
+    font-size: 11px;
+}
+
+.policy-dossier-disabled {
+    opacity: 0.65;
+}
+
+.policy-dossier-restriction {
+    color: #923c2b;
+    font-weight: bold;
+}
+
+@media (max-width: 600px) {
+    .policy-dossier-options {
+        grid-template-columns: 1fr;
+    }
+}
