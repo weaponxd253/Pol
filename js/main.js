@@ -29,6 +29,11 @@ const announcer = document.getElementById('announcer');
 const dialog = document.getElementById('replacement-dialog');
 const policyDossierOptions =
   document.getElementById('policy-dossier-options');
+const policyDossier =
+  document.getElementById('policy-dossier');
+
+const policyDossierClose =
+  document.getElementById('policy-dossier-close');
 
 let storageStatus = loadGame();
 let savedGame = storageStatus.state;
@@ -561,6 +566,7 @@ function returnToBriefing() {
   officeScreen.hidden = true;
   app.hidden = false;
   enterOfficeButton.hidden = false;
+  policyDossier.hidden = true;
 
   // Refresh game UI without resetting game state.
   render({ focusHeading: true });
@@ -573,91 +579,122 @@ function returnToBriefing() {
 
 function populatePolicyDossier() {
 
-    // Remove any policy cards from a previous visit.
-    policyDossierOptions.replaceChildren();
+  // Remove any policy cards from a previous visit.
+  policyDossierOptions.replaceChildren();
 
-    // Display an explanation when policies cannot be reviewed.
-    if (!state || state.phase !== 'policy') {
-        const message = document.createElement('p');
+  // Display an explanation when policies cannot be reviewed.
+  if (!state || state.phase !== 'policy') {
+    const message = document.createElement('p');
 
-        message.className = 'policy-dossier-placeholder';
+    message.className = 'policy-dossier-placeholder';
 
-        message.textContent = !state
-            ? 'Begin or resume a presidency to review policies.'
-            : 'Complete your advisor briefing before reviewing policies.';
+    message.textContent = !state
+      ? 'Begin or resume a presidency to review policies.'
+      : 'Complete your advisor briefing before reviewing policies.';
 
-        policyDossierOptions.appendChild(message);
-        return;
+    policyDossierOptions.appendChild(message);
+    return;
+  }
+
+  // Get policies from the existing simulation engine.
+  const policies = getPolicies(state)
+    .filter(policy =>
+      state.mode === 'quick' ||
+      state.hand.includes(policy.id)
+    )
+    .map(policy => policyDetails(state, policy));
+
+  // Create one document card per policy.
+  for (const policy of policies) {
+
+    const card = document.createElement('article');
+    card.className = 'policy-dossier-card';
+
+    const title = document.createElement('h4');
+    title.textContent = policy.title;
+
+    const description = document.createElement('p');
+    description.textContent = policy.description;
+
+    // Format the immediate effects.
+    const effects = document.createElement('div');
+    effects.className = 'policy-dossier-effects';
+
+    for (const [meter, amount] of Object.entries(policy.effects)) {
+
+      if (amount === 0) continue;
+
+      const chip = document.createElement('span');
+
+      chip.className = amount > 0
+        ? 'policy-effect-positive'
+        : 'policy-effect-negative';
+
+      const name = meter.charAt(0).toUpperCase() +
+        meter.slice(1);
+
+      const value = amount > 0
+        ? `+${amount}`
+        : String(amount);
+
+      chip.textContent = `${name} ${value}`;
+
+      effects.appendChild(chip);
     }
 
-    // Get policies from the existing simulation engine.
-    const policies = getPolicies(state)
-        .filter(policy =>
-            state.mode === 'quick' ||
-            state.hand.includes(policy.id)
-        )
-        .map(policy => policyDetails(state, policy));
+    // Display future consequences.
+    const consequence = document.createElement('p');
+    consequence.className = 'policy-dossier-consequence';
 
-    // Create one document card per policy.
-    for (const policy of policies) {
+    consequence.textContent = policy.consequence;
 
-        const card = document.createElement('article');
-        card.className = 'policy-dossier-card';
+    card.append(title, description, effects, consequence);
 
-        const title = document.createElement('h4');
-        title.textContent = policy.title;
+    // Explain restrictions without changing the game state.
+    if (policy.disabledReason) {
+      card.classList.add('policy-dossier-disabled');
 
-        const description = document.createElement('p');
-        description.textContent = policy.description;
+      const restriction = document.createElement('p');
+      restriction.className = 'policy-dossier-restriction';
+      restriction.textContent = policy.disabledReason;
 
-        // Format the immediate effects.
-        const effects = document.createElement('div');
-        effects.className = 'policy-dossier-effects';
-
-        for (const [meter, amount] of Object.entries(policy.effects)) {
-
-            if (amount === 0) continue;
-
-            const chip = document.createElement('span');
-
-            chip.className = amount > 0
-                ? 'policy-effect-positive'
-                : 'policy-effect-negative';
-
-            const name = meter.charAt(0).toUpperCase() +
-                meter.slice(1);
-
-            const value = amount > 0
-                ? `+${amount}`
-                : String(amount);
-
-            chip.textContent = `${name} ${value}`;
-
-            effects.appendChild(chip);
-        }
-
-        // Display future consequences.
-        const consequence = document.createElement('p');
-        consequence.className = 'policy-dossier-consequence';
-
-        consequence.textContent = policy.consequence;
-
-        card.append(title, description, effects, consequence);
-
-        // Explain restrictions without changing the game state.
-        if (policy.disabledReason) {
-            card.classList.add('policy-dossier-disabled');
-
-            const restriction = document.createElement('p');
-            restriction.className = 'policy-dossier-restriction';
-            restriction.textContent = policy.disabledReason;
-
-            card.appendChild(restriction);
-        }
-
-        policyDossierOptions.appendChild(card);
+      card.appendChild(restriction);
     }
+
+    policyDossierOptions.appendChild(card);
+  }
 }
+
+function openPolicyDossier() {
+
+  // Generate the latest policy cards.
+  populatePolicyDossier();
+
+  // Show the dossier.
+  policyDossier.hidden = false;
+
+  // Pause character movement while reading.
+  if (officeGame?.scene.isActive('OfficeScene')) {
+    officeGame.scene.pause('OfficeScene');
+  }
+
+  // Give keyboard focus to the Close button.
+  policyDossierClose.focus();
+}
+
+function closePolicyDossier() {
+
+  // Hide the dossier.
+  policyDossier.hidden = true;
+
+  // Resume the office scene.
+  if (officeGame?.scene.isPaused('OfficeScene')) {
+    officeGame.scene.resume('OfficeScene');
+  }
+
+  policyDossierClose.blur();
+}
+
 
 
 function showAdvisorEvent() {
@@ -678,13 +715,25 @@ function showAdvisorEvent() {
     return;
   }
 
-  // The advisor presents decisions only during event phase.
-  if (state.phase !== 'event') {
+  if (state.phase === 'policy') {
     advisorEventTitle.textContent =
-      'No new briefing available';
+      'Briefing Complete';
 
     advisorEventDescription.textContent =
-      'Your current event has already moved forward. Continue your existing government decisions.';
+      'Your response has been recorded. Please proceed ' +
+      'to the National Policy Desk to review and approve ' +
+      'your next government policy.';
+
+    return;
+  }
+
+  if (state.phase !== 'event') {
+    advisorEventTitle.textContent =
+      'No New Briefing';
+
+    advisorEventDescription.textContent =
+      'There are no additional event decisions available ' +
+      'at this stage of your presidency.';
 
     return;
   }
@@ -822,6 +871,22 @@ officeDialogueClose.addEventListener(
   closeAdvisorDialogue
 );
 
+policyDossierClose.addEventListener(
+  'click',
+  closePolicyDossier
+);
+
+document.addEventListener('keydown', event => {
+
+  if (
+    event.key === 'Escape' &&
+    !policyDossier.hidden
+  ) {
+    closePolicyDossier();
+  }
+
+});
+
 // ==========================================
 // CONTINUE TO POLICIES BUTTON
 // ==========================================
@@ -844,11 +909,16 @@ advisorContinue.addEventListener('click', () => {
     // Save progress.
     persist();
 
-    // Hide the advisor dialogue.
-    officeDialogue.hidden = true;
+    // Update the original government interface in the background.
+    render();
 
-    // Open the existing policy selection screen.
-    returnToBriefing();
+    // Close the advisor dialogue and resume Phaser.
+    closeAdvisorDialogue();
+
+    // Tell the player where to go next.
+    officeMessage.textContent =
+      'Briefing complete. Approach the National Policy Desk ' +
+      'and press E to review your policies.';
 
   } catch (error) {
     advisorFeedback.textContent = error.message;
@@ -903,10 +973,7 @@ window.addEventListener(
     switch (action) {
 
       case 'national-policies':
-
-        // Show the current game decision screen.
-        // If no run is active, show mode selection.
-        returnToBriefing();
+        openPolicyDossier();
         break;
 
       case 'exit-office':
