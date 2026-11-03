@@ -2326,7 +2326,9 @@ h2:focus {
   background: rgba(255, 250, 235, 0.88);
   border: 1px solid #c4ae80;
   border-radius: 4px;
-
+  width: 100%;
+  font: inherit;
+  cursor: pointer;
   padding: 12px;
   text-align: left;
 
@@ -2389,4 +2391,29 @@ h2:focus {
   .policy-dossier-options {
     grid-template-columns: 1fr;
   }
+}
+
+
+/* Hovering over a selectable policy */
+.policy-dossier-card:not(:disabled):hover {
+    background: #fff8e5;
+    border-color: #a57a36;
+}
+
+/* Currently selected policy */
+.policy-dossier-card[aria-pressed="true"] {
+    background: #e6f0df;
+    border: 2px solid #356d58;
+    box-shadow: inset 0 0 0 1px #356d58;
+}
+
+/* Selected policy title */
+.policy-dossier-card[aria-pressed="true"] h4 {
+    color: #173f36;
+}
+
+/* Policies the player cannot select */
+.policy-dossier-card:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
 }

@@ -607,8 +607,22 @@ function populatePolicyDossier() {
   // Create one document card per policy.
   for (const policy of policies) {
 
-    const card = document.createElement('article');
+    // Create a clickable policy card.
+    const card = document.createElement('button');
+
+    card.type = 'button';
     card.className = 'policy-dossier-card';
+
+    // Store the policy's unique ID.
+    card.dataset.policyId = policy.id;
+
+    // Check whether this policy is already selected.
+    const selected = state.selectedPolicyId === policy.id;
+
+    card.setAttribute('aria-pressed', String(selected));
+
+    // Prevent unavailable policies from being selected.
+    card.disabled = Boolean(policy.disabledReason);
 
     const title = document.createElement('h4');
     title.textContent = policy.title;
@@ -660,6 +674,40 @@ function populatePolicyDossier() {
 
       card.appendChild(restriction);
     }
+
+    // Select this policy when the player clicks the card.
+card.addEventListener('click', () => {
+
+    try {
+        // Update the existing government state.
+        state = selectPolicy(state, policy.id);
+
+        // Save the selection.
+        persist();
+
+        // Refresh the original government interface.
+        render();
+
+        // Redraw cards to show which one is selected.
+        populatePolicyDossier();
+
+        // Restore keyboard focus to the selected card.
+        const selectedCard = [
+            ...policyDossierOptions.querySelectorAll(
+                '.policy-dossier-card'
+            )
+        ].find(element =>
+            element.dataset.policyId === policy.id
+        );
+
+        selectedCard?.focus();
+
+    } catch (error) {
+        announcer.textContent = error.message;
+        console.error(error);
+    }
+
+});
 
     policyDossierOptions.appendChild(card);
   }
