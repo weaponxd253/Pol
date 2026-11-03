@@ -476,6 +476,21 @@ const officeDialogue =
 const officeDialogueClose =
   document.getElementById('office-dialogue-close');
 
+const advisorEventTitle =
+  document.getElementById('advisor-event-title');
+
+const advisorEventDescription =
+  document.getElementById('advisor-event-description');
+
+const advisorResponseOptions =
+  document.getElementById('advisor-response-options');
+
+const advisorFeedback =
+  document.getElementById('advisor-feedback');
+
+const advisorContinue =
+  document.getElementById('advisor-continue');
+
 // Open the executive office.
 function enterOffice() {
 
@@ -550,8 +565,134 @@ function returnToBriefing() {
 // RPG DIALOGUE FUNCTIONS
 // ==========================================
 
+function showAdvisorEvent() {
+
+  // Clear the previous event's response buttons.
+  advisorResponseOptions.replaceChildren();
+
+  advisorFeedback.textContent = '';
+  advisorContinue.hidden = true;
+
+  // No government run has been started or resumed yet.
+  if (!state) {
+    advisorEventTitle.textContent = 'No active term';
+
+    advisorEventDescription.textContent =
+      'Begin or resume your presidency before receiving a briefing.';
+
+    return;
+  }
+
+  // The advisor presents decisions only during event phase.
+  if (state.phase !== 'event') {
+    advisorEventTitle.textContent =
+      'No new briefing available';
+
+    advisorEventDescription.textContent =
+      'Your current event has already moved forward. Continue your existing government decisions.';
+
+    return;
+  }
+
+  // Read the actual event from the game engine.
+  const currentEvent = getEvent(state);
+
+  advisorEventTitle.textContent =
+    currentEvent.title;
+
+  advisorEventDescription.textContent =
+    currentEvent.description;
+
+  // Generate a button for every event response.
+  for (const response of currentEvent.responses) {
+
+    const button = document.createElement('button');
+
+    button.type = 'button';
+    button.className = 'advisor-choice';
+    button.dataset.responseId = response.id;
+
+    const selected =
+      state.selectedResponseId === response.id;
+
+    button.setAttribute(
+      'aria-pressed',
+      String(selected)
+    );
+
+    // Response title.
+    const title = document.createElement('strong');
+    title.textContent = response.title;
+
+    // Format the government's meter changes.
+    const effects = Object.entries(response.effects)
+      .filter(([, value]) => value !== 0)
+      .map(([meter, value]) => {
+
+        const label =
+          meter.charAt(0).toUpperCase() +
+          meter.slice(1);
+
+        const amount =
+          value > 0 ? `+${value}` : `${value}`;
+
+        return `${label} ${amount}`;
+      })
+      .join(' · ');
+
+    const details = document.createElement('small');
+    details.textContent = effects;
+
+    button.append(title, details);
+
+    // Make the choice use the REAL game engine.
+    button.addEventListener('click', () => {
+
+      try {
+        state = selectResponse(
+          state,
+          response.id
+        );
+
+        // Save the selected response.
+        persist();
+
+        // Update the original government screen too.
+        render();
+
+        // Redraw selected button appearance.
+        showAdvisorEvent();
+
+        advisorFeedback.textContent =
+          `${response.title} selected.`;
+
+        // Restore focus to the selected choice.
+        const selectedButton = [
+          ...advisorResponseOptions.children
+        ].find(element =>
+          element.dataset.responseId === response.id
+        );
+
+        selectedButton?.focus();
+
+      } catch (error) {
+        advisorFeedback.textContent = error.message;
+        console.error(error);
+      }
+    });
+
+    advisorResponseOptions.appendChild(button);
+  }
+
+  // Player may continue after choosing a response.
+  advisorContinue.hidden = !state.selectedResponseId;
+}
+
 // Show the advisor dialogue.
 function openAdvisorDialogue() {
+
+  showAdvisorEvent();
+
 
   // Make the HTML dialogue visible.
   officeDialogue.hidden = false;
@@ -585,6 +726,54 @@ officeDialogueClose.addEventListener(
   'click',
   closeAdvisorDialogue
 );
+
+// ==========================================
+// CONTINUE TO POLICIES BUTTON
+// ==========================================
+
+advisorContinue.addEventListener('click', () => {
+
+    // Make sure a valid response has been selected.
+    if (
+        !state ||
+        state.phase !== 'event' ||
+        !state.selectedResponseId
+    ) {
+        return;
+    }
+
+    try {
+        // Lock in the event response and enter policy phase.
+        state = beginPolicyPhase(state);
+
+        // Save progress.
+        persist();
+
+        // Hide the advisor dialogue.
+        officeDialogue.hidden = true;
+
+        // Open the existing policy selection screen.
+        returnToBriefing();
+
+    } catch (error) {
+        advisorFeedback.textContent = error.message;
+        console.error(error);
+    }
+});
+
+// ==========================================
+// ESCAPE KEY HANDLER
+// ==========================================
+
+document.addEventListener('keydown', event => {
+
+    if (
+        event.key === 'Escape' &&
+        !officeDialogue.hidden
+    ) {
+        closeAdvisorDialogue();
+    }
+});
 
 // Also support Escape.
 document.addEventListener('keydown', event => {

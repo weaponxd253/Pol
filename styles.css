@@ -497,3 +497,57 @@ h2:focus { outline: none; }
         font-size: 13px;
     }
 }
+
+.advisor-response-options {
+    display: grid;
+    gap: 10px;
+    margin: 16px 0;
+}
+
+.advisor-choice {
+    width: 100%;
+    text-align: left;
+    padding: 12px 14px;
+
+    background: #29473d;
+    border: 1px solid #9d885c;
+    border-radius: 5px;
+
+    color: #f4e9d4;
+    cursor: pointer;
+}
+
+.advisor-choice:hover,
+.advisor-choice:focus-visible {
+    border-color: #e4ca91;
+    background: #36594c;
+}
+
+.advisor-choice[aria-pressed="true"] {
+    border: 2px solid #e4ca91;
+    background: #41624f;
+}
+
+.advisor-choice strong,
+.advisor-choice small {
+    display: block;
+}
+
+.advisor-choice small {
+    margin-top: 5px;
+    color: #e2cc9d;
+}
+
+#advisor-event-title {
+    margin: 6px 0 10px;
+    color: #f4e9d4;
+    font-size: 19px;
+}
+
+#advisor-continue[hidden] {
+    display: none !important;
+}
+
+#advisor-continue {
+    margin-right: 8px;
+}
