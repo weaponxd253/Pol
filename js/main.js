@@ -114,7 +114,6 @@ const hudDebt =
 const hudUpcomingCommitments =
   document.getElementById('hud-upcoming-commitments');
 
-
 const hudPhase =
   document.getElementById('hud-phase');
 
@@ -135,6 +134,24 @@ const hudTreasuryBar =
 
 const hudTreasuryMeter =
   document.getElementById('hud-treasury-meter');
+
+
+// ==========================================
+// PRESIDENTIAL OBJECTIVE ELEMENTS
+// ==========================================
+
+const presidentialObjective =
+  document.getElementById('presidential-objective');
+
+const objectiveTitle =
+  document.getElementById('objective-title');
+
+const objectiveDescription =
+  document.getElementById('objective-description');
+
+const objectiveLocation =
+  document.getElementById('objective-location');
+
 
 
 
@@ -472,6 +489,139 @@ function updateExpandedPresidentialHUD() {
 }
 
 
+// ==========================================
+// PHASE 5B - UPDATE PRESIDENTIAL OBJECTIVE
+// ==========================================
+
+function updatePresidentialObjective() {
+
+  // No active presidency.
+  if (!state) {
+    presidentialObjective.hidden = true;
+    return;
+  }
+
+  let title = '';
+  let description = '';
+  let location = '';
+
+  // ======================================
+  // EVENT PHASE
+  // ======================================
+
+  if (state.phase === 'event') {
+
+    if (state.selectedResponseId) {
+
+      title = 'Complete Your Briefing';
+
+      description =
+        'Your response has been selected. ' +
+        'Return to the Chief of Staff briefing ' +
+        'and continue to the policy phase.';
+
+    } else {
+
+      title = 'Meet with Chief of Staff';
+
+      description =
+        'A new national event requires your attention. ' +
+        'Approach the advisor area and press E ' +
+        'to receive your briefing.';
+
+    }
+
+    location = 'Advisor Meeting Area';
+  }
+
+  // ======================================
+  // POLICY PHASE
+  // ======================================
+
+  else if (state.phase === 'policy') {
+
+    if (state.selectedPolicyId) {
+
+      title = 'Approve Selected Policy';
+
+      description =
+        'You have selected a government policy. ' +
+        'Review its projected effects at the ' +
+        'National Policy Desk and approve it.';
+
+    } else {
+
+      title = 'Review National Policies';
+
+      description =
+        'Your advisor briefing is complete. ' +
+        'Approach the National Policy Desk ' +
+        'and press E to review available policies.';
+
+    }
+
+    location = 'National Policy Desk';
+  }
+
+  // ======================================
+  // REPORT PHASE
+  // ======================================
+
+  else if (state.phase === 'report') {
+
+    title = 'Review Cabinet Results';
+
+    description =
+      'Your policy has been enacted. ' +
+      'Visit the Cabinet Briefing Table to ' +
+      'review the results and advance your presidency.';
+
+    location = 'Cabinet Briefing Table';
+  }
+
+  // ======================================
+  // FINAL RESULT
+  // ======================================
+
+  else if (state.phase === 'result') {
+
+    title = 'Review Presidential Legacy';
+
+    description =
+      'Your presidency has concluded. ' +
+      'Review the final results of your administration.';
+
+    location = 'Final Results';
+  }
+
+  // ======================================
+  // FALLBACK
+  // ======================================
+
+  else {
+
+    title = 'Presidential Duties';
+
+    description =
+      'Review the current state of your administration.';
+
+    location = 'Executive Office';
+  }
+
+  // ======================================
+  // UPDATE THE OBJECTIVE PANEL
+  // ======================================
+
+  objectiveTitle.textContent = title;
+
+  objectiveDescription.textContent = description;
+
+  objectiveLocation.textContent = location;
+
+  presidentialObjective.hidden = false;
+}
+
+
 
 // ==========================================
 // UPDATE PRESIDENTIAL STATUS HUD
@@ -479,9 +629,12 @@ function updateExpandedPresidentialHUD() {
 
 function updatePresidentialHUD() {
 
-  // No active presidency means no HUD.
   if (!state) {
+
     presidentialHud.hidden = true;
+
+    updatePresidentialObjective();
+
     return;
   }
 
@@ -562,6 +715,9 @@ function updatePresidentialHUD() {
   );
 
   updateExpandedPresidentialHUD();
+
+  updatePresidentialObjective();
+
 
 }
 
