@@ -92,6 +92,36 @@ const cabinetReportBudget =
   document.getElementById('cabinet-report-budget');
 
 
+// ==========================================
+// PRESIDENTIAL HUD ELEMENTS
+// ==========================================
+
+const presidentialHud =
+  document.getElementById('presidential-hud');
+
+const hudPhase =
+  document.getElementById('hud-phase');
+
+const hudTurn =
+  document.getElementById('hud-turn');
+
+const hudApproval =
+  document.getElementById('hud-approval');
+
+const hudTreasury =
+  document.getElementById('hud-treasury');
+
+const hudApprovalBar =
+  document.getElementById('hud-approval-bar');
+
+const hudTreasuryBar =
+  document.getElementById('hud-treasury-bar');
+
+const hudTreasuryMeter =
+  document.getElementById('hud-treasury-meter');
+
+
+
 let storageStatus = loadGame();
 let savedGame = storageStatus.state;
 let state = null;
@@ -284,6 +314,97 @@ function menuMarkup() {
   `;
 }
 
+
+// ==========================================
+// UPDATE PRESIDENTIAL STATUS HUD
+// ==========================================
+
+function updatePresidentialHUD() {
+
+  // No active presidency means no HUD.
+  if (!state) {
+    presidentialHud.hidden = true;
+    return;
+  }
+
+  presidentialHud.hidden = false;
+
+  // ======================================
+  // TURN INFORMATION
+  // ======================================
+
+  const totalTurns =
+    state.mode === 'quick' ? 3 : 12;
+
+  hudTurn.textContent =
+    `Turn ${state.turn} of ${totalTurns}`;
+
+  // ======================================
+  // CURRENT GOVERNMENT PHASE
+  // ======================================
+
+  const phaseNames = {
+    event: 'BRIEFING',
+    policy: 'POLICY REVIEW',
+    report: 'REPORT READY',
+    result: 'TERM COMPLETE'
+  };
+
+  hudPhase.textContent =
+    phaseNames[state.phase] || 'GOVERNING';
+
+  // ======================================
+  // APPROVAL
+  // ======================================
+
+  const approval = state.meters.approval;
+
+  hudApproval.textContent = approval;
+
+  hudApprovalBar.querySelector(
+    '.hud-meter-fill'
+  ).style.width =
+    `${Math.max(0, Math.min(100, approval))}%`;
+
+  hudApprovalBar.setAttribute(
+    'aria-valuenow',
+    String(approval)
+  );
+
+  // ======================================
+  // TREASURY
+  // ======================================
+
+  const treasury = state.meters.treasury;
+
+  hudTreasury.textContent = treasury;
+
+  hudTreasuryBar.querySelector(
+    '.hud-meter-fill'
+  ).style.width =
+    `${Math.max(0, Math.min(100, treasury))}%`;
+
+  hudTreasuryBar.setAttribute(
+    'aria-valuenow',
+    String(treasury)
+  );
+
+  // ======================================
+  // TREASURY WARNINGS
+  // ======================================
+
+  hudTreasuryMeter.classList.toggle(
+    'is-low',
+    treasury > 0 && treasury < 20
+  );
+
+  hudTreasuryMeter.classList.toggle(
+    'is-critical',
+    treasury <= 0
+  );
+}
+
+
 // Render existing game interface.
 function render({ focusHeading = false } = {}) {
 
@@ -361,6 +482,8 @@ function render({ focusHeading = false } = {}) {
       `[data-focus-key="${focusKey}"]`
     )?.focus({ preventScroll: true });
   }
+
+  updatePresidentialHUD();
 }
 
 // ==========================================
