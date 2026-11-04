@@ -56,6 +56,23 @@ const policyApprovalCancel =
 const cabinetReport =
   document.getElementById('cabinet-report');
 
+// ==========================================
+// GOVERNMENT ARCHIVES ELEMENTS
+// ==========================================
+
+const governmentArchives =
+  document.getElementById('government-archives');
+
+const archiveRecordList =
+  document.getElementById('archive-record-list');
+
+const archiveRecordDetail =
+  document.getElementById('archive-record-detail');
+
+const governmentArchivesClose =
+  document.getElementById('government-archives-close');
+
+
 const cabinetReportClose =
   document.getElementById('cabinet-report-close');
 
@@ -1303,77 +1320,77 @@ cabinetReportClose.addEventListener(
 
 cabinetReportNext.addEventListener('click', () => {
 
-    // Only advance from an open, completed report.
-    if (
-        cabinetReport.hidden ||
-        !state ||
-        state.phase !== 'report'
-    ) {
-        return;
+  // Only advance from an open, completed report.
+  if (
+    cabinetReport.hidden ||
+    !state ||
+    state.phase !== 'report'
+  ) {
+    return;
+  }
+
+  try {
+
+    // Advance using the existing simulation engine.
+    // This must only happen once per completed report.
+    state = advanceTurn(state);
+
+    // Save the updated presidency.
+    persist();
+
+    // Refresh the original government interface
+    // without making it visible.
+    render();
+
+    // Close the report and resume Phaser movement.
+    closeCabinetReport();
+
+    // ======================================
+    // PRESIDENCY HAS ENDED
+    // ======================================
+
+    if (state.phase === 'result') {
+
+      // For now, use the existing final result screen.
+      // A dedicated RPG result screen can come later.
+      returnToBriefing();
+
+      announcer.textContent =
+        'Your presidency has concluded. ' +
+        'Review your final government results.';
+
+      return;
     }
 
-    try {
+    // ======================================
+    // NEXT TURN HAS BEGUN
+    // ======================================
 
-        // Advance using the existing simulation engine.
-        // This must only happen once per completed report.
-        state = advanceTurn(state);
+    // Tell the president where to go next.
+    officeMessage.textContent =
+      `Turn ${state.turn} has begun. ` +
+      'Visit the Chief of Staff for your next briefing.';
 
-        // Save the updated presidency.
-        persist();
+    announcer.textContent =
+      `Turn ${state.turn} has begun. ` +
+      'A new government event is available.';
 
-        // Refresh the original government interface
-        // without making it visible.
-        render();
+    console.log('Presidency advanced:', {
+      turn: state.turn,
+      phase: state.phase,
+      reports: state.history.length
+    });
 
-        // Close the report and resume Phaser movement.
-        closeCabinetReport();
+  } catch (error) {
 
-        // ======================================
-        // PRESIDENCY HAS ENDED
-        // ======================================
+    announcer.textContent = error.message;
 
-        if (state.phase === 'result') {
+    console.error(
+      'Failed to advance presidential turn:',
+      error
+    );
 
-            // For now, use the existing final result screen.
-            // A dedicated RPG result screen can come later.
-            returnToBriefing();
-
-            announcer.textContent =
-                'Your presidency has concluded. ' +
-                'Review your final government results.';
-
-            return;
-        }
-
-        // ======================================
-        // NEXT TURN HAS BEGUN
-        // ======================================
-
-        // Tell the president where to go next.
-        officeMessage.textContent =
-            `Turn ${state.turn} has begun. ` +
-            'Visit the Chief of Staff for your next briefing.';
-
-        announcer.textContent =
-            `Turn ${state.turn} has begun. ` +
-            'A new government event is available.';
-
-        console.log('Presidency advanced:', {
-            turn: state.turn,
-            phase: state.phase,
-            reports: state.history.length
-        });
-
-    } catch (error) {
-
-        announcer.textContent = error.message;
-
-        console.error(
-            'Failed to advance presidential turn:',
-            error
-        );
-
-    }
+  }
 
 });
 
@@ -1389,6 +1406,355 @@ document.addEventListener('keydown', event => {
   }
 
 });
+
+function addArchiveDetailLine(container, label, value) {
+
+  const line = document.createElement('p');
+  line.className = 'archive-detail-line';
+
+  const heading = document.createElement('strong');
+  heading.textContent = label + ': ';
+
+  const content = document.createElement('span');
+  content.textContent = String(value ?? 'Not recorded');
+
+  line.append(heading, content);
+  container.appendChild(line);
+}
+
+
+function showArchiveRecord(index) {
+
+  // Read one historical report.
+  const report = state?.history?.[index];
+
+  if (!report) {
+    return;
+  }
+
+  // Clear the previously selected record.
+  archiveRecordDetail.replaceChildren();
+
+  // Highlight the selected record in the left column.
+  for (const button of archiveRecordList.querySelectorAll(
+    '.archive-record-button'
+  )) {
+    const selected =
+      Number(button.dataset.recordIndex) === index;
+
+    button.classList.toggle('is-selected', selected);
+    button.setAttribute('aria-pressed', String(selected));
+  }
+
+  // ======================================
+  // RECORD HEADING
+  // ======================================
+
+  const heading = document.createElement('h3');
+
+  heading.textContent =
+    `Presidential Record No. ${String(report.turn).padStart(3, '0')}`;
+
+  archiveRecordDetail.appendChild(heading);
+
+  // ======================================
+  // DECISIONS
+  // ======================================
+
+  const decisionsHeading = document.createElement('h4');
+  decisionsHeading.textContent = 'Presidential Decisions';
+
+  archiveRecordDetail.appendChild(decisionsHeading);
+
+  addArchiveDetailLine(
+    archiveRecordDetail,
+    'National Event',
+    report.eventTitle
+  );
+
+  addArchiveDetailLine(
+    archiveRecordDetail,
+    'Presidential Response',
+    report.responseTitle
+  );
+
+  addArchiveDetailLine(
+    archiveRecordDetail,
+    'Policy Enacted',
+    report.policyTitle
+  );
+
+  // ======================================
+  // NATIONAL STATISTICS
+  // ======================================
+
+  const statisticsHeading = document.createElement('h4');
+  statisticsHeading.textContent = 'National Performance';
+
+  archiveRecordDetail.appendChild(statisticsHeading);
+
+  const meterNames = {
+    approval: 'Approval',
+    treasury: 'Treasury',
+    donors: 'Donors',
+    economy: 'Economy',
+    international: 'International',
+    stability: 'Stability'
+  };
+
+  for (const [key, label] of Object.entries(meterNames)) {
+
+    const before = report.startMeters[key];
+    const after = report.meters[key];
+    const change = after - before;
+
+    const row = document.createElement('div');
+    row.className = 'archive-meter-row';
+
+    const name = document.createElement('strong');
+    name.textContent = label;
+
+    const values = document.createElement('span');
+
+    values.textContent =
+      `${before} → ${after} ` +
+      `(${change > 0 ? '+' : ''}${change})`;
+
+    values.className =
+      change > 0 ? 'archive-positive' :
+        change < 0 ? 'archive-negative' : '';
+
+    const explanation = document.createElement('small');
+
+    const causes = report.contributions[key] || [];
+
+    explanation.textContent = causes.length
+      ? causes.map(effect =>
+        `${effect.source}: ` +
+        `${effect.amount > 0 ? '+' : ''}${effect.amount}`
+      ).join(' · ')
+      : 'No changes this turn.';
+
+    row.append(name, values, explanation);
+
+    archiveRecordDetail.appendChild(row);
+  }
+
+  // ======================================
+  // FINANCIAL RESULTS
+  // ======================================
+
+  const financeHeading = document.createElement('h4');
+  financeHeading.textContent = 'Treasury & National Debt';
+
+  archiveRecordDetail.appendChild(financeHeading);
+
+  addArchiveDetailLine(
+    archiveRecordDetail,
+    'National Debt',
+    `${report.startDebt} → ${report.debt}`
+  );
+
+  addArchiveDetailLine(
+    archiveRecordDetail,
+    'Revenue',
+    report.budget.revenue
+  );
+
+  addArchiveDetailLine(
+    archiveRecordDetail,
+    'Essential Spending',
+    report.budget.spending
+  );
+
+  addArchiveDetailLine(
+    archiveRecordDetail,
+    'Interest',
+    report.budget.interest
+  );
+
+  addArchiveDetailLine(
+    archiveRecordDetail,
+    'Scheduled Payments',
+    report.budget.commitments
+  );
+
+  addArchiveDetailLine(
+    archiveRecordDetail,
+    'Net Budget Change',
+    report.budget.total
+  );
+
+  // ======================================
+  // FUTURE COMMITMENTS AT THAT TIME
+  // ======================================
+
+  const commitmentsHeading = document.createElement('h4');
+  commitmentsHeading.textContent =
+    'Commitments After This Turn';
+
+  archiveRecordDetail.appendChild(commitmentsHeading);
+
+  const obligations = report.remainingScheduled || [];
+
+  if (obligations.length === 0) {
+
+    const empty = document.createElement('p');
+    empty.textContent =
+      'No future scheduled commitments were recorded.';
+
+    archiveRecordDetail.appendChild(empty);
+
+  } else {
+
+    for (const obligation of obligations) {
+
+      addArchiveDetailLine(
+        archiveRecordDetail,
+        `Turn ${obligation.dueTurn}`,
+        `${obligation.source}: ` +
+        `${obligation.meter} ` +
+        `${obligation.amount > 0 ? '+' : ''}` +
+        obligation.amount
+      );
+
+    }
+  }
+
+  // ======================================
+  // HISTORICAL GOVERNMENT COLLAPSE
+  // ======================================
+
+  if (report.failures?.length > 0) {
+
+    const warning = document.createElement('p');
+    warning.className = 'archive-record-warning';
+
+    warning.textContent =
+      'Government collapse: ' +
+      report.failures.map(item => item.label).join(', ');
+
+    archiveRecordDetail.appendChild(warning);
+  }
+
+  // Start at the top of the selected record.
+  archiveRecordDetail.scrollTop = 0;
+}
+
+
+function populateGovernmentArchives() {
+
+  // Clear any previously displayed records.
+  archiveRecordList.replaceChildren();
+  archiveRecordDetail.replaceChildren();
+
+  // Handle a missing presidency.
+  if (!state) {
+
+    archiveRecordDetail.textContent =
+      'Start or resume a presidency to view government records.';
+
+    return;
+  }
+
+  // Read the completed turn history.
+  const reports = state.history || [];
+
+  // Handle a presidency with no completed turns.
+  if (reports.length === 0) {
+
+    archiveRecordDetail.textContent =
+      'No presidential records are available yet. ' +
+      'Complete your first turn to create an archive entry.';
+
+    return;
+  }
+
+  // Display newest records first.
+  for (let index = reports.length - 1; index >= 0; index--) {
+
+    const report = reports[index];
+
+    const button = document.createElement('button');
+
+    button.type = 'button';
+    button.className = 'archive-record-button';
+    button.dataset.recordIndex = index;
+
+    const title = document.createElement('strong');
+
+    title.textContent =
+      `Presidential Record No. ${String(report.turn).padStart(3, '0')}`;
+
+    const description = document.createElement('small');
+    description.textContent = report.eventTitle;
+
+    button.append(title, description);
+
+    // Clicking the record displays its historical details.
+    button.addEventListener('click', () => {
+
+      showArchiveRecord(index);
+
+    });
+
+    archiveRecordList.appendChild(button);
+  }
+
+  // Automatically display the newest completed record.
+  showArchiveRecord(reports.length - 1);
+}
+
+
+function openGovernmentArchives() {
+
+  // Refresh the list whenever the Archives open.
+  populateGovernmentArchives();
+
+  // Display the Archives overlay.
+  governmentArchives.hidden = false;
+
+  // Pause movement while browsing records.
+  if (officeGame?.scene.isActive('OfficeScene')) {
+    officeGame.scene.pause('OfficeScene');
+  }
+
+  // Move keyboard focus into the Archives.
+  governmentArchivesClose.focus();
+}
+
+
+function closeGovernmentArchives() {
+
+  // Hide the Archives.
+  governmentArchives.hidden = true;
+
+  // Resume movement.
+  if (officeGame?.scene.isPaused('OfficeScene')) {
+    officeGame.scene.resume('OfficeScene');
+  }
+
+  governmentArchivesClose.blur();
+}
+
+governmentArchivesClose.addEventListener(
+  'click',
+  closeGovernmentArchives
+);
+
+// Close the Archives when Escape is pressed.
+document.addEventListener('keydown', event => {
+
+  if (
+    event.key === 'Escape' &&
+    !governmentArchives.hidden
+  ) {
+    closeGovernmentArchives();
+  }
+
+});
+
+
 
 
 function showAdvisorEvent() {
@@ -1683,8 +2049,8 @@ window.addEventListener(
 
       case 'archives':
 
-        officeMessage.textContent =
-          'Government archives are not connected yet.';
+        openGovernmentArchives();
+
         break;
 
       case 'advisors':

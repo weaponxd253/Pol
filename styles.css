@@ -2805,3 +2805,234 @@ h2:focus {
 
 }
 
+
+/* ======================================
+   PHASE 4C - GOVERNMENT ARCHIVES
+   ====================================== */
+
+.government-archives-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 130;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.72);
+}
+
+.government-archives-overlay[hidden] {
+    display: none !important;
+}
+
+.government-archives-frame {
+    display: flex;
+    flex-direction: column;
+
+    width: min(94%, 860px);
+    height: 90%;
+
+    background: #f4ecd8;
+    border: 5px solid #b99654;
+    border-radius: 7px;
+
+    color: #263c32;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+
+    overflow: hidden;
+}
+
+/* Header */
+
+.government-archives-header {
+    padding: 18px 20px;
+    text-align: center;
+
+    background: #173f36;
+    color: #f4e9c9;
+
+    border-bottom: 4px solid #b99654;
+}
+
+.government-archives-header h3 {
+    margin: 7px 0;
+    font-family: Georgia, serif;
+    font-size: 25px;
+}
+
+.government-archives-header p {
+    margin: 0;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+/* Main two-column layout */
+
+.government-archives-body {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+
+    flex: 1;
+    min-height: 0;
+}
+
+/* Left: record index */
+
+.archive-record-list {
+    overflow-y: auto;
+
+    padding: 14px;
+
+    background: #e8dec5;
+    border-right: 2px solid #c4ab7a;
+}
+
+.archive-record-button {
+    display: block;
+    width: 100%;
+
+    margin-bottom: 8px;
+    padding: 12px;
+
+    text-align: left;
+    font: inherit;
+
+    background: #fbf5e7;
+    border: 1px solid #cab78e;
+    border-radius: 4px;
+
+    color: #263c32;
+    cursor: pointer;
+}
+
+.archive-record-button strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 12px;
+}
+
+.archive-record-button small {
+    display: block;
+    font-size: 11px;
+    line-height: 1.4;
+    color: #70634e;
+}
+
+.archive-record-button:hover {
+    background: #efe4c7;
+}
+
+.archive-record-button.is-selected {
+    background: #dce9d9;
+    border: 2px solid #2c694f;
+}
+
+/* Right: report details */
+
+.archive-record-detail {
+    overflow-y: auto;
+    min-width: 0;
+
+    padding: 20px;
+    background: #faf3e3;
+}
+
+.archive-record-detail h3 {
+    margin: 0 0 14px;
+    font-family: Georgia, serif;
+    font-size: 20px;
+}
+
+.archive-record-detail h4 {
+    margin: 20px 0 10px;
+    padding-bottom: 7px;
+
+    font-family: Georgia, serif;
+    font-size: 16px;
+
+    border-bottom: 1px solid #c8b68f;
+}
+
+.archive-detail-line {
+    margin: 8px 0;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.archive-meter-row {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    margin-bottom: 8px;
+    padding: 10px;
+
+    background: #f3ead4;
+    border: 1px solid #dfcfac;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.archive-meter-row small {
+    display: block;
+    width: 100%;
+    color: #786a50;
+    line-height: 1.5;
+}
+
+.archive-positive {
+    color: #246e3c;
+    font-weight: bold;
+}
+
+.archive-negative {
+    color: #ad432f;
+    font-weight: bold;
+}
+
+.archive-record-warning {
+    color: #982e25;
+    font-weight: bold;
+}
+
+/* Footer */
+
+.government-archives-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    padding: 12px 18px;
+
+    background: #173f36;
+    border-top: 3px solid #b99654;
+    color: #f4e9c9;
+}
+
+#government-archives-close {
+    padding: 9px 15px;
+
+    background: #e9d6a3;
+    border: 1px solid #b99654;
+    border-radius: 4px;
+
+    color: #173f36;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+@media (max-width: 650px) {
+    .government-archives-body {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(100px, 35%) minmax(0, 1fr);
+    }
+
+    .archive-record-list {
+        border-right: none;
+        border-bottom: 2px solid #c4ab7a;
+    }
+}
+
