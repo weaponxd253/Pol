@@ -2417,3 +2417,88 @@ h2:focus {
     cursor: not-allowed;
     opacity: 0.6;
 }
+
+
+/* Government impact forecast */
+
+.policy-dossier-forecast {
+    margin-top: 18px;
+    padding: 16px;
+
+    background: rgba(255, 249, 231, 0.94);
+    border: 1px solid #c4ae80;
+    border-radius: 4px;
+
+    color: #263c32;
+    text-align: left;
+}
+
+.policy-dossier-forecast h4 {
+    margin: 0 0 12px;
+    font-family: Georgia, serif;
+    font-size: 18px;
+}
+
+.policy-dossier-forecast p {
+    margin-bottom: 12px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.policy-forecast-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 14px 0;
+}
+
+.policy-forecast-meter {
+    padding: 10px;
+    background: #f4eddb;
+    border: 1px solid #ded0ad;
+    border-radius: 4px;
+}
+
+.policy-forecast-meter span,
+.policy-forecast-meter strong {
+    display: block;
+}
+
+.policy-forecast-meter span {
+    font-size: 11px;
+    margin-bottom: 5px;
+}
+
+.policy-forecast-meter strong {
+    font-size: 13px;
+}
+
+.forecast-positive {
+    color: #276b3d;
+}
+
+.forecast-negative {
+    color: #a3472f;
+}
+
+.policy-forecast-warning {
+    background: #f8dfd5;
+    border: 1px solid #bc7561;
+    color: #8b2f24;
+
+    padding: 12px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.policy-forecast-debt,
+.policy-forecast-budget {
+    border-top: 1px solid #d6c8a9;
+    padding-top: 10px;
+}
+
+@media (max-width: 600px) {
+    .policy-forecast-grid {
+        grid-template-columns: 1fr;
+    }
+}

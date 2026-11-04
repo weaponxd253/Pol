@@ -577,6 +577,128 @@ function returnToBriefing() {
 // RPG DIALOGUE FUNCTIONS
 // ==========================================
 
+
+function updatePolicyForecast() {
+
+  const panel = document.getElementById(
+    'policy-dossier-forecast'
+  );
+
+  // Clear the previous forecast.
+  panel.replaceChildren();
+
+  const heading = document.createElement('h4');
+  heading.textContent = 'Government Impact Forecast';
+  panel.appendChild(heading);
+
+  // No policy has been selected yet.
+  if (
+    !state ||
+    state.phase !== 'policy' ||
+    !state.selectedPolicyId
+  ) {
+    const message = document.createElement('p');
+    message.textContent =
+      'Select a policy to review its projected effects.';
+
+    panel.appendChild(message);
+    return;
+  }
+
+  // Read the forecast from the existing engine.
+  let forecast;
+
+  try {
+    forecast = calculateTurn(state);
+  } catch (error) {
+    const message = document.createElement('p');
+    message.textContent = error.message;
+    panel.appendChild(message);
+    return;
+  }
+
+  const selectedTitle = document.createElement('p');
+  selectedTitle.textContent =
+    'Selected: ' + forecast.policyTitle;
+
+  panel.appendChild(selectedTitle);
+
+  // Names of the six national statistics.
+  const meters = {
+    approval: 'Approval',
+    treasury: 'Treasury',
+    donors: 'Donors',
+    economy: 'Economy',
+    international: 'International',
+    stability: 'Stability'
+  };
+
+  const grid = document.createElement('div');
+  grid.className = 'policy-forecast-grid';
+
+  for (const [key, label] of Object.entries(meters)) {
+
+    const before = state.meters[key];
+    const after = forecast.meters[key];
+    const change = after - before;
+
+    const cell = document.createElement('div');
+    cell.className = 'policy-forecast-meter';
+
+    const name = document.createElement('span');
+    name.textContent = label;
+
+    const value = document.createElement('strong');
+    value.textContent =
+      `${before} → ${after} (${change > 0 ? '+' : ''}${change})`;
+
+    if (change > 0) {
+      value.className = 'forecast-positive';
+    } else if (change < 0) {
+      value.className = 'forecast-negative';
+    }
+
+    cell.append(name, value);
+    grid.appendChild(cell);
+  }
+
+  panel.appendChild(grid);
+
+  // Projected national debt.
+  const debt = document.createElement('p');
+  debt.className = 'policy-forecast-debt';
+  debt.textContent =
+    `National Debt: ${state.debt} → ${forecast.debt}`;
+
+  panel.appendChild(debt);
+
+  // Budget forecast, separate from the policy effects.
+  const budget = document.createElement('p');
+  budget.className = 'policy-forecast-budget';
+  budget.textContent =
+    `Budget: Revenue ${forecast.budget.revenue}, ` +
+    `Essential Spending ${forecast.budget.spending}, ` +
+    `Interest ${forecast.budget.interest}, ` +
+    `Net ${forecast.budget.total}`;
+
+  panel.appendChild(budget);
+
+  // Warn the player if the turn would cause collapse.
+  if (forecast.failures.length > 0) {
+
+    const warning = document.createElement('p');
+    warning.className = 'policy-forecast-warning';
+
+    warning.textContent =
+      'Warning: This decision would cause government ' +
+      'collapse. Critical statistics: ' +
+      forecast.failures.map(item => item.label).join(', ');
+
+    panel.appendChild(warning);
+  }
+}
+
+
 function populatePolicyDossier() {
 
   // Remove any policy cards from a previous visit.
@@ -593,6 +715,7 @@ function populatePolicyDossier() {
       : 'Complete your advisor briefing before reviewing policies.';
 
     policyDossierOptions.appendChild(message);
+    updatePolicyForecast();
     return;
   }
 
@@ -676,9 +799,9 @@ function populatePolicyDossier() {
     }
 
     // Select this policy when the player clicks the card.
-card.addEventListener('click', () => {
+    card.addEventListener('click', () => {
 
-    try {
+      try {
         // Update the existing government state.
         state = selectPolicy(state, policy.id);
 
@@ -693,24 +816,27 @@ card.addEventListener('click', () => {
 
         // Restore keyboard focus to the selected card.
         const selectedCard = [
-            ...policyDossierOptions.querySelectorAll(
-                '.policy-dossier-card'
-            )
+          ...policyDossierOptions.querySelectorAll(
+            '.policy-dossier-card'
+          )
         ].find(element =>
-            element.dataset.policyId === policy.id
+          element.dataset.policyId === policy.id
         );
 
         selectedCard?.focus();
 
-    } catch (error) {
+      } catch (error) {
         announcer.textContent = error.message;
         console.error(error);
-    }
+      }
 
-});
+    });
 
     policyDossierOptions.appendChild(card);
   }
+
+  // Refresh the forecast after displaying the policy cards.
+  updatePolicyForecast();
 }
 
 function openPolicyDossier() {
