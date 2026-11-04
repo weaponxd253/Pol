@@ -35,6 +35,46 @@ const policyDossier =
 const policyDossierClose =
   document.getElementById('policy-dossier-close');
 
+const policyDossierApprove =
+  document.getElementById('policy-dossier-approve');
+
+const policyApprovalConfirmation =
+  document.getElementById('policy-approval-confirmation');
+
+const policyApprovalMessage =
+  document.getElementById('policy-approval-message');
+
+const policyApprovalConfirm =
+  document.getElementById('policy-approval-confirm');
+
+const policyApprovalCancel =
+  document.getElementById('policy-approval-cancel');
+// ==========================================
+// CABINET PERFORMANCE REPORT ELEMENTS
+// ==========================================
+
+const cabinetReport =
+  document.getElementById('cabinet-report');
+
+const cabinetReportClose =
+  document.getElementById('cabinet-report-close');
+
+const cabinetReportNext =
+  document.getElementById('cabinet-report-next');
+
+const cabinetReportTurn =
+  document.getElementById('cabinet-report-turn');
+
+const cabinetReportSummary =
+  document.getElementById('cabinet-report-summary');
+
+const cabinetReportMeters =
+  document.getElementById('cabinet-report-meters');
+
+const cabinetReportBudget =
+  document.getElementById('cabinet-report-budget');
+
+
 let storageStatus = loadGame();
 let savedGame = storageStatus.state;
 let state = null;
@@ -699,10 +739,26 @@ function updatePolicyForecast() {
 }
 
 
+function resetPolicyApproval() {
+
+  // Hide any unfinished confirmation.
+  policyApprovalConfirmation.hidden = true;
+
+  // A policy can only be approved during policy phase.
+  const canApprove =
+    state &&
+    state.phase === 'policy' &&
+    Boolean(state.selectedPolicyId);
+
+  policyDossierApprove.disabled = !canApprove;
+}
+
 function populatePolicyDossier() {
 
   // Remove any policy cards from a previous visit.
   policyDossierOptions.replaceChildren();
+
+  resetPolicyApproval();
 
   // Display an explanation when policies cannot be reviewed.
   if (!state || state.phase !== 'policy') {
@@ -860,6 +916,7 @@ function closePolicyDossier() {
 
   // Hide the dossier.
   policyDossier.hidden = true;
+  resetPolicyApproval();
 
   // Resume the office scene.
   if (officeGame?.scene.isPaused('OfficeScene')) {
@@ -869,6 +926,469 @@ function closePolicyDossier() {
   policyDossierClose.blur();
 }
 
+policyDossierApprove.addEventListener('click', () => {
+
+  // A valid policy must be selected first.
+  if (
+    !state ||
+    state.phase !== 'policy' ||
+    !state.selectedPolicyId
+  ) {
+    return;
+  }
+
+  try {
+
+    // Validate the selection using the simulation engine.
+    const forecast = calculateTurn(state);
+
+    // Explain exactly what the player is approving.
+    policyApprovalMessage.textContent =
+      `Approve "${forecast.policyTitle}" and resolve ` +
+      `Turn ${state.turn}? ` +
+      'The projected changes will become official. ' +
+      'This decision cannot be undone.';
+
+    // Show the confirmation section.
+    policyApprovalConfirmation.hidden = false;
+
+    // Make the confirmation visible in the scroll area.
+    policyApprovalConfirmation.scrollIntoView({
+      block: 'nearest'
+    });
+
+    policyApprovalConfirm.focus({
+      preventScroll: true
+    });
+
+  } catch (error) {
+
+    announcer.textContent = error.message;
+    console.error(error);
+
+  }
+
+});
+
+policyApprovalCancel.addEventListener('click', () => {
+
+  // Hide confirmation without changing game state.
+  policyApprovalConfirmation.hidden = true;
+
+  // Return focus to the approval button.
+  policyDossierApprove.focus();
+
+});
+
+// ==========================================
+// CANCEL POLICY APPROVAL
+// ==========================================
+
+policyApprovalCancel.addEventListener('click', () => {
+
+  policyApprovalConfirmation.hidden = true;
+
+  policyDossierApprove.focus();
+
+});
+
+
+// ==========================================
+// CONFIRM AND ENACT POLICY
+// ==========================================
+
+policyApprovalConfirm.addEventListener('click', () => {
+
+  // Prevent duplicate or invalid approvals.
+  if (
+    policyApprovalConfirmation.hidden ||
+    !state ||
+    state.phase !== 'policy' ||
+    !state.selectedPolicyId
+  ) {
+    return;
+  }
+
+  try {
+
+    // Officially enact the selected policy.
+    state = resolveTurn(state);
+
+    // Save the updated presidency.
+    persist();
+
+    // Close the dossier and resume character movement.
+    closePolicyDossier();
+
+    // Refresh the original government interface in the background.
+    render();
+
+    // Direct the player to the Cabinet Briefing Table.
+    officeMessage.textContent =
+      'Policy enacted. Approach the Cabinet Briefing Table ' +
+      'and press E to review your government report.';
+
+    // Announce the successful decision.
+    announcer.textContent =
+      'Policy approved. Turn ' +
+      state.turn +
+      ' has been resolved.';
+
+  } catch (error) {
+
+    announcer.textContent = error.message;
+    console.error(error);
+
+  }
+
+});
+
+function populateCabinetReport() {
+
+  // Reports are only available after resolving a turn.
+  if (!state || state.phase !== 'report') {
+    return false;
+  }
+
+  // Read the most recent completed government report.
+  const report = state.history.at(-1);
+
+  if (!report) {
+    return false;
+  }
+
+  // ======================================
+  // REPORT HEADING
+  // ======================================
+
+  cabinetReportTurn.textContent =
+    `Presidential Term - Turn ${report.turn}`;
+
+  // ======================================
+  // PRESIDENTIAL DECISIONS
+  // ======================================
+
+  cabinetReportSummary.replaceChildren();
+
+  const decisions = [
+    ['Event', report.eventTitle],
+    ['Response', report.responseTitle],
+    ['Policy Enacted', report.policyTitle]
+  ];
+
+  for (const [label, value] of decisions) {
+
+    const line = document.createElement('p');
+
+    const strong = document.createElement('strong');
+    strong.textContent = label + ': ';
+
+    line.append(strong, document.createTextNode(value));
+
+    cabinetReportSummary.appendChild(line);
+  }
+
+  // ======================================
+  // NATIONAL PERFORMANCE
+  // ======================================
+
+  cabinetReportMeters.replaceChildren();
+
+  const meters = {
+    approval: 'Approval',
+    treasury: 'Treasury',
+    donors: 'Donors',
+    economy: 'Economy',
+    international: 'International',
+    stability: 'Stability'
+  };
+
+  for (const [key, label] of Object.entries(meters)) {
+
+    const before = report.startMeters[key];
+    const after = report.meters[key];
+    const change = after - before;
+
+    const row = document.createElement('div');
+    row.className = 'cabinet-report-meter-row';
+
+    const name = document.createElement('strong');
+    name.textContent = label;
+
+    const values = document.createElement('span');
+    values.textContent =
+      `${before} → ${after} ` +
+      `(${change > 0 ? '+' : ''}${change})`;
+
+    values.className = change > 0
+      ? 'forecast-positive'
+      : change < 0
+        ? 'forecast-negative'
+        : '';
+
+    row.append(name, values);
+
+    // Explain which effects caused the change.
+    const causes = report.contributions[key];
+
+    if (causes.length > 0) {
+
+      const explanation = document.createElement('small');
+
+      explanation.textContent = causes
+        .map(effect =>
+          `${effect.source}: ` +
+          `${effect.amount > 0 ? '+' : ''}${effect.amount}`
+        )
+        .join(' · ');
+
+      row.appendChild(explanation);
+    }
+
+    cabinetReportMeters.appendChild(row);
+  }
+
+  // ======================================
+  // TREASURY AND DEBT
+  // ======================================
+
+  cabinetReportBudget.replaceChildren();
+
+  const financials = [
+    ['Debt', `${report.startDebt} → ${report.debt}`],
+    ['Revenue', report.budget.revenue],
+    ['Essential Spending', report.budget.spending],
+    ['Interest', report.budget.interest],
+    ['Scheduled Payments', report.budget.commitments],
+    ['Net Budget Change', report.budget.total]
+  ];
+
+  for (const [label, value] of financials) {
+
+    const line = document.createElement('p');
+
+    const strong = document.createElement('strong');
+    strong.textContent = label + ': ';
+
+    line.append(
+      strong,
+      document.createTextNode(String(value))
+    );
+
+    cabinetReportBudget.appendChild(line);
+  }
+
+  // ======================================
+  // FUTURE OBLIGATIONS
+  // ======================================
+
+  const obligations = report.remainingScheduled || [];
+
+  if (obligations.length > 0) {
+
+    const heading = document.createElement('h4');
+    heading.textContent = 'Future Commitments';
+
+    cabinetReportBudget.appendChild(heading);
+
+    for (const obligation of obligations) {
+
+      const line = document.createElement('p');
+
+      line.textContent =
+        `Turn ${obligation.dueTurn}: ` +
+        `${obligation.source} - ` +
+        `${obligation.meter} ` +
+        `${obligation.amount > 0 ? '+' : ''}` +
+        obligation.amount;
+
+      cabinetReportBudget.appendChild(line);
+    }
+  }
+
+  // ======================================
+  // GOVERNMENT COLLAPSE WARNING
+  // ======================================
+
+  if (report.failures.length > 0) {
+
+    const warning = document.createElement('p');
+    warning.className = 'cabinet-report-warning';
+
+    warning.textContent =
+      'Government collapse: ' +
+      report.failures.map(item => item.label).join(', ');
+
+    cabinetReportBudget.appendChild(warning);
+  }
+
+  return true;
+}
+
+function openCabinetReport() {
+
+  console.log('Cabinet report debug:', {
+    hasActiveGame: Boolean(state),
+    currentPhase: state?.phase,
+    hasSavedGame: Boolean(savedGame),
+    savedPhase: savedGame?.phase,
+    reportCount: state?.history?.length
+  });
+
+  // Only allow reports after the turn is resolved.
+  if (!state || state.phase !== 'report') {
+
+    officeMessage.textContent =
+      'Complete your government decisions before ' +
+      'reviewing the Cabinet Report.';
+
+    return;
+  }
+
+  // Load the latest report.
+  if (!populateCabinetReport()) {
+    officeMessage.textContent =
+      'No completed report is available.';
+    return;
+  }
+
+
+  // Prepare the turn advancement button.
+  // An ended presidency should display its final result
+  // instead of starting another event.
+  cabinetReportNext.textContent =
+    state.outcome
+      ? 'View Final Result'
+      : 'Next Turn';
+
+  cabinetReportNext.disabled = false;
+
+  // Show the completed Cabinet Report.
+  cabinetReport.hidden = false;
+
+  // Pause movement while reviewing the report.
+  if (officeGame?.scene.isActive('OfficeScene')) {
+    officeGame.scene.pause('OfficeScene');
+  }
+
+  // Focus the Close button when the report opens.
+  cabinetReportClose.focus();
+
+}
+
+
+function closeCabinetReport() {
+
+  // Hide the report.
+  cabinetReport.hidden = true;
+
+  // Resume player movement.
+  if (officeGame?.scene.isPaused('OfficeScene')) {
+    officeGame.scene.resume('OfficeScene');
+  }
+
+  cabinetReportClose.blur();
+}
+
+// Close the Cabinet Report using its button.
+cabinetReportClose.addEventListener(
+  'click',
+  closeCabinetReport
+);
+
+
+// ==========================================
+// ADVANCE TO THE NEXT PRESIDENTIAL TURN
+// ==========================================
+
+cabinetReportNext.addEventListener('click', () => {
+
+    // Only advance from an open, completed report.
+    if (
+        cabinetReport.hidden ||
+        !state ||
+        state.phase !== 'report'
+    ) {
+        return;
+    }
+
+    try {
+
+        // Advance using the existing simulation engine.
+        // This must only happen once per completed report.
+        state = advanceTurn(state);
+
+        // Save the updated presidency.
+        persist();
+
+        // Refresh the original government interface
+        // without making it visible.
+        render();
+
+        // Close the report and resume Phaser movement.
+        closeCabinetReport();
+
+        // ======================================
+        // PRESIDENCY HAS ENDED
+        // ======================================
+
+        if (state.phase === 'result') {
+
+            // For now, use the existing final result screen.
+            // A dedicated RPG result screen can come later.
+            returnToBriefing();
+
+            announcer.textContent =
+                'Your presidency has concluded. ' +
+                'Review your final government results.';
+
+            return;
+        }
+
+        // ======================================
+        // NEXT TURN HAS BEGUN
+        // ======================================
+
+        // Tell the president where to go next.
+        officeMessage.textContent =
+            `Turn ${state.turn} has begun. ` +
+            'Visit the Chief of Staff for your next briefing.';
+
+        announcer.textContent =
+            `Turn ${state.turn} has begun. ` +
+            'A new government event is available.';
+
+        console.log('Presidency advanced:', {
+            turn: state.turn,
+            phase: state.phase,
+            reports: state.history.length
+        });
+
+    } catch (error) {
+
+        announcer.textContent = error.message;
+
+        console.error(
+            'Failed to advance presidential turn:',
+            error
+        );
+
+    }
+
+});
+
+
+// Also close with Escape.
+document.addEventListener('keydown', event => {
+
+  if (
+    event.key === 'Escape' &&
+    !cabinetReport.hidden
+  ) {
+    closeCabinetReport();
+  }
+
+});
 
 
 function showAdvisorEvent() {
@@ -1157,9 +1677,8 @@ window.addEventListener(
         break;
 
       case 'cabinet-briefing':
+        openCabinetReport();
 
-        officeMessage.textContent =
-          'Cabinet briefings are not connected yet.';
         break;
 
       case 'archives':

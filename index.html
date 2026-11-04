@@ -152,21 +152,115 @@
                 </p>
               </section>
 
+              <!-- Final policy approval confirmation -->
+              <div id="policy-approval-confirmation" class="policy-approval-confirmation" role="group"
+                aria-label="Confirm policy approval" hidden>
+                <h4>Presidential Authorization</h4>
+
+                <p id="policy-approval-message"></p>
+
+                <div class="policy-approval-actions">
+                  <button id="policy-approval-confirm" type="button">
+                    Confirm and Enact
+                  </button>
+
+                  <button id="policy-approval-cancel" type="button">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+
+
             </div>
 
-            <!-- Bottom green section of your artwork -->
+
             <div class="policy-dossier-footer">
 
               <span>OFFICE OF THE EXECUTIVE</span>
 
-              <button id="policy-dossier-close" type="button">
-                Close Dossier
-              </button>
+              <div class="policy-dossier-footer-actions">
+
+                <button id="policy-dossier-approve" type="button" disabled>
+                  Approve Policy
+                </button>
+
+                <button id="policy-dossier-close" type="button">
+                  Close Dossier
+                </button>
+
+              </div>
+
+            </div>
+
+
+          </div>
+        </div>
+
+
+        <!-- ======================================
+     CABINET PERFORMANCE REPORT
+     ====================================== -->
+
+        <div id="cabinet-report" class="cabinet-report-overlay" role="dialog" aria-labelledby="cabinet-report-title"
+          aria-modal="true" hidden>
+          <div class="cabinet-report-frame">
+
+            <div class="cabinet-report-header">
+              <p>REPUBLIC OF ARDEN</p>
+
+              <h3 id="cabinet-report-title">
+                Cabinet Performance Report
+              </h3>
+
+              <p id="cabinet-report-turn">
+                Presidential Term
+              </p>
+            </div>
+
+            <div class="cabinet-report-content">
+
+              <section class="cabinet-report-decisions">
+                <h4>Presidential Decisions</h4>
+
+                <div id="cabinet-report-summary"></div>
+              </section>
+
+              <section class="cabinet-report-statistics">
+                <h4>National Performance</h4>
+
+                <div id="cabinet-report-meters"></div>
+              </section>
+
+              <section class="cabinet-report-finances">
+                <h4>Treasury & Commitments</h4>
+
+                <div id="cabinet-report-budget"></div>
+              </section>
+
+            </div>
+
+
+            <div class="cabinet-report-footer">
+
+              <span>OFFICE OF THE EXECUTIVE</span>
+
+              <div class="cabinet-report-footer-actions">
+
+                <button id="cabinet-report-next" type="button">
+                  Next Turn
+                </button>
+
+                <button id="cabinet-report-close" type="button">
+                  Close Report
+                </button>
+
+              </div>
 
             </div>
 
           </div>
         </div>
+
 
       </div>
 
