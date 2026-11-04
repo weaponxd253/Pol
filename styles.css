@@ -3156,3 +3156,119 @@ h2:focus {
 .hud-meter.is-critical .hud-meter-label strong {
     color: #f2b48d;
 }
+
+
+/* ======================================
+   PHASE 5A.2 - EXPANDABLE HUD
+   ====================================== */
+
+/* Keep the HUD inside the Phaser game. */
+.presidential-hud {
+    max-height: calc(100% - 24px);
+    overflow-y: auto;
+}
+
+/* Let the button receive clicks even though
+   the original HUD ignores pointer events. */
+.hud-expand-button,
+.hud-expanded {
+    pointer-events: auto;
+}
+
+/* Expand/collapse button */
+.hud-expand-button {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    padding: 9px;
+
+    background: #d8be80;
+    border: 1px solid #a88c50;
+    border-radius: 4px;
+
+    color: #173f36;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.hud-expand-button:hover {
+    background: #f0dca5;
+}
+
+/* Expanded information panel */
+.hud-expanded {
+    margin-top: 12px;
+    padding-top: 12px;
+
+    border-top: 1px solid #69806d;
+}
+
+.hud-expanded[hidden] {
+    display: none !important;
+}
+
+.hud-expanded h4 {
+    margin: 0 0 12px;
+
+    color: #e8ce94;
+    font-family: Georgia, serif;
+    font-size: 14px;
+}
+
+/* Additional government meters */
+.hud-extra-meter {
+    margin-bottom: 12px;
+}
+
+.hud-extra-meter .hud-meter-label {
+    margin-bottom: 5px;
+}
+
+/* National debt */
+.hud-expanded-finance {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+
+    margin: 14px 0;
+    padding: 10px 0;
+
+    border-top: 1px solid #52705d;
+    border-bottom: 1px solid #52705d;
+
+    font-size: 12px;
+}
+
+.hud-expanded-finance strong {
+    color: #f2ddab;
+}
+
+/* Future government commitments */
+.hud-commitment {
+    margin-bottom: 8px;
+    padding: 8px;
+
+    background: #285443;
+    border: 1px solid #557563;
+    border-radius: 4px;
+
+    font-size: 11px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.hud-commitment-empty {
+    color: #b8cdbd;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* Warnings for any of the expanded meters */
+.hud-extra-meter.is-low .hud-meter-fill {
+    background: #d28b55;
+}
+
+.hud-extra-meter.is-critical .hud-meter-fill {
+    background: #bb4b3b;
+}

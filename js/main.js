@@ -99,6 +99,22 @@ const cabinetReportBudget =
 const presidentialHud =
   document.getElementById('presidential-hud');
 
+const hudExpandButton =
+  document.getElementById('hud-expand-button');
+
+const hudExpanded =
+  document.getElementById('hud-expanded');
+
+const hudExtraMeters =
+  document.getElementById('hud-extra-meters');
+
+const hudDebt =
+  document.getElementById('hud-debt');
+
+const hudUpcomingCommitments =
+  document.getElementById('hud-upcoming-commitments');
+
+
 const hudPhase =
   document.getElementById('hud-phase');
 
@@ -316,6 +332,148 @@ function menuMarkup() {
 
 
 // ==========================================
+// UPDATE EXPANDED GOVERNMENT STATUS
+// ==========================================
+
+function updateExpandedPresidentialHUD() {
+
+  if (!state) {
+    return;
+  }
+
+  // Clear previously generated statistics.
+  hudExtraMeters.replaceChildren();
+
+  // The four statistics not already shown
+  // in the compact Presidential HUD.
+  const extraMeters = [
+    ['donors', 'Donors'],
+    ['economy', 'Economy'],
+    ['international', 'International'],
+    ['stability', 'Stability']
+  ];
+
+  // ======================================
+  // GENERATE ADDITIONAL STATISTIC BARS
+  // ======================================
+
+  for (const [key, label] of extraMeters) {
+
+    const value = state.meters[key];
+
+    const meter = document.createElement('div');
+    meter.className = 'hud-extra-meter';
+
+    // Identify low or critical values.
+    if (value <= 0) {
+      meter.classList.add('is-critical');
+    } else if (value < 20) {
+      meter.classList.add('is-low');
+    }
+
+    // Statistic label and current value.
+    const labelRow = document.createElement('div');
+    labelRow.className = 'hud-meter-label';
+
+    const name = document.createElement('span');
+    name.textContent = label;
+
+    const amount = document.createElement('strong');
+    amount.textContent = String(value);
+
+    labelRow.append(name, amount);
+
+    // Statistic progress bar.
+    const bar = document.createElement('div');
+    bar.className = 'hud-meter-bar';
+
+    bar.setAttribute('role', 'progressbar');
+    bar.setAttribute('aria-label', label);
+    bar.setAttribute('aria-valuemin', '0');
+    bar.setAttribute('aria-valuemax', '100');
+    bar.setAttribute('aria-valuenow', String(value));
+
+    const fill = document.createElement('div');
+    fill.className = 'hud-meter-fill';
+
+    fill.style.width =
+      `${Math.max(0, Math.min(100, value))}%`;
+
+    bar.appendChild(fill);
+
+    // Add the completed meter to the panel.
+    meter.append(labelRow, bar);
+
+    hudExtraMeters.appendChild(meter);
+  }
+
+  // ======================================
+  // NATIONAL DEBT
+  // ======================================
+
+  hudDebt.textContent = String(state.debt);
+
+  // ======================================
+  // UPCOMING GOVERNMENT COMMITMENTS
+  // ======================================
+
+  hudUpcomingCommitments.replaceChildren();
+
+  const upcoming = [...(state.scheduledEffects || [])]
+    .filter(effect => effect.dueTurn > state.turn)
+    .sort((a, b) => a.dueTurn - b.dueTurn);
+
+  if (upcoming.length === 0) {
+
+    const empty = document.createElement('p');
+    empty.className = 'hud-commitment-empty';
+
+    empty.textContent =
+      'No upcoming scheduled commitments.';
+
+    hudUpcomingCommitments.appendChild(empty);
+
+    return;
+  }
+
+  // Display the next three commitments.
+  for (const effect of upcoming.slice(0, 3)) {
+
+    const item = document.createElement('div');
+    item.className = 'hud-commitment';
+
+    const meterName =
+      effect.meter.charAt(0).toUpperCase() +
+      effect.meter.slice(1);
+
+    const amount =
+      effect.amount > 0
+        ? `+${effect.amount}`
+        : String(effect.amount);
+
+    item.textContent =
+      `Turn ${effect.dueTurn}: ` +
+      `${effect.source} (${meterName} ${amount})`;
+
+    hudUpcomingCommitments.appendChild(item);
+  }
+
+  // Let the player know if more commitments exist.
+  if (upcoming.length > 3) {
+
+    const more = document.createElement('p');
+    more.className = 'hud-commitment-empty';
+
+    more.textContent =
+      `${upcoming.length - 3} more scheduled effects.`;
+
+    hudUpcomingCommitments.appendChild(more);
+  }
+}
+
+
+
+// ==========================================
 // UPDATE PRESIDENTIAL STATUS HUD
 // ==========================================
 
@@ -402,7 +560,38 @@ function updatePresidentialHUD() {
     'is-critical',
     treasury <= 0
   );
+
+  updateExpandedPresidentialHUD();
+
 }
+
+
+// ==========================================
+// TOGGLE EXPANDED PRESIDENTIAL STATUS
+// ==========================================
+
+hudExpandButton.addEventListener('click', () => {
+
+  // Determine whether the expanded panel
+  // is currently visible.
+  const isExpanded = !hudExpanded.hidden;
+
+  // Toggle its visibility.
+  hudExpanded.hidden = isExpanded;
+
+  // Update accessibility information.
+  hudExpandButton.setAttribute(
+    'aria-expanded',
+    String(!isExpanded)
+  );
+
+  // Update the button label.
+  hudExpandButton.textContent = isExpanded
+    ? 'View Government Status'
+    : 'Hide Government Status';
+
+});
+
 
 
 // Render existing game interface.

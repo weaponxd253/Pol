@@ -126,6 +126,53 @@
             <div class="hud-meter-fill"></div>
         </div>
     </div>
+    
+<!-- ======================================
+     EXPAND GOVERNMENT STATUS BUTTON
+     ====================================== -->
+
+<button
+    id="hud-expand-button"
+    class="hud-expand-button"
+    type="button"
+    aria-expanded="false"
+    aria-controls="hud-expanded"
+>
+    View Government Status
+</button>
+
+
+<!-- ======================================
+     EXPANDED GOVERNMENT STATUS
+     ====================================== -->
+
+<section
+    id="hud-expanded"
+    class="hud-expanded"
+    aria-label="Expanded government status"
+    hidden
+>
+    <h4>National Indicators</h4>
+
+    <!-- Additional government statistics -->
+    <div id="hud-extra-meters"></div>
+
+    <!-- National debt -->
+    <div class="hud-expanded-finance">
+        <span>National Debt</span>
+
+        <strong id="hud-debt">0</strong>
+    </div>
+
+    <h4>Upcoming Commitments</h4>
+
+    <!-- Future policy consequences -->
+    <div id="hud-upcoming-commitments">
+        <p>No upcoming commitments.</p>
+    </div>
+
+</section>
+
 </div>
 
 
