@@ -3459,3 +3459,6 @@ h2:focus {
     }
 }
 
+#office-game canvas:focus {
+    outline: none;
+}

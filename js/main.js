@@ -151,17 +151,17 @@ const objectiveDescription =
 
 const objectiveLocation =
   document.getElementById('objective-location');
-  
+
 // Objective notification elements.
 
 const objectiveNotice =
-    document.getElementById('objective-notice');
+  document.getElementById('objective-notice');
 
 const objectiveNoticeTitle =
-    document.getElementById('objective-notice-title');
+  document.getElementById('objective-notice-title');
 
 const objectiveNoticeLocation =
-    document.getElementById('objective-notice-location');
+  document.getElementById('objective-notice-location');
 
 // Track the last objective displayed.
 let lastObjectiveKey = null;
@@ -185,122 +185,122 @@ let replacement = null;
 
 window.getOfficeInteractionStatus = function (action) {
 
-    // Leaving the office should always be allowed.
-    if (action === 'exit-office') {
-        return {
-            allowed: true,
-            reason: ''
-        };
-    }
-
-    // Government activities require an active game.
-    if (!state) {
-        return {
-            allowed: false,
-            reason: 'Start or resume a presidency first.'
-        };
-    }
-
-    // Archives can be visited during any active phase.
-    if (action === 'archives') {
-        return {
-            allowed: true,
-            reason: ''
-        };
-    }
-
-    // Chief of Staff
-    if (action === 'advisors') {
-        return {
-            allowed: state.phase === 'event',
-            reason: 'No new briefing is available. Follow your current objective.'
-        };
-    }
-
-    // National Policy Desk
-    if (action === 'national-policies') {
-        return {
-            allowed: state.phase === 'policy',
-            reason: state.phase === 'event'
-                ? 'Finish your Chief of Staff briefing first.'
-                : 'No policy decision is available right now.'
-        };
-    }
-
-    // Cabinet Briefing Table
-    if (action === 'cabinet-briefing') {
-        return {
-            allowed: state.phase === 'report',
-            reason: 'Complete your current decisions before reviewing Cabinet results.'
-        };
-    }
-
-    // Unknown actions should not be accepted.
+  // Leaving the office should always be allowed.
+  if (action === 'exit-office') {
     return {
-        allowed: false,
-        reason: 'This activity is not available.'
+      allowed: true,
+      reason: ''
     };
+  }
+
+  // Government activities require an active game.
+  if (!state) {
+    return {
+      allowed: false,
+      reason: 'Start or resume a presidency first.'
+    };
+  }
+
+  // Archives can be visited during any active phase.
+  if (action === 'archives') {
+    return {
+      allowed: true,
+      reason: ''
+    };
+  }
+
+  // Chief of Staff
+  if (action === 'advisors') {
+    return {
+      allowed: state.phase === 'event',
+      reason: 'No new briefing is available. Follow your current objective.'
+    };
+  }
+
+  // National Policy Desk
+  if (action === 'national-policies') {
+    return {
+      allowed: state.phase === 'policy',
+      reason: state.phase === 'event'
+        ? 'Finish your Chief of Staff briefing first.'
+        : 'No policy decision is available right now.'
+    };
+  }
+
+  // Cabinet Briefing Table
+  if (action === 'cabinet-briefing') {
+    return {
+      allowed: state.phase === 'report',
+      reason: 'Complete your current decisions before reviewing Cabinet results.'
+    };
+  }
+
+  // Unknown actions should not be accepted.
+  return {
+    allowed: false,
+    reason: 'This activity is not available.'
+  };
 };
 
 
 
- // ==========================================
- // PHASE 5B.2 - CONTEXTUAL OFFICE GUIDANCE
- // ==========================================
+// ==========================================
+// PHASE 5B.2 - CONTEXTUAL OFFICE GUIDANCE
+// ==========================================
 
 window.getOfficeContextHint = function (action) {
 
-    if (!state) {
-        return 'Start or resume a presidency first.';
+  if (!state) {
+    return 'Start or resume a presidency first.';
+  }
+
+  switch (action) {
+
+    case 'advisors':
+      if (state.phase === 'event') {
+        return state.selectedResponseId
+          ? 'Response selected. Complete your briefing.'
+          : 'A national event requires your response.';
+      }
+
+      return state.phase === 'policy'
+        ? 'Briefing complete. Visit the Policy Desk.'
+        : 'No new briefing available.';
+
+    case 'national-policies':
+      if (state.phase === 'event') {
+        return 'Finish your Chief of Staff briefing first.';
+      }
+
+      if (state.phase === 'policy') {
+        return state.selectedPolicyId
+          ? 'Review the forecast and approve your policy.'
+          : 'Choose a policy to review its impact.';
+      }
+
+      return 'No new policy decisions available.';
+
+    case 'cabinet-briefing':
+      if (state.phase === 'report') {
+        return 'Review results or advance to the next turn.';
+      }
+
+      return 'Complete your government decisions first.';
+
+    case 'archives': {
+      const count = state.history?.length || 0;
+
+      return count > 0
+        ? `${count} completed presidential records.`
+        : 'No records yet. Complete your first turn.';
     }
 
-    switch (action) {
+    case 'exit-office':
+      return 'Return to the government dashboard.';
 
-        case 'advisors':
-            if (state.phase === 'event') {
-                return state.selectedResponseId
-                    ? 'Response selected. Complete your briefing.'
-                    : 'A national event requires your response.';
-            }
-
-            return state.phase === 'policy'
-                ? 'Briefing complete. Visit the Policy Desk.'
-                : 'No new briefing available.';
-
-        case 'national-policies':
-            if (state.phase === 'event') {
-                return 'Finish your Chief of Staff briefing first.';
-            }
-
-            if (state.phase === 'policy') {
-                return state.selectedPolicyId
-                    ? 'Review the forecast and approve your policy.'
-                    : 'Choose a policy to review its impact.';
-            }
-
-            return 'No new policy decisions available.';
-
-        case 'cabinet-briefing':
-            if (state.phase === 'report') {
-                return 'Review results or advance to the next turn.';
-            }
-
-            return 'Complete your government decisions first.';
-
-        case 'archives': {
-            const count = state.history?.length || 0;
-
-            return count > 0
-                ? `${count} completed presidential records.`
-                : 'No records yet. Complete your first turn.';
-        }
-
-        case 'exit-office':
-            return 'Return to the government dashboard.';
-
-        default:
-            return 'Press E to interact.';
-    }
+    default:
+      return 'Press E to interact.';
+  }
 };
 
 // ==========================================
@@ -309,27 +309,27 @@ window.getOfficeContextHint = function (action) {
 
 window.getOfficeObjectiveAction = function () {
 
-    if (!state) {
-        return null;
-    }
+  if (!state) {
+    return null;
+  }
 
-    switch (state.phase) {
+  switch (state.phase) {
 
-        case 'event':
-            return 'advisors';
+    case 'event':
+      return 'advisors';
 
-        case 'policy':
-            return 'national-policies';
+    case 'policy':
+      return 'national-policies';
 
-        case 'report':
-            return 'cabinet-briefing';
+    case 'report':
+      return 'cabinet-briefing';
 
-        case 'result':
-            return null;
+    case 'result':
+      return null;
 
-        default:
-            return null;
-    }
+    default:
+      return null;
+  }
 };
 
 
@@ -668,27 +668,27 @@ function updateExpandedPresidentialHUD() {
 
 function showObjectiveNotification(title, location) {
 
-    // Fill the notification with the new objective.
-    objectiveNoticeTitle.textContent = title;
+  // Fill the notification with the new objective.
+  objectiveNoticeTitle.textContent = title;
 
-    objectiveNoticeLocation.textContent =
-        'Destination: ' + location;
+  objectiveNoticeLocation.textContent =
+    'Destination: ' + location;
 
-    // Cancel an older hide timer, if one exists.
-    if (objectiveNoticeTimer !== null) {
-        clearTimeout(objectiveNoticeTimer);
-    }
+  // Cancel an older hide timer, if one exists.
+  if (objectiveNoticeTimer !== null) {
+    clearTimeout(objectiveNoticeTimer);
+  }
 
-    // Show the notification.
-    objectiveNotice.hidden = false;
+  // Show the notification.
+  objectiveNotice.hidden = false;
 
-    // Automatically hide it after four seconds.
-    objectiveNoticeTimer = setTimeout(() => {
+  // Automatically hide it after four seconds.
+  objectiveNoticeTimer = setTimeout(() => {
 
-        objectiveNotice.hidden = true;
-        objectiveNoticeTimer = null;
+    objectiveNotice.hidden = true;
+    objectiveNoticeTimer = null;
 
-    }, 4000);
+  }, 4000);
 }
 
 
@@ -698,7 +698,7 @@ function showObjectiveNotification(title, location) {
 
 function updatePresidentialObjective() {
 
- if (!state) {
+  if (!state) {
 
     presidentialObjective.hidden = true;
 
@@ -708,7 +708,7 @@ function updatePresidentialObjective() {
     objectiveNotice.hidden = true;
 
     return;
-}
+  }
 
   let title = '';
   let description = '';
@@ -828,33 +828,33 @@ function updatePresidentialObjective() {
   objectiveLocation.textContent = location;
 
   presidentialObjective.hidden = false;
-  
-// ======================================
-// DETECT OBJECTIVE CHANGES
-// ======================================
 
-// Include the turn number so that receiving a new
-// briefing next turn counts as a new objective.
-const objectiveKey =
+  // ======================================
+  // DETECT OBJECTIVE CHANGES
+  // ======================================
+
+  // Include the turn number so that receiving a new
+  // briefing next turn counts as a new objective.
+  const objectiveKey =
     `${state.turn}:${title}:${location}`;
 
-// Check whether the player is currently in the office.
-const officeVisible =
+  // Check whether the player is currently in the office.
+  const officeVisible =
     document.getElementById('office-screen')?.hidden === false;
 
-// Only notify when an existing objective changes.
-// Don't display a notification on the initial render.
-if (
+  // Only notify when an existing objective changes.
+  // Don't display a notification on the initial render.
+  if (
     lastObjectiveKey !== null &&
     lastObjectiveKey !== objectiveKey &&
     officeVisible &&
     state.phase !== 'result'
-) {
+  ) {
     showObjectiveNotification(title, location);
-}
+  }
 
-// Save the current objective for future comparisons.
-lastObjectiveKey = objectiveKey;
+  // Save the current objective for future comparisons.
+  lastObjectiveKey = objectiveKey;
 
 }
 
@@ -1262,6 +1262,134 @@ const advisorFeedback =
 const advisorContinue =
   document.getElementById('advisor-continue');
 
+
+// ==========================================
+// PHASE 5C.2 - OFFICE OVERLAY MANAGER
+// ==========================================
+
+// Every interactive office overlay.
+const OFFICE_OVERLAYS = [
+  {
+    element: officeDialogue,
+    focus: officeDialogueClose
+  },
+  {
+    element: policyDossier,
+    focus: policyDossierClose
+  },
+  {
+    element: cabinetReport,
+    focus: cabinetReportClose
+  },
+  {
+    element: governmentArchives,
+    focus: governmentArchivesClose
+  }
+];
+
+// Find the currently visible overlay.
+function getActiveOfficeOverlay() {
+
+  const active = OFFICE_OVERLAYS.find(
+    item => !item.element.hidden
+  );
+
+  return active?.element ?? null;
+}
+
+// Keep Phaser movement synchronized with
+// the office screen and open overlays.
+function syncOfficeScenePause() {
+
+  if (!officeGame) {
+    return;
+  }
+
+  const shouldPause =
+    officeScreen.hidden ||
+    getActiveOfficeOverlay() !== null;
+
+  if (
+    shouldPause &&
+    officeGame.scene.isActive('OfficeScene')
+  ) {
+    officeGame.scene.pause('OfficeScene');
+  }
+
+  if (
+    !shouldPause &&
+    officeGame.scene.isPaused('OfficeScene')
+  ) {
+    officeGame.scene.resume('OfficeScene');
+  }
+}
+
+// Open one overlay and pause the office.
+function openOfficeOverlay(element, focusElement) {
+
+  // Do not allow two interfaces at once.
+  if (getActiveOfficeOverlay()) {
+    return false;
+  }
+
+  element.hidden = false;
+
+  syncOfficeScenePause();
+
+  focusElement?.focus();
+
+  return true;
+}
+
+
+// ==========================================
+// PHASE 5C.3C - RESTORE GAME INPUT FOCUS
+// ==========================================
+
+function closeOfficeOverlay(element, focusElement) {
+
+  // Hide the currently open interface.
+  element.hidden = true;
+
+  // Restore Phaser movement when appropriate.
+  syncOfficeScenePause();
+
+  // Remove focus from the closed interface.
+  focusElement?.blur();
+
+  // Don't focus the game if we've left the office.
+  if (officeScreen.hidden) {
+    return;
+  }
+
+  // Return keyboard focus to the Phaser canvas.
+  const canvas = officeGame?.canvas;
+
+  if (canvas) {
+
+    canvas.tabIndex = 0;
+
+    canvas.focus({
+      preventScroll: true
+    });
+  }
+}
+
+
+// Reset every office overlay when leaving
+// the executive office.
+function closeAllOfficeOverlays() {
+
+  for (const overlay of OFFICE_OVERLAYS) {
+    overlay.element.hidden = true;
+  }
+
+  resetPolicyApproval();
+
+  syncOfficeScenePause();
+}
+
+
 // Open the executive office.
 function enterOffice() {
 
@@ -1305,32 +1433,27 @@ function enterOffice() {
 
   } else {
 
-    // Resume existing scene and player position.
-    if (officeGame.scene.isPaused('OfficeScene')) {
-      officeGame.scene.resume('OfficeScene');
-    }
+    syncOfficeScenePause();
+
   }
 
   populatePolicyDossier();
 }
 
-// Return to existing policy screens.
+
 function returnToBriefing() {
-  officeDialogue.hidden = true;
 
-  if (
-    officeGame &&
-    officeGame.scene.isActive('OfficeScene')
-  ) {
-    officeGame.scene.pause('OfficeScene');
-  }
-
+  // Hide the graphical office first.
   officeScreen.hidden = true;
+
+  // Clear all overlays and ensure Phaser pauses.
+  closeAllOfficeOverlays();
+
+  // Restore the original strategy interface.
   app.hidden = false;
   enterOfficeButton.hidden = false;
-  policyDossier.hidden = true;
 
-  // Refresh game UI without resetting game state.
+  // Refresh without resetting the presidency.
   render({ focusHeading: true });
 }
 
@@ -1617,36 +1740,33 @@ function populatePolicyDossier() {
   updatePolicyForecast();
 }
 
+
 function openPolicyDossier() {
 
-  // Generate the latest policy cards.
-  populatePolicyDossier();
-
-  // Show the dossier.
-  policyDossier.hidden = false;
-
-  // Pause character movement while reading.
-  if (officeGame?.scene.isActive('OfficeScene')) {
-    officeGame.scene.pause('OfficeScene');
+  if (getActiveOfficeOverlay()) {
+    return;
   }
 
-  // Give keyboard focus to the Close button.
-  policyDossierClose.focus();
+  populatePolicyDossier();
+
+  openOfficeOverlay(
+    policyDossier,
+    policyDossierClose
+  );
 }
+
+
 
 function closePolicyDossier() {
 
-  // Hide the dossier.
-  policyDossier.hidden = true;
   resetPolicyApproval();
 
-  // Resume the office scene.
-  if (officeGame?.scene.isPaused('OfficeScene')) {
-    officeGame.scene.resume('OfficeScene');
-  }
-
-  policyDossierClose.blur();
+  closeOfficeOverlay(
+    policyDossier,
+    policyDossierClose
+  );
 }
+
 
 policyDossierApprove.addEventListener('click', () => {
 
@@ -1988,11 +2108,10 @@ function openCabinetReport() {
   // Show the completed Cabinet Report.
   cabinetReport.hidden = false;
 
-  // Pause movement while reviewing the report.
-  if (officeGame?.scene.isActive('OfficeScene')) {
-    officeGame.scene.pause('OfficeScene');
-  }
-
+  openOfficeOverlay(
+    cabinetReport,
+    cabinetReportClose
+  );
   // Focus the Close button when the report opens.
   cabinetReportClose.focus();
 
@@ -2099,18 +2218,6 @@ cabinetReportNext.addEventListener('click', () => {
 
 });
 
-
-// Also close with Escape.
-document.addEventListener('keydown', event => {
-
-  if (
-    event.key === 'Escape' &&
-    !cabinetReport.hidden
-  ) {
-    closeCabinetReport();
-  }
-
-});
 
 function addArchiveDetailLine(container, label, value) {
 
@@ -2410,54 +2517,36 @@ function populateGovernmentArchives() {
   showArchiveRecord(reports.length - 1);
 }
 
-
 function openGovernmentArchives() {
 
-  // Refresh the list whenever the Archives open.
-  populateGovernmentArchives();
-
-  // Display the Archives overlay.
-  governmentArchives.hidden = false;
-
-  // Pause movement while browsing records.
-  if (officeGame?.scene.isActive('OfficeScene')) {
-    officeGame.scene.pause('OfficeScene');
+  if (getActiveOfficeOverlay()) {
+    return;
   }
 
-  // Move keyboard focus into the Archives.
-  governmentArchivesClose.focus();
+  populateGovernmentArchives();
+
+  openOfficeOverlay(
+    governmentArchives,
+    governmentArchivesClose
+  );
 }
 
 
 function closeGovernmentArchives() {
 
-  // Hide the Archives.
-  governmentArchives.hidden = true;
-
-  // Resume movement.
-  if (officeGame?.scene.isPaused('OfficeScene')) {
-    officeGame.scene.resume('OfficeScene');
-  }
-
-  governmentArchivesClose.blur();
+  closeOfficeOverlay(
+    governmentArchives,
+    governmentArchivesClose
+  );
 }
+
 
 governmentArchivesClose.addEventListener(
   'click',
   closeGovernmentArchives
 );
 
-// Close the Archives when Escape is pressed.
-document.addEventListener('keydown', event => {
 
-  if (
-    event.key === 'Escape' &&
-    !governmentArchives.hidden
-  ) {
-    closeGovernmentArchives();
-  }
-
-});
 
 
 
@@ -2597,38 +2686,29 @@ function showAdvisorEvent() {
   advisorContinue.hidden = !state.selectedResponseId;
 }
 
-// Show the advisor dialogue.
 function openAdvisorDialogue() {
+
+  if (getActiveOfficeOverlay()) {
+    return;
+  }
 
   showAdvisorEvent();
 
-
-  // Make the HTML dialogue visible.
-  officeDialogue.hidden = false;
-
-  // Pause the Phaser scene.
-  // The player cannot walk while talking.
-  if (officeGame?.scene.isActive('OfficeScene')) {
-    officeGame.scene.pause('OfficeScene');
-  }
-
-  // Move keyboard focus into the dialogue.
-  officeDialogueClose.focus();
+  openOfficeOverlay(
+    officeDialogue,
+    officeDialogueClose
+  );
 }
 
-// Close the advisor dialogue.
+
 function closeAdvisorDialogue() {
 
-  // Hide the HTML dialogue.
-  officeDialogue.hidden = true;
-
-  // Resume Phaser movement.
-  if (officeGame?.scene.isPaused('OfficeScene')) {
-    officeGame.scene.resume('OfficeScene');
-  }
-
-  officeDialogueClose.blur();
+  closeOfficeOverlay(
+    officeDialogue,
+    officeDialogueClose
+  );
 }
+
 
 // Close dialogue when clicking the button.
 officeDialogueClose.addEventListener(
@@ -2641,16 +2721,49 @@ policyDossierClose.addEventListener(
   closePolicyDossier
 );
 
+
+// ==========================================
+// PHASE 5C.2 - CENTRAL ESCAPE HANDLER
+// ==========================================
+
 document.addEventListener('keydown', event => {
 
   if (
-    event.key === 'Escape' &&
-    !policyDossier.hidden
+    event.key !== 'Escape' ||
+    officeScreen.hidden
   ) {
-    closePolicyDossier();
+    return;
   }
 
+  const activeOverlay =
+    getActiveOfficeOverlay();
+
+  // No office overlay is currently open.
+  if (!activeOverlay) {
+    return;
+  }
+
+  event.preventDefault();
+
+  // Close only the currently active overlay.
+  if (activeOverlay === policyDossier) {
+
+    closePolicyDossier();
+
+  } else if (activeOverlay === cabinetReport) {
+
+    closeCabinetReport();
+
+  } else if (activeOverlay === governmentArchives) {
+
+    closeGovernmentArchives();
+
+  } else if (activeOverlay === officeDialogue) {
+
+    closeAdvisorDialogue();
+  }
 });
+
 
 // ==========================================
 // CONTINUE TO POLICIES BUTTON
@@ -2695,27 +2808,6 @@ advisorContinue.addEventListener('click', () => {
 // ESCAPE KEY HANDLER
 // ==========================================
 
-document.addEventListener('keydown', event => {
-
-  if (
-    event.key === 'Escape' &&
-    !officeDialogue.hidden
-  ) {
-    closeAdvisorDialogue();
-  }
-});
-
-// Also support Escape.
-document.addEventListener('keydown', event => {
-
-  if (
-    event.key === 'Escape' &&
-    !officeDialogue.hidden
-  ) {
-    closeAdvisorDialogue();
-  }
-});
-
 
 // Office button handlers.
 enterOfficeButton.addEventListener(
@@ -2735,26 +2827,36 @@ window.addEventListener(
 
     const action = event.detail.action;
 
-    
-// ======================================
-// CHECK INTERACTION AVAILABILITY
-// ======================================
+    // Ignore new interactions while an office
+    // dialogue or document is already open.
+    if (getActiveOfficeOverlay()) {
+      return;
+    }
 
-const status =
-    window.getOfficeInteractionStatus(action);
 
-if (!status.allowed) {
+    // ======================================
+    // CHECK INTERACTION AVAILABILITY
+    // ======================================
 
-    officeMessage.textContent = status.reason;
 
-    console.info(
-        'Office interaction unavailable:',
-        action,
-        status.reason
-    );
+    // ==========================================
+    // PHASE 5C.3B - LOCKED INTERACTION FEEDBACK
+    // ==========================================
 
-    return;
-}
+    const status =
+      window.getOfficeInteractionStatus(action);
+
+    if (!status.allowed) {
+
+      // Explain why the interaction is unavailable.
+      officeMessage.textContent = status.reason;
+
+      // Also announce the reason for accessibility.
+      announcer.textContent = status.reason;
+
+      return;
+    }
+
 
 
     switch (action) {

@@ -332,24 +332,45 @@ export class OfficeScene extends Phaser.Scene {
         });
 
 
-        this.input.keyboard.on('keydown-E', () => {
 
+        // ==========================================
+        // PHASE 5C.3A - SAFE E-KEY INTERACTION
+        // ==========================================
+
+        this.input.keyboard.on('keydown-E', (event) => {
+
+            // Ignore automatic key-repeat events when E is held.
+            if (event.repeat) {
+                return;
+            }
+
+            // Interactions only work while this scene is active.
+            if (!this.sys.isActive()) {
+                return;
+            }
+
+            // No nearby object to interact with.
             if (!this.nearby) {
                 return;
             }
 
-            const status =
-                window.getOfficeInteractionStatus?.(
-                    this.nearby.action
-                );
+            // Don't interact while typing or using HTML controls.
+            const focusedTag = document.activeElement?.tagName;
 
-            // Don't send unavailable interactions.
-            if (status?.allowed === false) {
+            if (
+                ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON']
+                    .includes(focusedTag)
+            ) {
                 return;
             }
 
+            // Send the interaction to main.js.
+            // The main interaction listener decides
+            // whether the action is allowed.
             this.openInteraction(this.nearby);
+
         });
+
 
     }
 
