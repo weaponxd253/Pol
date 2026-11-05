@@ -151,6 +151,24 @@ const objectiveDescription =
 
 const objectiveLocation =
   document.getElementById('objective-location');
+  
+// Objective notification elements.
+
+const objectiveNotice =
+    document.getElementById('objective-notice');
+
+const objectiveNoticeTitle =
+    document.getElementById('objective-notice-title');
+
+const objectiveNoticeLocation =
+    document.getElementById('objective-notice-location');
+
+// Track the last objective displayed.
+let lastObjectiveKey = null;
+
+// Timer used to hide the notification.
+let objectiveNoticeTimer = null;
+
 
 
 
@@ -159,6 +177,97 @@ let storageStatus = loadGame();
 let savedGame = storageStatus.state;
 let state = null;
 let replacement = null;
+
+
+ // ==========================================
+ // PHASE 5B.2 - CONTEXTUAL OFFICE GUIDANCE
+ // ==========================================
+
+window.getOfficeContextHint = function (action) {
+
+    if (!state) {
+        return 'Start or resume a presidency first.';
+    }
+
+    switch (action) {
+
+        case 'advisors':
+            if (state.phase === 'event') {
+                return state.selectedResponseId
+                    ? 'Response selected. Complete your briefing.'
+                    : 'A national event requires your response.';
+            }
+
+            return state.phase === 'policy'
+                ? 'Briefing complete. Visit the Policy Desk.'
+                : 'No new briefing available.';
+
+        case 'national-policies':
+            if (state.phase === 'event') {
+                return 'Finish your Chief of Staff briefing first.';
+            }
+
+            if (state.phase === 'policy') {
+                return state.selectedPolicyId
+                    ? 'Review the forecast and approve your policy.'
+                    : 'Choose a policy to review its impact.';
+            }
+
+            return 'No new policy decisions available.';
+
+        case 'cabinet-briefing':
+            if (state.phase === 'report') {
+                return 'Review results or advance to the next turn.';
+            }
+
+            return 'Complete your government decisions first.';
+
+        case 'archives': {
+            const count = state.history?.length || 0;
+
+            return count > 0
+                ? `${count} completed presidential records.`
+                : 'No records yet. Complete your first turn.';
+        }
+
+        case 'exit-office':
+            return 'Return to the government dashboard.';
+
+        default:
+            return 'Press E to interact.';
+    }
+};
+
+// ==========================================
+// PHASE 5B.3 - OBJECTIVE DESTINATION
+// ==========================================
+
+window.getOfficeObjectiveAction = function () {
+
+    if (!state) {
+        return null;
+    }
+
+    switch (state.phase) {
+
+        case 'event':
+            return 'advisors';
+
+        case 'policy':
+            return 'national-policies';
+
+        case 'report':
+            return 'cabinet-briefing';
+
+        case 'result':
+            return null;
+
+        default:
+            return null;
+    }
+};
+
+
 
 const escape = value =>
   String(value).replace(
@@ -488,6 +597,35 @@ function updateExpandedPresidentialHUD() {
   }
 }
 
+// ==========================================
+// DISPLAY OBJECTIVE UPDATE NOTIFICATION
+// ==========================================
+
+function showObjectiveNotification(title, location) {
+
+    // Fill the notification with the new objective.
+    objectiveNoticeTitle.textContent = title;
+
+    objectiveNoticeLocation.textContent =
+        'Destination: ' + location;
+
+    // Cancel an older hide timer, if one exists.
+    if (objectiveNoticeTimer !== null) {
+        clearTimeout(objectiveNoticeTimer);
+    }
+
+    // Show the notification.
+    objectiveNotice.hidden = false;
+
+    // Automatically hide it after four seconds.
+    objectiveNoticeTimer = setTimeout(() => {
+
+        objectiveNotice.hidden = true;
+        objectiveNoticeTimer = null;
+
+    }, 4000);
+}
+
 
 // ==========================================
 // PHASE 5B - UPDATE PRESIDENTIAL OBJECTIVE
@@ -495,11 +633,17 @@ function updateExpandedPresidentialHUD() {
 
 function updatePresidentialObjective() {
 
-  // No active presidency.
-  if (!state) {
+ if (!state) {
+
     presidentialObjective.hidden = true;
+
+    // Reset objective tracking.
+    lastObjectiveKey = null;
+
+    objectiveNotice.hidden = true;
+
     return;
-  }
+}
 
   let title = '';
   let description = '';
@@ -619,6 +763,34 @@ function updatePresidentialObjective() {
   objectiveLocation.textContent = location;
 
   presidentialObjective.hidden = false;
+  
+// ======================================
+// DETECT OBJECTIVE CHANGES
+// ======================================
+
+// Include the turn number so that receiving a new
+// briefing next turn counts as a new objective.
+const objectiveKey =
+    `${state.turn}:${title}:${location}`;
+
+// Check whether the player is currently in the office.
+const officeVisible =
+    document.getElementById('office-screen')?.hidden === false;
+
+// Only notify when an existing objective changes.
+// Don't display a notification on the initial render.
+if (
+    lastObjectiveKey !== null &&
+    lastObjectiveKey !== objectiveKey &&
+    officeVisible &&
+    state.phase !== 'result'
+) {
+    showObjectiveNotification(title, location);
+}
+
+// Save the current objective for future comparisons.
+lastObjectiveKey = objectiveKey;
+
 }
 
 

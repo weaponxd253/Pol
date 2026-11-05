@@ -210,18 +210,44 @@ export class OfficeScene extends Phaser.Scene {
             712,
             '',
             {
-                fontFamily: 'Arial, sans-serif',
-                fontSize: '17px',
+                fontSize: '14px',
                 color: '#fff8e9',
                 backgroundColor: '#162c24',
+                align: 'center',
                 padding: {
-                    x: 12,
-                    y: 8
+                    x: 16,
+                    y: 10
+                },
+                wordWrap: {
+                    width: 600,
+                    useAdvancedWrap: true
                 }
             }
         )
             .setOrigin(0.5, 1)
             .setDepth(30);
+
+
+        // ==========================================
+        // PHASE 5B.3 - OBJECTIVE MARKER
+        // ==========================================
+
+        this.objectiveMarker = this.add.text(
+            0,
+            0,
+            '◆',
+            {
+                fontFamily: 'Arial, sans-serif',
+                fontSize: '25px',
+                color: '#f0cd79',
+                stroke: '#173f36',
+                strokeThickness: 4
+            }
+        )
+            .setOrigin(0.5)
+            .setDepth(28)
+            .setVisible(false);
+
 
 
         const b = ROOM_BOUNDS;
@@ -496,14 +522,59 @@ export class OfficeScene extends Phaser.Scene {
 
         this.nearby = candidates[0] ?? null;
 
-        // Update the interaction prompt.
+
+        // ==========================================
+        // PHASE 5B.2 - CONTEXTUAL E PROMPTS
+        // ==========================================
+
+        let prompt = '';
+
         if (this.nearby) {
-            this.hint.setText(
-                `E  ·  ${this.nearby.name}`
-            );
-        } else {
-            this.hint.setText('');
+
+            const guidance =
+                window.getOfficeContextHint?.(
+                    this.nearby.action
+                ) || '';
+
+            prompt =
+                `E  ·  ${this.nearby.name}\n${guidance}`;
         }
+
+        if (this.hint.text !== prompt) {
+            this.hint.setText(prompt);
+        }
+
+
+        // ==========================================
+        // PHASE 5B.3 - DESTINATION MARKER
+        // ==========================================
+
+        const objectiveAction =
+            window.getOfficeObjectiveAction?.();
+
+        const objectiveTarget = INTERACTIONS.find(
+            interaction =>
+                interaction.action === objectiveAction
+        );
+
+        if (objectiveTarget) {
+
+            const floatOffset =
+                Math.sin(_time / 300) * 4;
+
+            this.objectiveMarker.setPosition(
+                objectiveTarget.x,
+                objectiveTarget.y - 35 + floatOffset
+            );
+
+            this.objectiveMarker.setVisible(true);
+
+        } else {
+
+            this.objectiveMarker.setVisible(false);
+
+        }
+
     }
 
     openInteraction(interaction) {
