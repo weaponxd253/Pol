@@ -65,195 +65,169 @@
         </button>
       </div>
 
-
-
-
       <div id="office-game">
-        
-<!-- ======================================
+
+        <!-- ======================================
      PRESIDENTIAL STATUS HUD
      ====================================== -->
 
-<div id="presidential-hud" class="presidential-hud" aria-label="Presidential status" hidden>
-    <div class="hud-header">
-        <strong>PRESIDENTIAL STATUS</strong>
-        <span id="hud-phase">BRIEFING</span>
-    </div>
+        <div id="presidential-hud" class="presidential-hud" aria-label="Presidential status" hidden>
+          <div class="hud-header">
+            <strong>PRESIDENTIAL STATUS</strong>
+            <span id="hud-phase">BRIEFING</span>
+          </div>
 
-    <div class="hud-turn">
-        <span id="hud-turn">Turn 1 of 12</span>
-    </div>
+          <div class="hud-turn">
+            <span id="hud-turn">Turn 1 of 12</span>
+          </div>
 
-    <div class="hud-meter">
-        <div class="hud-meter-label">
-            <span>Approval</span>
-            <strong id="hud-approval">60</strong>
-        </div>
+          <div class="hud-meter">
+            <div class="hud-meter-label">
+              <span>Approval</span>
+              <strong id="hud-approval">60</strong>
+            </div>
 
-        <div
-            id="hud-approval-bar"
-            class="hud-meter-bar"
-            role="progressbar"
-            aria-label="Approval"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            aria-valuenow="60"
-        >
-            <div class="hud-meter-fill"></div>
-        </div>
-    </div>
+            <div id="hud-approval-bar" class="hud-meter-bar" role="progressbar" aria-label="Approval" aria-valuemin="0"
+              aria-valuemax="100" aria-valuenow="60">
+              <div class="hud-meter-fill"></div>
+            </div>
+          </div>
 
-    <div id="hud-treasury-meter" class="hud-meter">
-        <div class="hud-meter-label">
-            <span>Treasury</span>
-            <strong id="hud-treasury">60</strong>
-        </div>
+          <div id="hud-treasury-meter" class="hud-meter">
+            <div class="hud-meter-label">
+              <span>Treasury</span>
+              <strong id="hud-treasury">60</strong>
+            </div>
 
-        <div
-            id="hud-treasury-bar"
-            class="hud-meter-bar"
-            role="progressbar"
-            aria-label="Treasury"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            aria-valuenow="60"
-        >
-            <div class="hud-meter-fill"></div>
-        </div>
-    </div>
-    
-<!-- ======================================
+            <div id="hud-treasury-bar" class="hud-meter-bar" role="progressbar" aria-label="Treasury" aria-valuemin="0"
+              aria-valuemax="100" aria-valuenow="60">
+              <div class="hud-meter-fill"></div>
+            </div>
+          </div>
+
+          <!-- ======================================
      EXPAND GOVERNMENT STATUS BUTTON
      ====================================== -->
 
-<button
-    id="hud-expand-button"
-    class="hud-expand-button"
-    type="button"
-    aria-expanded="false"
-    aria-controls="hud-expanded"
->
-    View Government Status
-</button>
+          <button id="hud-expand-button" class="hud-expand-button" type="button" aria-expanded="false"
+            aria-controls="hud-expanded">
+            View Government Status
+          </button>
 
 
-<!-- ======================================
+          <!-- ======================================
      EXPANDED GOVERNMENT STATUS
      ====================================== -->
 
-<section
-    id="hud-expanded"
-    class="hud-expanded"
-    aria-label="Expanded government status"
-    hidden
->
-    <h4>National Indicators</h4>
+          <section id="hud-expanded" class="hud-expanded" aria-label="Expanded government status" hidden>
+            <h4>National Indicators</h4>
 
-    <!-- Additional government statistics -->
-    <div id="hud-extra-meters"></div>
+            <!-- Additional government statistics -->
+            <div id="hud-extra-meters"></div>
 
-    <!-- National debt -->
-    <div class="hud-expanded-finance">
-        <span>National Debt</span>
+            <!-- National debt -->
+            <div class="hud-expanded-finance">
+              <span>National Debt</span>
 
-        <strong id="hud-debt">0</strong>
-    </div>
+              <strong id="hud-debt">0</strong>
+            </div>
 
-    <h4>Upcoming Commitments</h4>
+            <h4>Upcoming Commitments</h4>
 
-    <!-- Future policy consequences -->
-    <div id="hud-upcoming-commitments">
-        <p>No upcoming commitments.</p>
-    </div>
+            <!-- Future policy consequences -->
+            <div id="hud-upcoming-commitments">
+              <p>No upcoming commitments.</p>
+            </div>
 
-</section>
+          </section>
 
-</div>
+        </div>
 
 
-<!-- ======================================
+        <!-- ======================================
      PHASE 5B - PRESIDENTIAL OBJECTIVES
      ====================================== -->
 
-<div
-    id="presidential-objective"
-    class="presidential-objective"
-    role="region"
-    aria-label="Current presidential objective"
-    hidden
->
+        <div id="presidential-objective" class="presidential-objective" role="region"
+          aria-label="Current presidential objective" hidden>
 
-    <div class="objective-header">
-        <strong>CURRENT OBJECTIVE</strong>
-        <span aria-hidden="true">◆</span>
-    </div>
+          <div class="objective-header">
+            <strong>CURRENT OBJECTIVE</strong>
+            <span aria-hidden="true">◆</span>
+          </div>
 
-    <h3 id="objective-title">
-        Meet with Chief of Staff
-    </h3>
+          <h3 id="objective-title">
+            Meet with Chief of Staff
+          </h3>
 
-    <p id="objective-description">
-        Review the current government briefing.
-    </p>
+          <p id="objective-description">
+            Review the current government briefing.
+          </p>
 
-    <div class="objective-location">
-        <span>DESTINATION</span>
-        <strong id="objective-location">
-            Advisor Meeting Area
-        </strong>
-    </div>
+          <div class="objective-location">
+            <span>DESTINATION</span>
+            <strong id="objective-location">
+              Advisor Meeting Area
+            </strong>
+          </div>
 
-</div>
+        </div>
 
 
-<!-- ======================================
+        <!-- ======================================
      PHASE 5B.3 - OBJECTIVE NOTIFICATION
      ====================================== -->
 
-<div
-    id="objective-notice"
-    class="objective-notice"
-    role="status"
-    aria-live="polite"
-    aria-atomic="true"
-    hidden
->
-    <strong>OBJECTIVE UPDATED</strong>
+        <div id="objective-notice" class="objective-notice" role="status" aria-live="polite" aria-atomic="true" hidden>
+          <strong>OBJECTIVE UPDATED</strong>
 
-    <h4 id="objective-notice-title">
-        New Objective
-    </h4>
+          <h4 id="objective-notice-title">
+            New Objective
+          </h4>
 
-    <p id="objective-notice-location">
-        Executive Office
-    </p>
-</div>
+          <p id="objective-notice-location">
+            Executive Office
+          </p>
+        </div>
 
 
-<!-- ======================================
+        <!-- ======================================
      PHASE 5D - GOVERNMENT ALERTS
      ====================================== -->
 
-<div
-    id="government-alert"
-    class="government-alert"
-    role="status"
-    aria-live="polite"
-    aria-atomic="true"
-    hidden
->
-    <div class="government-alert-header">
-        <span aria-hidden="true">⚠</span>
+        <div id="government-alert" class="government-alert" role="status" aria-live="polite" aria-atomic="true" hidden>
+          <div class="government-alert-header">
+            <span aria-hidden="true">⚠</span>
 
-        <strong id="government-alert-title">
-            Government Warning
-        </strong>
-    </div>
+            <strong id="government-alert-title">
+              Government Warning
+            </strong>
+          </div>
 
-    <p id="government-alert-message">
-        A government condition requires attention.
-    </p>
-</div>
+          <p id="government-alert-message">
+            A government condition requires attention.
+          </p>
+        </div>
+
+        <!-- ======================================
+     PHASE 5D.2 - DECISION NOTIFICATIONS
+     ====================================== -->
+
+        <div id="decision-notice" class="decision-notice" role="status" aria-live="polite" aria-atomic="true" hidden>
+          <div class="decision-notice-header">
+            <span aria-hidden="true">◆</span>
+            <strong>POLICY ENACTED</strong>
+          </div>
+
+          <h4 id="decision-notice-title"></h4>
+
+          <div class="decision-notice-impact">
+            <span>TURN IMPACT</span>
+
+            <p id="decision-notice-changes"></p>
+          </div>
+        </div>
+
 
 
 
@@ -454,53 +428,54 @@
         </div>
 
 
-        
-      <!-- ======================================
+
+        <!-- ======================================
      GOVERNMENT ARCHIVES
      ====================================== -->
 
-      <div id="government-archives" class="government-archives-overlay" role="dialog" aria-modal="true"
-        aria-labelledby="government-archives-title" hidden>
-        <div class="government-archives-frame">
+        <div id="government-archives" class="government-archives-overlay" role="dialog" aria-modal="true"
+          aria-labelledby="government-archives-title" hidden>
+          <div class="government-archives-frame">
 
-          <!-- Archive heading -->
-          <header class="government-archives-header">
-            <p>REPUBLIC OF ARDEN</p>
+            <!-- Archive heading -->
+            <header class="government-archives-header">
+              <p>REPUBLIC OF ARDEN</p>
 
-            <h3 id="government-archives-title">
-              Government Archives
-            </h3>
+              <h3 id="government-archives-title">
+                Government Archives
+              </h3>
 
-            <p>Office of Presidential Records</p>
-          </header>
+              <p>Office of Presidential Records</p>
+            </header>
 
-          <!-- Archive main content -->
-          <div class="government-archives-body">
+            <!-- Archive main content -->
+            <div class="government-archives-body">
 
-            <!-- Left column: historical records -->
-            <nav id="archive-record-list" class="archive-record-list" aria-label="Presidential records">
-            </nav>
+              <!-- Left column: historical records -->
+              <nav id="archive-record-list" class="archive-record-list" aria-label="Presidential records">
+              </nav>
 
-            <!-- Right column: selected report -->
-            <section id="archive-record-detail" class="archive-record-detail" aria-label="Selected presidential record">
-              <p>Select a record to review its history.</p>
-            </section>
+              <!-- Right column: selected report -->
+              <section id="archive-record-detail" class="archive-record-detail"
+                aria-label="Selected presidential record">
+                <p>Select a record to review its history.</p>
+              </section>
+
+            </div>
+
+            <!-- Archive footer -->
+            <footer class="government-archives-footer">
+
+              <span>OFFICE OF THE EXECUTIVE</span>
+
+              <button id="government-archives-close" type="button">
+                Close Archives
+              </button>
+
+            </footer>
 
           </div>
-
-          <!-- Archive footer -->
-          <footer class="government-archives-footer">
-
-            <span>OFFICE OF THE EXECUTIVE</span>
-
-            <button id="government-archives-close" type="button">
-              Close Archives
-            </button>
-
-          </footer>
-
         </div>
-      </div>
 
 
       </div>

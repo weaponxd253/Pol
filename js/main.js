@@ -177,6 +177,22 @@ const governmentAlertTitle =
 const governmentAlertMessage =
   document.getElementById('government-alert-message');
 
+// ==========================================
+// PHASE 5D.2 - DECISION NOTIFICATION ELEMENTS
+// ==========================================
+
+const decisionNotice =
+  document.getElementById('decision-notice');
+
+const decisionNoticeTitle =
+  document.getElementById('decision-notice-title');
+
+const decisionNoticeChanges =
+  document.getElementById('decision-notice-changes');
+
+let decisionNoticeTimer = null;
+
+
 
 // Track the last objective displayed.
 let lastObjectiveKey = null;
@@ -889,6 +905,114 @@ function updatePresidentialObjective() {
 }
 
 // ==========================================
+// PHASE 5D.2 - PRESIDENTIAL DECISION NOTICE
+// ==========================================
+
+function showDecisionNotification(report) {
+
+  // A completed turn report is required.
+  if (!report) {
+    return;
+  }
+
+  // Cancel an earlier notification timer.
+  if (decisionNoticeTimer !== null) {
+    clearTimeout(decisionNoticeTimer);
+    decisionNoticeTimer = null;
+  }
+
+  // ======================================
+  // POLICY TITLE
+  // ======================================
+
+  decisionNoticeTitle.textContent =
+    report.policyTitle || 'Government Policy Approved';
+
+  // ======================================
+  // CALCULATE ACTUAL TURN CHANGES
+  // ======================================
+
+  const meterNames = {
+    approval: 'Approval',
+    treasury: 'Treasury',
+    donors: 'Donors',
+    economy: 'Economy',
+    international: 'International',
+    stability: 'Stability'
+  };
+
+  const changes = Object.entries(meterNames)
+    .map(([key, label]) => {
+
+      const before = report.startMeters[key];
+      const after = report.meters[key];
+
+      return {
+        label,
+        amount: after - before
+      };
+    })
+    .filter(change => change.amount !== 0)
+    .sort(
+      (a, b) =>
+        Math.abs(b.amount) - Math.abs(a.amount)
+    );
+
+  // Display the three largest changes.
+  const largestChanges = changes.slice(0, 3);
+
+  if (largestChanges.length === 0) {
+
+    decisionNoticeChanges.textContent =
+      'No change to national indicators this turn.';
+
+  } else {
+
+    decisionNoticeChanges.textContent =
+      largestChanges
+        .map(change => {
+
+          const sign =
+            change.amount > 0 ? '+' : '';
+
+          return (
+            change.label +
+            ' ' +
+            sign +
+            change.amount
+          );
+        })
+        .join(' · ');
+  }
+
+  // ======================================
+  // DISPLAY NOTIFICATION
+  // ======================================
+
+  decisionNotice.hidden = false;
+
+  // Automatically hide after five seconds.
+  decisionNoticeTimer = setTimeout(() => {
+
+    decisionNotice.hidden = true;
+    decisionNoticeTimer = null;
+
+  }, 5000);
+}
+
+// Hide and clean up a decision notification.
+function hideDecisionNotification() {
+
+  if (decisionNoticeTimer !== null) {
+    clearTimeout(decisionNoticeTimer);
+    decisionNoticeTimer = null;
+  }
+
+  decisionNotice.hidden = true;
+}
+
+
+// ==========================================
 // PHASE 5D.1 - GOVERNMENT WARNING SYSTEM
 // ==========================================
 
@@ -1590,6 +1714,8 @@ function enterOffice() {
 
 function returnToBriefing() {
 
+  hideDecisionNotification();
+
   // Hide the graphical office first.
   officeScreen.hidden = true;
 
@@ -2003,14 +2129,20 @@ policyApprovalConfirm.addEventListener('click', () => {
     // Officially enact the selected policy.
     state = resolveTurn(state);
 
+    // Capture the report for the turn just completed.
+    const completedReport = state.history.at(-1);
+
     // Save the updated presidency.
     persist();
 
     // Close the dossier and resume character movement.
     closePolicyDossier();
 
-    // Refresh the original government interface in the background.
+    // Refresh the government HUD and objective.
     render();
+
+    // Show the completed decision and actual impact.
+    showDecisionNotification(completedReport);
 
     // Direct the player to the Cabinet Briefing Table.
     officeMessage.textContent =
