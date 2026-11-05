@@ -179,6 +179,71 @@ let state = null;
 let replacement = null;
 
 
+// ==========================================
+// PHASE 5C.1 - INTERACTION AVAILABILITY
+// ==========================================
+
+window.getOfficeInteractionStatus = function (action) {
+
+    // Leaving the office should always be allowed.
+    if (action === 'exit-office') {
+        return {
+            allowed: true,
+            reason: ''
+        };
+    }
+
+    // Government activities require an active game.
+    if (!state) {
+        return {
+            allowed: false,
+            reason: 'Start or resume a presidency first.'
+        };
+    }
+
+    // Archives can be visited during any active phase.
+    if (action === 'archives') {
+        return {
+            allowed: true,
+            reason: ''
+        };
+    }
+
+    // Chief of Staff
+    if (action === 'advisors') {
+        return {
+            allowed: state.phase === 'event',
+            reason: 'No new briefing is available. Follow your current objective.'
+        };
+    }
+
+    // National Policy Desk
+    if (action === 'national-policies') {
+        return {
+            allowed: state.phase === 'policy',
+            reason: state.phase === 'event'
+                ? 'Finish your Chief of Staff briefing first.'
+                : 'No policy decision is available right now.'
+        };
+    }
+
+    // Cabinet Briefing Table
+    if (action === 'cabinet-briefing') {
+        return {
+            allowed: state.phase === 'report',
+            reason: 'Complete your current decisions before reviewing Cabinet results.'
+        };
+    }
+
+    // Unknown actions should not be accepted.
+    return {
+        allowed: false,
+        reason: 'This activity is not available.'
+    };
+};
+
+
+
  // ==========================================
  // PHASE 5B.2 - CONTEXTUAL OFFICE GUIDANCE
  // ==========================================
@@ -2669,6 +2734,28 @@ window.addEventListener(
   event => {
 
     const action = event.detail.action;
+
+    
+// ======================================
+// CHECK INTERACTION AVAILABILITY
+// ======================================
+
+const status =
+    window.getOfficeInteractionStatus(action);
+
+if (!status.allowed) {
+
+    officeMessage.textContent = status.reason;
+
+    console.info(
+        'Office interaction unavailable:',
+        action,
+        status.reason
+    );
+
+    return;
+}
+
 
     switch (action) {
 

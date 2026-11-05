@@ -332,12 +332,25 @@ export class OfficeScene extends Phaser.Scene {
         });
 
 
-        // E interacts with nearby objects.
         this.input.keyboard.on('keydown-E', () => {
-            if (this.nearby) {
-                this.openInteraction(this.nearby);
+
+            if (!this.nearby) {
+                return;
             }
+
+            const status =
+                window.getOfficeInteractionStatus?.(
+                    this.nearby.action
+                );
+
+            // Don't send unavailable interactions.
+            if (status?.allowed === false) {
+                return;
+            }
+
+            this.openInteraction(this.nearby);
         });
+
     }
 
 
@@ -523,26 +536,42 @@ export class OfficeScene extends Phaser.Scene {
         this.nearby = candidates[0] ?? null;
 
 
+
+
         // ==========================================
-        // PHASE 5B.2 - CONTEXTUAL E PROMPTS
+        // PHASE 5C.1 - AVAILABLE / LOCKED PROMPTS
         // ==========================================
 
         let prompt = '';
 
         if (this.nearby) {
 
-            const guidance =
-                window.getOfficeContextHint?.(
-                    this.nearby.action
-                ) || '';
+            const action = this.nearby.action;
 
-            prompt =
-                `E  ·  ${this.nearby.name}\n${guidance}`;
+            const status =
+                window.getOfficeInteractionStatus?.(action);
+
+            if (status && !status.allowed) {
+
+                prompt =
+                    `LOCKED  ·  ${this.nearby.name}\n` +
+                    status.reason;
+
+            } else {
+
+                const guidance =
+                    window.getOfficeContextHint?.(action) || '';
+
+                prompt =
+                    `E  ·  ${this.nearby.name}\n` +
+                    guidance;
+            }
         }
 
         if (this.hint.text !== prompt) {
             this.hint.setText(prompt);
         }
+
 
 
         // ==========================================
