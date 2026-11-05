@@ -163,11 +163,27 @@ const objectiveNoticeTitle =
 const objectiveNoticeLocation =
   document.getElementById('objective-notice-location');
 
+
+// ==========================================
+// PHASE 5D - GOVERNMENT ALERT ELEMENTS
+// ==========================================
+
+const governmentAlert =
+  document.getElementById('government-alert');
+
+const governmentAlertTitle =
+  document.getElementById('government-alert-title');
+
+const governmentAlertMessage =
+  document.getElementById('government-alert-message');
+
+
 // Track the last objective displayed.
 let lastObjectiveKey = null;
 
 // Timer used to hide the notification.
 let objectiveNoticeTimer = null;
+
 
 
 
@@ -776,17 +792,31 @@ function updatePresidentialObjective() {
   // REPORT PHASE
   // ======================================
 
+
   else if (state.phase === 'report') {
 
-    title = 'Review Cabinet Results';
+    if (state.outcome) {
 
-    description =
-      'Your policy has been enacted. ' +
-      'Visit the Cabinet Briefing Table to ' +
-      'review the results and advance your presidency.';
+      title = 'Review Final Cabinet Report';
+
+      description =
+        'Your administration has reached its conclusion. ' +
+        'Visit the Cabinet Briefing Table to review ' +
+        'the final consequences and your presidential outcome.';
+
+    } else {
+
+      title = 'Review Cabinet Results';
+
+      description =
+        'Your policy has been enacted. ' +
+        'Visit the Cabinet Briefing Table to review ' +
+        'the results and advance your presidency.';
+    }
 
     location = 'Cabinet Briefing Table';
   }
+
 
   // ======================================
   // FINAL RESULT
@@ -858,6 +888,121 @@ function updatePresidentialObjective() {
 
 }
 
+// ==========================================
+// PHASE 5D.1 - GOVERNMENT WARNING SYSTEM
+// ==========================================
+
+function updateGovernmentAlert() {
+
+  // Alerts only appear during an active
+  // presidency inside the executive office.
+  const officeVisible =
+    document.getElementById('office-screen')
+      ?.hidden === false;
+
+  if (!state || !officeVisible) {
+    governmentAlert.hidden = true;
+    return;
+  }
+
+  let title = '';
+  let message = '';
+  let severity = '';
+
+  // ======================================
+  // GOVERNMENT COLLAPSE
+  // ======================================
+
+  // The engine is the authority on whether
+  // the administration has actually collapsed.
+  if (state.outcome === 'collapsed') {
+
+    title = 'GOVERNMENT COLLAPSE';
+
+    message =
+      'The administration has collapsed. ' +
+      'Review the final Cabinet Report ' +
+      'and presidential outcome.';
+
+    severity = 'critical';
+
+  } else {
+
+    // ======================================
+    // NATIONAL STATISTIC WARNINGS
+    // ======================================
+
+    const meterNames = {
+      approval: 'Public Approval',
+      treasury: 'National Treasury',
+      donors: 'Donor Support',
+      economy: 'National Economy',
+      international: 'International Standing',
+      stability: 'Government Stability'
+    };
+
+    // Check for statistics at or below 20.
+    const warnings = Object.entries(
+      state.meters
+    )
+      .filter(([key, value]) =>
+        key in meterNames &&
+        Number.isFinite(value) &&
+        value <= 20
+      )
+      .sort((a, b) => a[1] - b[1]);
+
+    // Show the most severe warning.
+    if (warnings.length > 0) {
+
+      const [meter, value] = warnings[0];
+
+      severity = value <= 10
+        ? 'critical'
+        : 'warning';
+
+      title = severity === 'critical'
+        ? `${meterNames[meter]} Crisis`
+        : `${meterNames[meter]} Warning`;
+
+      message =
+        `${meterNames[meter]} has fallen to ` +
+        `${value}. Review your government ` +
+        'conditions and upcoming commitments.';
+    }
+  }
+
+  // ======================================
+  // NO ACTIVE WARNING
+  // ======================================
+
+  if (!title) {
+    governmentAlert.hidden = true;
+    return;
+  }
+
+  // ======================================
+  // UPDATE ALERT PANEL
+  // ======================================
+
+  // Avoid unnecessary live-region updates.
+  if (governmentAlertTitle.textContent !== title) {
+    governmentAlertTitle.textContent = title;
+  }
+
+  if (governmentAlertMessage.textContent !== message) {
+    governmentAlertMessage.textContent = message;
+  }
+
+  governmentAlert.classList.toggle(
+    'is-critical',
+    severity === 'critical'
+  );
+
+  governmentAlert.hidden = false;
+}
+
+
 
 
 // ==========================================
@@ -871,10 +1016,10 @@ function updatePresidentialHUD() {
     presidentialHud.hidden = true;
 
     updatePresidentialObjective();
+    updateGovernmentAlert();
 
     return;
   }
-
   presidentialHud.hidden = false;
 
   // ======================================
@@ -955,6 +1100,7 @@ function updatePresidentialHUD() {
 
   updatePresidentialObjective();
 
+  updateGovernmentAlert();
 
 }
 
@@ -1438,6 +1584,7 @@ function enterOffice() {
   }
 
   populatePolicyDossier();
+  updateGovernmentAlert();
 }
 
 

@@ -3462,3 +3462,85 @@ h2:focus {
 #office-game canvas:focus {
     outline: none;
 }
+
+
+/* ======================================
+   PHASE 5D.1 - GOVERNMENT ALERTS
+   ====================================== */
+
+.government-alert {
+    position: absolute;
+
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    z-index: 45;
+
+    box-sizing: border-box;
+    width: 300px;
+    max-width: calc(100% - 24px);
+
+    padding: 12px 14px;
+
+    background: rgba(48, 43, 30, 0.97);
+    border: 2px solid #cfaa65;
+    border-radius: 5px;
+
+    color: #f4e9c9;
+
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+
+    /* Never interfere with game interactions. */
+    pointer-events: none;
+}
+
+.government-alert[hidden] {
+    display: none !important;
+}
+
+.government-alert-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 7px;
+}
+
+.government-alert-header strong {
+    color: #e8c684;
+
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.6px;
+}
+
+.government-alert-header span {
+    font-size: 16px;
+    color: #e8c684;
+}
+
+#government-alert-message {
+    margin: 0;
+
+    font-size: 11px;
+    line-height: 1.5;
+    color: #f0e4ce;
+}
+
+/* Severe government crisis */
+
+.government-alert.is-critical {
+    background: rgba(69, 29, 29, 0.97);
+    border-color: #d17865;
+}
+
+.government-alert.is-critical
+.government-alert-header strong {
+    color: #f3b3a3;
+}
+
+.government-alert.is-critical
+.government-alert-header span {
+    color: #f3b3a3;
+}
