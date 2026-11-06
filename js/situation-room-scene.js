@@ -6,6 +6,7 @@ import {
     bindRoomActions, createRoomCollisionDebug, createRoomPlayer, drawRoomFeet,
     moveRoomPlayer, placeRoomPlayer, sendRoomAction, updateRoomHud, updateRoomPrompt
 } from './room-controls.js';
+import { createRoomNpcs, loadRoomNpcs } from './room-npcs.js';
 
 const WIDTH = 960;
 const HEIGHT = 720;
@@ -17,12 +18,14 @@ export class SituationRoomScene extends window.Phaser.Scene {
 
     preload() {
         this.load.image('situation-room', './assets/situation_room.png');
+        loadRoomNpcs(this);
     }
 
     create() {
         this.add.image(WIDTH / 2, HEIGHT / 2, 'situation-room').setDisplaySize(WIDTH, HEIGHT);
         const { x, y } = SITUATION_ENTRANCE;
         createRoomPlayer(this, x, y, 'down');
+        this.npcs = createRoomNpcs(this);
 
         this.hint = this.add.text(WIDTH / 2, HEIGHT - 8, '', {
             fontFamily: 'Arial, sans-serif',
@@ -40,9 +43,10 @@ export class SituationRoomScene extends window.Phaser.Scene {
         }
 
         createRoomCollisionDebug(this, SITUATION_ROOM_FLOOR, SITUATION_BLOCKS, SITUATION_INTERACTIONS);
+        this.npcs.drawDebug(this.debugGraphics);
         this.updateStationPrompt();
         bindRoomActions(this,
-            () => sendRoomAction(getSituationInteraction(this.player.x, this.player.y)),
+            () => sendRoomAction(this.getInteraction()),
             () => {
                 placeRoomPlayer(this, x, y, 'down');
                 this.updateStationPrompt();
@@ -51,18 +55,23 @@ export class SituationRoomScene extends window.Phaser.Scene {
     }
 
     blocked(x, y) {
-        return !canWalkSituationRoom(x, y);
+        return !canWalkSituationRoom(x, y) || this.npcs.blocks(x, y);
+    }
+
+    getInteraction() {
+        const { x, y } = this.player;
+        return getSituationInteraction(x, y) ?? this.npcs.nearby(x, y);
     }
 
     updateStationPrompt() {
-        const { x, y } = this.player;
-        const guidance = y > 665 ? 'Return to the Government Corridor through the north opening.'
+        const guidance = this.player.y > 665 ? 'Return to the Government Corridor through the north opening.'
             : 'Approach a marked station or the north opening.';
-        updateRoomPrompt(this.hint, getSituationInteraction(x, y), guidance);
+        updateRoomPrompt(this.hint, this.getInteraction(), guidance);
     }
 
     update(_time, delta) {
         moveRoomPlayer(this, delta);
+        this.npcs.updateDepth(this.player);
         drawRoomFeet(this);
         this.updateStationPrompt();
         updateRoomHud(this.player);

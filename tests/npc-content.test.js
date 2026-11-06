@@ -2,16 +2,27 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { advanceTurn, beginPolicyPhase, createInitialState, resolveTurn, selectPolicy, selectResponse } from '../js/engine.js';
 import { canWalkCabinetRoom, getCabinetRoomExit } from '../js/cabinet-room-layout.js';
+import { canWalkCorridor, getCorridorDoor } from '../js/corridor-layout.js';
+import { canWalkPressRoom, getPressRoomExit } from '../js/press-room-layout.js';
+import { canWalkSituationRoom, getSituationInteraction } from '../js/situation-room-layout.js';
 import { getRoomNpcs } from '../js/npc-content.js';
 
 const [finance] = getRoomNpcs('CabinetRoomScene');
 
-test('staff belong to their assigned rooms and the Finance Secretary stands on accessible floor', () => {
-    assert.equal(getRoomNpcs('GovernmentCorridorScene')[0].name, 'Chief of Staff');
+test('staff stand on accessible floor in their assigned rooms, clear of doors and stations', () => {
+    assert.deepEqual(getRoomNpcs('GovernmentCorridorScene').map(npc => npc.name), ['Chief of Staff', 'Government Aide']);
     assert.deepEqual(getRoomNpcs('OfficeScene'), []);
-    assert.equal(finance.name, 'Finance Secretary');
-    assert.equal(canWalkCabinetRoom(finance.x, finance.y), true);
-    assert.equal(getCabinetRoomExit(finance.x, finance.y), null);
+    const placements = [
+        ['CabinetRoomScene', 'Finance Secretary', canWalkCabinetRoom, getCabinetRoomExit],
+        ['SituationRoomScene', 'Defense Secretary', canWalkSituationRoom, getSituationInteraction],
+        ['PressBriefingRoomScene', 'Press Secretary', canWalkPressRoom, getPressRoomExit],
+        ['GovernmentCorridorScene', 'Government Aide', canWalkCorridor, getCorridorDoor]
+    ];
+    for (const [room, name, canWalk, getInteraction] of placements) {
+        const { x, y } = getRoomNpcs(room).find(npc => npc.name === name);
+        assert.equal(canWalk(x, y), true, name);
+        assert.equal(getInteraction(x, y), null, name);
+    }
     assert.match(finance.briefing(null).message, /start or resume/i);
 });
 
