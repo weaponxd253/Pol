@@ -625,6 +625,40 @@ export class OfficeScene extends Phaser.Scene {
 
         }
 
+        // ==========================================
+        // HUD VISIBILITY NEAR THE PLAYER
+        // ==========================================
+
+        const hud = document.getElementById(
+            'presidential-hud'
+        );
+
+        const objective = document.getElementById(
+            'presidential-objective'
+        );
+
+        const playerX = this.player.x;
+        const playerY = this.player.y;
+
+        // Left-side Presidential HUD.
+        // Use a larger area when expanded.
+        const expanded = !document.getElementById(
+            'hud-expanded'
+        )?.hidden;
+
+        const hudBottom = expanded ? 680 : 360;
+
+        hud?.classList.toggle(
+            'player-near',
+            playerX < 300 && playerY < hudBottom
+        );
+
+        // Right-side Objective panel.
+        objective?.classList.toggle(
+            'player-near',
+            playerX > 670 && playerY < 285
+        );
+
     }
 
     openInteraction(interaction) {

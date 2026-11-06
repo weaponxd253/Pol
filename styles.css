@@ -3638,3 +3638,78 @@ h2:focus {
         animation: none;
     }
 }
+
+/* ======================================
+   PHASE 5D.3 - UPCOMING COMMITMENTS
+   ====================================== */
+
+.hud-commitment-alert {
+    margin-top: 12px;
+    padding: 10px;
+
+    background: rgba(95, 76, 40, 0.96);
+    border: 1px solid #c7a66b;
+    border-radius: 4px;
+
+    color: #f4e8cb;
+    line-height: 1.5;
+}
+
+.hud-commitment-alert[hidden] {
+    display: none !important;
+}
+
+#hud-commitment-alert-title {
+    display: block;
+    margin-bottom: 6px;
+
+    color: #f0d494;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 0.3px;
+}
+
+#hud-commitment-alert-message {
+    margin: 0;
+
+    color: #f4e8cb;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+/* Low Treasury buffer */
+.hud-commitment-alert.is-urgent {
+    background: rgba(101, 60, 35, 0.97);
+    border-color: #d49a63;
+}
+
+/* Scheduled payments exceed current Treasury */
+.hud-commitment-alert.is-critical {
+    background: rgba(92, 38, 35, 0.97);
+    border-color: #d47765;
+}
+
+.hud-commitment-alert.is-critical
+#hud-commitment-alert-title {
+    color: #ffb3a3;
+}
+
+/* Highlight payments due next turn
+   in the expanded Government Status panel. */
+
+.hud-commitment-due {
+    border-color: #d4a466;
+    background: rgba(96, 65, 37, 0.95);
+}
+
+/* Fade interface when the player is behind it */
+
+.presidential-hud,
+.presidential-objective {
+    transition: opacity 0.2s ease;
+}
+
+.presidential-hud.player-near,
+.presidential-objective.player-near {
+    opacity: 0.15;
+}

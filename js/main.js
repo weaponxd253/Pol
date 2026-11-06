@@ -135,6 +135,20 @@ const hudTreasuryBar =
 const hudTreasuryMeter =
   document.getElementById('hud-treasury-meter');
 
+// ==========================================
+// PHASE 5D.3 - COMMITMENT ALERT ELEMENTS
+// ==========================================
+
+const hudCommitmentAlert =
+  document.getElementById('hud-commitment-alert');
+
+const hudCommitmentAlertTitle =
+  document.getElementById('hud-commitment-alert-title');
+
+const hudCommitmentAlertMessage =
+  document.getElementById('hud-commitment-alert-message');
+
+
 
 // ==========================================
 // PRESIDENTIAL OBJECTIVE ELEMENTS
@@ -642,8 +656,21 @@ function updateExpandedPresidentialHUD() {
 
   hudUpcomingCommitments.replaceChildren();
 
+
+  const turnUnresolved =
+    state.phase === 'event' ||
+    state.phase === 'policy';
+
   const upcoming = [...(state.scheduledEffects || [])]
-    .filter(effect => effect.dueTurn > state.turn)
+    .filter(effect => {
+
+      const dueTurn = Number(effect.dueTurn);
+
+      return (
+        dueTurn > state.turn ||
+        (turnUnresolved && dueTurn === state.turn)
+      );
+    })
     .sort((a, b) => a.dueTurn - b.dueTurn);
 
   if (upcoming.length === 0) {
@@ -677,6 +704,19 @@ function updateExpandedPresidentialHUD() {
     item.textContent =
       `Turn ${effect.dueTurn}: ` +
       `${effect.source} (${meterName} ${amount})`;
+
+    // Highlight Treasury payments due next turn.
+    if (
+      Number(effect.dueTurn) === state.turn + 1 &&
+      effect.meter === 'treasury' &&
+      Number(effect.amount) < 0
+    ) {
+      item.classList.add('hud-commitment-due');
+
+      item.textContent =
+        'DUE NEXT TURN · ' + item.textContent;
+    }
+
 
     hudUpcomingCommitments.appendChild(item);
   }
@@ -1126,8 +1166,168 @@ function updateGovernmentAlert() {
   governmentAlert.hidden = false;
 }
 
+// ==========================================
+// PHASE 5D.3 - UPCOMING TREASURY WARNINGS
+// ==========================================
+
+function updateUpcomingCommitmentAlert() {
+
+  // Check whether the executive office is visible.
+  const officeVisible =
+    document.getElementById('office-screen')
+      ?.hidden === false;
+
+  // Do not display the alert outside an active
+  // presidency or after the presidency has ended.
+  if (
+    !state ||
+    !officeVisible ||
+    state.outcome
+  ) {
+    hudCommitmentAlert.hidden = true;
+    return;
+  }
+
+  // ======================================
+  // FIND TREASURY PAYMENTS DUE NEXT TURN
+  // ======================================
 
 
+  const nextTurn = state.turn + 1;
+
+  const turnUnresolved =
+    state.phase === 'event' ||
+    state.phase === 'policy';
+
+  const treasuryPayments = (state.scheduledEffects || [])
+    .filter(effect =>
+      effect.meter === 'treasury' &&
+      Number(effect.amount) < 0
+    );
+
+  const dueThisTurn = turnUnresolved
+    ? treasuryPayments.filter(
+      effect => Number(effect.dueTurn) === state.turn
+    )
+    : [];
+
+  const dueNextTurn = treasuryPayments.filter(
+    effect => Number(effect.dueTurn) === nextTurn
+  );
+
+  // Prioritize current payments over future payments.
+  const duePayments = dueThisTurn.length > 0
+    ? dueThisTurn
+    : dueNextTurn;
+
+  const paymentTurn = dueThisTurn.length > 0
+    ? state.turn
+    : nextTurn;
+
+    if (duePayments.length === 0) {
+    hudCommitmentAlert.hidden = true;
+    return;
+}
+
+
+  // ======================================
+  // CALCULATE TOTAL UPCOMING PAYMENTS
+  // ======================================
+
+  const totalDue = duePayments.reduce(
+    (total, effect) =>
+      total + Math.abs(Number(effect.amount)),
+    0
+  );
+
+  if (totalDue <= 0) {
+    hudCommitmentAlert.hidden = true;
+    return;
+}
+
+  const currentTreasury =
+    Number(state.meters.treasury);
+
+  // Compare current Treasury against these
+  // commitments alone, not the full turn budget.
+  const remainingBuffer =
+    currentTreasury - totalDue;
+
+  const paymentCount = duePayments.length;
+
+  const paymentLabel =
+    paymentCount === 1
+      ? 'commitment'
+      : 'commitments';
+
+  // ======================================
+  // CLASSIFY THE WARNING
+  // ======================================
+
+
+  let title = dueThisTurn.length > 0
+    ? 'TREASURY PAYMENT DUE THIS TURN'
+    : 'UPCOMING TREASURY PAYMENT';
+
+  let message =
+    `Turn ${paymentTurn}: ${totalDue} Treasury ` +
+    `due from ${paymentCount} ${paymentLabel}.`;
+
+
+  let severity = 'normal';
+
+  if (remainingBuffer <= 0) {
+
+    message +=
+      ' Current Treasury would not cover ' +
+      'these payments alone. ' +
+      (dueThisTurn.length > 0 ? 'This' : 'Next') +
+      ' turn\'s income and other costs will also matter.';
+
+
+  } else if (remainingBuffer <= 10) {
+
+    severity = 'urgent';
+
+    title = 'TREASURY BUFFER WARNING';
+
+    message +=
+      ` Current Treasury minus these payments ` +
+      `would leave ${remainingBuffer}, before ` +
+      'other turn effects.';
+
+  } else {
+
+    message +=
+      ' Review upcoming commitments before ' +
+      'making additional spending decisions.';
+  }
+
+  // ======================================
+  // DISPLAY THE ALERT
+  // ======================================
+
+  // Update text only when it changes.
+  if (hudCommitmentAlertTitle.textContent !== title) {
+    hudCommitmentAlertTitle.textContent = title;
+  }
+
+  if (hudCommitmentAlertMessage.textContent !== message) {
+    hudCommitmentAlertMessage.textContent = message;
+  }
+
+  hudCommitmentAlert.classList.toggle(
+    'is-urgent',
+    severity === 'urgent'
+  );
+
+  hudCommitmentAlert.classList.toggle(
+    'is-critical',
+    severity === 'critical'
+  );
+
+  hudCommitmentAlert.hidden = false;
+}
 
 // ==========================================
 // UPDATE PRESIDENTIAL STATUS HUD
@@ -1141,6 +1341,7 @@ function updatePresidentialHUD() {
 
     updatePresidentialObjective();
     updateGovernmentAlert();
+    updateUpcomingCommitmentAlert();
 
     return;
   }
@@ -1225,6 +1426,8 @@ function updatePresidentialHUD() {
   updatePresidentialObjective();
 
   updateGovernmentAlert();
+
+  updateUpcomingCommitmentAlert();
 
 }
 
@@ -1709,6 +1912,7 @@ function enterOffice() {
 
   populatePolicyDossier();
   updateGovernmentAlert();
+  updateUpcomingCommitmentAlert();
 }
 
 
@@ -2384,8 +2588,6 @@ function openCabinetReport() {
 
   cabinetReportNext.disabled = false;
 
-  // Show the completed Cabinet Report.
-  cabinetReport.hidden = false;
 
   openOfficeOverlay(
     cabinetReport,
@@ -2396,25 +2598,14 @@ function openCabinetReport() {
 
 }
 
-
 function closeCabinetReport() {
 
-  // Hide the report.
-  cabinetReport.hidden = true;
-
-  // Resume player movement.
-  if (officeGame?.scene.isPaused('OfficeScene')) {
-    officeGame.scene.resume('OfficeScene');
-  }
-
-  cabinetReportClose.blur();
+  closeOfficeOverlay(
+    cabinetReport,
+    cabinetReportClose
+  );
 }
 
-// Close the Cabinet Report using its button.
-cabinetReportClose.addEventListener(
-  'click',
-  closeCabinetReport
-);
 
 
 // ==========================================
