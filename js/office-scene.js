@@ -1,9 +1,10 @@
+import { PLAYER_FEET, bindRoomActions, createRoomPlayer, drawRoomFeet, moveRoomPlayer, placeRoomPlayer, sendRoomAction, updateRoomHud, updateRoomPrompt } from './room-controls.js';
 
 const Phaser = window.Phaser;
 
 const WIDTH = 960;
 const HEIGHT = 720;
-const WALK_SPEED = 165;
+const CORRIDOR_RETURN = { x: 480, y: 625 };
 
 const ROOM_BOUNDS = {
     left: 28,
@@ -19,13 +20,13 @@ const ROOM_BOUNDS = {
 
     // Bottom boundary and office door
     bottom: 633,
-    doorLeft: 422,
-    doorRight: 525,
-    doorBottom: 673,
+    doorLeft: 434,
+    doorRight: 514,
+    doorBottom: 639,
 
     // Player's collision footprint
-    radiusX: 11,
-    radiusY: 6
+    radiusX: PLAYER_FEET.x,
+    radiusY: PLAYER_FEET.y
 };
 
 function getTopBoundary(x) {
@@ -91,9 +92,10 @@ const INTERACTIONS = [
     },
     {
         name: 'Office Door',
+        label: 'Enter Government Corridor',
         x: 480,
-        y: 662,
-        radius: 52,
+        y: 639,
+        radius: 36,
         action: 'exit-office'
     }
 ];
@@ -103,9 +105,6 @@ export class OfficeScene extends Phaser.Scene {
     constructor() {
         super('OfficeScene');
 
-        this.lastDirection = 'up';
-        this.nearby = null;
-        this.player = null;
     }
 
     preload() {
@@ -137,72 +136,7 @@ export class OfficeScene extends Phaser.Scene {
             'office'
         ).setDisplaySize(WIDTH, HEIGHT);
 
-        // Walking animations.
-        // Row 1: down
-        // Row 2: left
-        // Row 3: right
-        // Row 4: up
-        const directions = {
-            down: 0,
-            left: 4,
-            right: 8,
-            up: 12
-        };
-
-        for (const [direction, start] of Object.entries(directions)) {
-
-            const key = `walk-${direction}`;
-
-            if (!this.anims.exists(key)) {
-                this.anims.create({
-                    key,
-                    frames: this.anims.generateFrameNumbers(
-                        'leader',
-                        {
-                            frames: [
-                                start + 1,
-                                start + 2,
-                                start + 3,
-                                start + 2
-                            ]
-                        }
-                    ),
-                    frameRate: 7,
-                    repeat: -1
-                });
-            }
-        }
-
-        // Player starts near the office entrance.
-        this.player = this.add.sprite(
-            480,
-            610,
-            'leader',
-            12
-        )
-            .setOrigin(0.5, 0.98)
-            .setScale(0.25)
-            .setDepth(10);
-
-        // Keyboard movement.
-        this.cursors = this.input.keyboard.createCursorKeys();
-
-        this.keys = this.input.keyboard.addKeys({
-            w: Phaser.Input.Keyboard.KeyCodes.W,
-            a: Phaser.Input.Keyboard.KeyCodes.A,
-            s: Phaser.Input.Keyboard.KeyCodes.S,
-            d: Phaser.Input.Keyboard.KeyCodes.D,
-            e: Phaser.Input.Keyboard.KeyCodes.E,
-            c: Phaser.Input.Keyboard.KeyCodes.C
-        });
-
-        // Prevent arrows from scrolling the browser.
-        this.input.keyboard.addCapture([
-            Phaser.Input.Keyboard.KeyCodes.UP,
-            Phaser.Input.Keyboard.KeyCodes.DOWN,
-            Phaser.Input.Keyboard.KeyCodes.LEFT,
-            Phaser.Input.Keyboard.KeyCodes.RIGHT
-        ]);
+        createRoomPlayer(this, 480, 610, 'up');
 
         // Interaction prompt.
         this.hint = this.add.text(
@@ -323,60 +257,15 @@ export class OfficeScene extends Phaser.Scene {
             .setDepth(26)
             .setVisible(false);
 
-        // C toggles all debugging visuals.
-        this.input.keyboard.on('keydown-C', () => {
-            if (!this.sys.isActive()) return;
-            const visible = !this.debugGraphics.visible;
-
-            this.debugGraphics.setVisible(visible);
-            this.debugFeet.setVisible(visible);
-        });
-
-
-
-        // ==========================================
-        // PHASE 5C.3A - SAFE E-KEY INTERACTION
-        // ==========================================
-
-        this.input.keyboard.on('keydown-E', (event) => {
-
-            // Ignore automatic key-repeat events when E is held.
-            if (event.repeat) {
-                return;
+        this.updateInteraction();
+        bindRoomActions(this,
+            () => sendRoomAction(this.getNearbyInteraction()),
+            () => {
+                placeRoomPlayer(this, CORRIDOR_RETURN.x, CORRIDOR_RETURN.y, 'up');
+                this.updateInteraction();
             }
-
-            // Interactions only work while this scene is active.
-            if (!this.sys.isActive()) {
-                return;
-            }
-
-            // No nearby object to interact with.
-            if (!this.nearby) {
-                return;
-            }
-
-            // Don't interact while typing or using HTML controls.
-            const focusedTag = document.activeElement?.tagName;
-
-            if (
-                ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON']
-                    .includes(focusedTag)
-            ) {
-                return;
-            }
-
-            // Send the interaction to main.js.
-            // The main interaction listener decides
-            // whether the action is allowed.
-            this.openInteraction(this.nearby);
-
-        });
-
-        this.events.once(Phaser.Scenes.Events.CREATE, () => {
-            window.dispatchEvent(new Event('government:office-ready'));
-        });
+        );
     }
-
 
     blocked(x, y) {
         const b = ROOM_BOUNDS;
@@ -398,202 +287,28 @@ export class OfficeScene extends Phaser.Scene {
         );
     }
 
-    update(_time, delta) {
-
-        if (!this.player) {
-            return;
-        }
-
-        // Horizontal input.
-        let dx =
-            Number(
-                this.cursors.right.isDown ||
-                this.keys.d.isDown
-            ) -
-            Number(
-                this.cursors.left.isDown ||
-                this.keys.a.isDown
-            );
-
-        // Vertical input.
-        let dy =
-            Number(
-                this.cursors.down.isDown ||
-                this.keys.s.isDown
-            ) -
-            Number(
-                this.cursors.up.isDown ||
-                this.keys.w.isDown
-            );
-
-        const moving = dx !== 0 || dy !== 0;
-        let actuallyMoved = false;
-
-        // Final safeguard against leaving room boundaries.
-        this.player.x = Phaser.Math.Clamp(
-            this.player.x,
-            ROOM_BOUNDS.left,
-            ROOM_BOUNDS.right
-        );
-        this.player.y = Phaser.Math.Clamp(
-            this.player.y,
-            getTopBoundary(this.player.x),
-            getBottomBoundary(this.player.x)
-        );
-
-        if (moving) {
-
-            // Normalize diagonal movement.
-            const magnitude = Math.hypot(dx, dy);
-
-            dx /= magnitude;
-            dy /= magnitude;
-
-            const distance =
-                WALK_SPEED * Math.min(delta, 50) / 1000;
-
-            const moveX = dx * distance;
-            const moveY = dy * distance;
-
-            // Test X movement separately.
-            if (
-                moveX !== 0 &&
-                !this.blocked(
-                    this.player.x + moveX,
-                    this.player.y
-                )
-            ) {
-                this.player.x += moveX;
-                actuallyMoved = true;
-            }
-
-            // Test Y movement separately.
-            if (
-                moveY !== 0 &&
-                !this.blocked(
-                    this.player.x,
-                    this.player.y + moveY
-                )
-            ) {
-                this.player.y += moveY;
-                actuallyMoved = true;
-            }
-
-            // Determine facing direction.
-            this.lastDirection =
-                Math.abs(dx) > Math.abs(dy)
-                    ? dx > 0 ? 'right' : 'left'
-                    : dy > 0 ? 'down' : 'up';
-        }
-
-        // Play walking animation only when moving.
-        if (moving && actuallyMoved) {
-            this.player.anims.play(
-                `walk-${this.lastDirection}`,
-                true
-            );
-        } else {
-            this.player.anims.stop();
-
-            const idleFrames = {
-                down: 0,
-                left: 4,
-                right: 8,
-                up: 12
-            };
-
-            this.player.setFrame(
-                idleFrames[this.lastDirection]
-            );
-        }
-
-        // Draw the player's actual collision footprint.
-        if (this.debugFeet.visible) {
-
-            const b = ROOM_BOUNDS;
-
-            this.debugFeet.clear();
-
-            // White rectangle = collision area around the feet.
-            this.debugFeet.lineStyle(2, 0xffffff, 1);
-
-            this.debugFeet.strokeRect(
-                this.player.x - b.radiusX,
-                this.player.y - b.radiusY,
-                b.radiusX * 2,
-                b.radiusY * 2
-            );
-
-            // White dot = exact player position.
-            this.debugFeet.fillStyle(0xffffff, 1);
-
-            this.debugFeet.fillCircle(
-                this.player.x,
-                this.player.y,
-                3
-            );
-        }
-
-        // Locate nearby interactable object.
-        const candidates = INTERACTIONS
-            .map(interaction => ({
-                ...interaction,
-                distance: Phaser.Math.Distance.Between(
-                    this.player.x,
-                    this.player.y,
-                    interaction.x,
-                    interaction.y
-                )
-            }))
-            .filter(interaction =>
-                interaction.distance <= interaction.radius
-            )
-            .sort((a, b) => a.distance - b.distance);
-
-        this.nearby = candidates[0] ?? null;
-
-
-
-
-        // ==========================================
-        // PHASE 5C.1 - AVAILABLE / LOCKED PROMPTS
-        // ==========================================
-
-        let prompt = '';
-
-        if (this.nearby) {
-
-            const action = this.nearby.action;
-
-            const status =
-                window.getOfficeInteractionStatus?.(action);
-
-            if (status && !status.allowed) {
-
-                prompt =
-                    `LOCKED  ·  ${this.nearby.name}\n` +
-                    status.reason;
-
-            } else {
-
-                const guidance =
-                    window.getOfficeContextHint?.(action) || '';
-
-                prompt =
-                    `E  ·  ${this.nearby.name}\n` +
-                    guidance;
+    getNearbyInteraction() {
+        let nearest = null;
+        let nearestDistance = Infinity;
+        for (const interaction of INTERACTIONS) {
+            const distance = Math.hypot(this.player.x - interaction.x, this.player.y - interaction.y);
+            if (distance <= interaction.radius && distance < nearestDistance) {
+                nearest = interaction;
+                nearestDistance = distance;
             }
         }
+        return nearest;
+    }
 
-        if (this.hint.text !== prompt) {
-            this.hint.setText(prompt);
-        }
+    updateInteraction() {
+        updateRoomPrompt(this.hint, this.getNearbyInteraction());
+    }
 
-
-
-        // ==========================================
-        // PHASE 5B.3 - DESTINATION MARKER
-        // ==========================================
+    update(time, delta) {
+        moveRoomPlayer(this, delta);
+        drawRoomFeet(this);
+        this.updateInteraction();
+        updateRoomHud(this.player);
 
         const objectiveAction =
             window.getOfficeObjectiveAction?.();
@@ -606,7 +321,7 @@ export class OfficeScene extends Phaser.Scene {
         if (objectiveTarget) {
 
             const floatOffset =
-                Math.sin(_time / 300) * 4;
+                Math.sin(time / 300) * 4;
 
             this.objectiveMarker.setPosition(
                 objectiveTarget.x,
@@ -620,56 +335,5 @@ export class OfficeScene extends Phaser.Scene {
             this.objectiveMarker.setVisible(false);
 
         }
-
-        // ==========================================
-        // HUD VISIBILITY NEAR THE PLAYER
-        // ==========================================
-
-        const hud = document.getElementById(
-            'presidential-hud'
-        );
-
-        const objective = document.getElementById(
-            'presidential-objective'
-        );
-
-        const playerX = this.player.x;
-        const playerY = this.player.y;
-
-        // Left-side Presidential HUD.
-        // Use a larger area when expanded.
-        const expanded = !document.getElementById(
-            'hud-expanded'
-        )?.hidden;
-
-        const hudBottom = expanded ? 680 : 360;
-
-        hud?.classList.toggle(
-            'player-near',
-            playerX < 300 && playerY < hudBottom
-        );
-
-        // Right-side Objective panel.
-        objective?.classList.toggle(
-            'player-near',
-            playerX > 670 && playerY < 285
-        );
-
-    }
-
-    openInteraction(interaction) {
-
-        // Send interaction to the government game.
-        window.dispatchEvent(
-            new CustomEvent(
-                'government:office-action',
-                {
-                    detail: {
-                        action: interaction.action,
-                        name: interaction.name
-                    }
-                }
-            )
-        );
     }
 }

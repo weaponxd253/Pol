@@ -13,8 +13,10 @@ const types = {
 const allowed = new Set([
   '/index.html', '/styles.css', '/term.css',
   '/js/main.js', '/js/engine.js', '/js/content.js', '/js/view.js', '/js/storage.js',
-  '/js/office-scene.js', '/js/office-alerts.js',
-  '/assets/office.png', '/assets/prez.png', '/assets/policy-dossier.png', '/assets/policy-dossier-seal.png'
+  '/js/office-scene.js', '/js/office-alerts.js', '/js/government-corridor-scene.js',
+  '/js/corridor-layout.js', '/js/room-controls.js',
+  '/assets/office.png', '/assets/prez.png', '/assets/policy-dossier.png', '/assets/policy-dossier-seal.png',
+  '/assets/government_corridor.png'
 ]);
 let port = Number(process.env.PORT || 4173);
 if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('PORT must be between 1 and 65535.');

@@ -235,12 +235,12 @@ let replacement = null;
 
 window.getOfficeInteractionStatus = function (action) {
 
-  // Leaving the office should always be allowed.
-  if (action === 'exit-office') {
-    return {
-      allowed: true,
-      reason: ''
-    };
+  if (action === 'exit-office' || action === 'enter-office') {
+    return { allowed: true, reason: '' };
+  }
+
+  if (action === 'cabinet-room' || action === 'situation-room') {
+    return { allowed: false, reason: 'This room is currently closed.' };
   }
 
   // Government activities require an active game.
@@ -299,6 +299,8 @@ window.getOfficeInteractionStatus = function (action) {
 // ==========================================
 
 window.getOfficeContextHint = function (action) {
+  if (action === 'exit-office') return 'Explore the hallway outside the office.';
+  if (action === 'enter-office') return 'Return to your briefing stations.';
 
   if (!state) {
     return 'Start or resume a presidency first.';
@@ -344,9 +346,6 @@ window.getOfficeContextHint = function (action) {
         ? `${count} completed presidential records.`
         : 'No records yet. Complete your first turn.';
     }
-
-    case 'exit-office':
-      return 'Return to the government dashboard.';
 
     default:
       return 'Press E to interact.';
@@ -1478,6 +1477,14 @@ const advisorContinue =
 // ==========================================
 
 const officeMap = document.getElementById('office-map');
+const officeHeading = document.getElementById('office-heading');
+const roomLink = document.getElementById('office-room-link');
+const rooms = {
+  OfficeScene: { label: 'Executive Office', next: 'GovernmentCorridorScene', action: 'exit-office' },
+  GovernmentCorridorScene: { label: 'Government Corridor', next: 'OfficeScene', action: 'enter-office' }
+};
+let activeRoomKey = null;
+let roomTransitionPending = false;
 const objectiveLink = document.getElementById('office-objective-link');
 const archiveLink = document.getElementById('office-archive-link');
 const officeControls = document.getElementById('office-controls');
@@ -1510,32 +1517,45 @@ function getActiveOfficeOverlay() {
 }
 
 function syncOfficeScenePause() {
-  if (!officeGame) return;
+  if (!officeGame || !activeRoomKey) return;
+  const manager = officeGame.scene;
   const shouldPause = officeScreen.hidden || pauseMenu.open || dialog.open || getActiveOfficeOverlay();
-
-
-  const roomScenes = [
-    'OfficeScene',
-    'GovernmentCorridorScene'
-  ];
-
-  for (const sceneKey of roomScenes) {
-
-    if (
-      shouldPause &&
-      officeGame.scene.isActive(sceneKey)
-    ) {
-      officeGame.scene.pause(sceneKey);
-    }
-
-    if (
-      !shouldPause &&
-      officeGame.scene.isPaused(sceneKey)
-    ) {
-      officeGame.scene.resume(sceneKey);
-    }
+  if (shouldPause && manager.isActive(activeRoomKey)) {
+    manager.pause(activeRoomKey);
+  } else if (!shouldPause && manager.isPaused(activeRoomKey)) {
+    manager.resume(activeRoomKey);
   }
+}
 
+function setCurrentRoom(key) {
+  activeRoomKey = key;
+  roomTransitionPending = false;
+  const room = rooms[key];
+  officeHeading.textContent = room.label;
+  officeMap.setAttribute('aria-label', `${room.label} map`);
+  enterOfficeButton.textContent = `Enter ${room.label}`;
+  roomLink.textContent = `Enter ${rooms[room.next].label}`;
+  roomLink.hidden = false;
+  roomLink.disabled = false;
+  if (!officeScreen.hidden) {
+    skipLink.textContent = `Skip to the ${room.label}`;
+    officeMessage.textContent = room.label;
+  }
+  syncOfficeScenePause();
+  if (!officeScreen.hidden && !pauseMenu.open && !dialog.open && !getActiveOfficeOverlay() &&
+      (document.activeElement === roomLink || document.activeElement === document.body)) {
+    officeMap.focus({ preventScroll: true });
+  }
+}
+
+function switchRoom(action) {
+  const room = rooms[activeRoomKey];
+  if (officeMap.hidden || room?.action !== action || roomTransitionPending ||
+      !officeGame.scene.isActive(activeRoomKey)) return;
+
+  roomTransitionPending = true;
+  roomLink.disabled = true;
+  officeGame.scene.getScene(activeRoomKey).scene.switch(room.next);
 }
 
 function openOfficeOverlay(element, focusElement) {
@@ -1582,7 +1602,7 @@ async function enterOffice() {
   enterOfficeButton.hidden = true;
   pauseButton.hidden = true;
   skipLink.href = '#office-heading';
-  skipLink.textContent = 'Skip to the Executive Office';
+  skipLink.textContent = `Skip to the ${officeHeading.textContent}`;
   objectiveNotice.hidden = true;
 
   officeScreen.scrollIntoView({ block: 'start', behavior: 'instant' });
@@ -1641,6 +1661,7 @@ async function enterOffice() {
 
 function showOfficeMapFallback() {
   officeMap.hidden = true;
+  roomLink.hidden = true;
   officeControls.hidden = true;
   officeMessage.textContent = 'The map is unavailable. Use the office navigation buttons to visit each station.';
   (objectiveLink.hidden ? officeBackButton : objectiveLink).focus({ preventScroll: true });
@@ -2882,6 +2903,10 @@ policyDossierClose.addEventListener(
 
 
 document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && event.repeat && (pauseMenu.open || dialog.open)) {
+    event.preventDefault();
+    return;
+  }
   if (pauseMenu.open || dialog.open) return;
 
   const overlay = getActiveOfficeOverlay();
@@ -2957,6 +2982,10 @@ objectiveLink.addEventListener('click', () => {
   else interactWithOffice(window.getOfficeObjectiveAction());
 });
 archiveLink.addEventListener('click', () => interactWithOffice('archives'));
+roomLink.addEventListener('click', () => interactWithOffice(rooms[activeRoomKey]?.action));
+officeMap.addEventListener('blur', () => {
+  if (activeRoomKey) officeGame.scene.getScene(activeRoomKey).input.keyboard.resetKeys();
+});
 
 function interactWithOffice(action) {
   if (officeScreen.hidden || pauseMenu.open || dialog.open || getActiveOfficeOverlay()) return;
@@ -2973,35 +3002,10 @@ function interactWithOffice(action) {
       openPolicyDossier();
       break;
 
-    case 'exit-office': {
-
-      // If Phaser is available, travel to the corridor.
-      if (
-        officeGame &&
-        !officeMap.hidden &&
-        officeGame.scene.isActive('OfficeScene')
-      ) {
-
-        const currentScene =
-          officeGame.scene.getScene('OfficeScene');
-
-        currentScene.scene.switch(
-          'GovernmentCorridorScene'
-        );
-
-        officeMessage.textContent =
-          'Government Corridor. Explore the hallway ' +
-          'or return through the upper-center doors.';
-
-      } else {
-
-        // Preserve the Phase 5 fallback behavior.
-        returnToBriefing();
-      }
-
+    case 'exit-office':
+    case 'enter-office':
+      switchRoom(action);
       break;
-    }
-
     case 'cabinet-briefing':
       openCabinetReport();
       break;
@@ -3015,6 +3019,6 @@ function interactWithOffice(action) {
 }
 
 window.addEventListener('government:office-action', event => interactWithOffice(event.detail.action));
-window.addEventListener('government:office-ready', syncOfficeScenePause);
+window.addEventListener('government:room-ready', event => setCurrentRoom(event.detail.key));
 
 render();
