@@ -325,6 +325,7 @@ export class OfficeScene extends Phaser.Scene {
 
         // C toggles all debugging visuals.
         this.input.keyboard.on('keydown-C', () => {
+            if (!this.sys.isActive()) return;
             const visible = !this.debugGraphics.visible;
 
             this.debugGraphics.setVisible(visible);
@@ -371,7 +372,9 @@ export class OfficeScene extends Phaser.Scene {
 
         });
 
-
+        this.events.once(Phaser.Scenes.Events.CREATE, () => {
+            window.dispatchEvent(new Event('government:office-ready'));
+        });
     }
 
 
@@ -432,13 +435,6 @@ export class OfficeScene extends Phaser.Scene {
             ROOM_BOUNDS.left,
             ROOM_BOUNDS.right
         );
-        const doorArea =
-            this.player.x >= ROOM_BOUNDS.doorLeft &&
-            this.player.x <= ROOM_BOUNDS.doorRight;
-
-        // Final safeguard against leaving room boundaries.
-
-
         this.player.y = Phaser.Math.Clamp(
             this.player.y,
             getTopBoundary(this.player.x),

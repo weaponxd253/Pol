@@ -83,6 +83,7 @@ dialog::backdrop { background: #172f2970; }
 dialog h2 { font-size: 30px; }
 dialog p { margin-top: 17px; color: var(--muted); font-size: 13px; line-height: 1.8; }
 .dialog-actions { display: flex; gap: 12px; margin-top: 25px; }
+.pause-actions { display: grid; gap: 8px; margin-top: 25px; }
 @media (max-width: 850px) { .mode-grid { grid-template-columns: 1fr 1fr; } .turn-bar { flex-wrap: wrap; } }
 @media (max-width: 600px) {
   .mode-grid { grid-template-columns: 1fr; gap: 15px; }

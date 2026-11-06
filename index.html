@@ -26,10 +26,10 @@
           </svg></span>
         <span>POLICY<span class="brand-dash">—</span>MAKER<small>REPUBLIC OF ARDEN</small></span>
       </a>
-      <div class="masthead-actions"><span class="scenario-tag">REPUBLIC OF ARDEN</span><button
-          class="button button-quiet" type="button" data-action="menu" data-focus-key="menu" hidden>Choose
-          mode</button><button class="button button-quiet" type="button" data-action="restart" data-focus-key="restart"
-          hidden>↻ <span>Restart</span></button></div>
+      <div class="masthead-actions">
+        <span class="scenario-tag">REPUBLIC OF ARDEN</span>
+        <button id="pause-open" class="button button-quiet" type="button" data-action="pause" hidden>Pause</button>
+      </div>
     </div>
   </header>
   <main class="page">
@@ -58,14 +58,26 @@
 
     <section id="office-screen" hidden>
       <div class="office-toolbar">
-        <h2>Executive Office</h2>
+        <h2 id="office-heading" tabindex="-1">Executive Office</h2>
 
-        <button id="office-back" class="button button-secondary" type="button">
-          Return to Briefing
-        </button>
+        <div class="office-toolbar-actions">
+          <button id="office-back" class="button button-secondary" type="button">
+            Return to Briefing
+          </button>
+          <button class="button button-secondary" type="button" data-action="pause">Pause</button>
+        </div>
+        <nav class="office-navigation" aria-label="Office navigation">
+          <button id="office-objective-link" class="button button-primary" type="button" hidden></button>
+          <button id="office-archive-link" class="button button-secondary" type="button" hidden>
+            Government Archives
+          </button>
+        </nav>
       </div>
 
       <div id="office-game">
+        <div id="office-canvas">
+          <canvas id="office-map" tabindex="0" aria-label="Executive Office map" aria-describedby="office-controls"></canvas>
+        </div>
 
         <!-- ======================================
      PRESIDENTIAL STATUS HUD
@@ -109,8 +121,7 @@
      PHASE 5D.3 - UPCOMING COMMITMENT ALERT
      ====================================== -->
 
-          <div id="hud-commitment-alert" class="hud-commitment-alert" role="status" aria-live="polite"
-            aria-atomic="true" hidden>
+          <div id="hud-commitment-alert" class="hud-commitment-alert" hidden>
             <strong id="hud-commitment-alert-title">
               Upcoming Treasury Payment
             </strong>
@@ -209,7 +220,7 @@
      PHASE 5D - GOVERNMENT ALERTS
      ====================================== -->
 
-        <div id="government-alert" class="government-alert" role="status" aria-live="polite" aria-atomic="true" hidden>
+        <div id="government-alert" class="government-alert" hidden>
           <div class="government-alert-header">
             <span aria-hidden="true">⚠</span>
 
@@ -227,7 +238,7 @@
      PHASE 5D.2 - DECISION NOTIFICATIONS
      ====================================== -->
 
-        <div id="decision-notice" class="decision-notice" role="status" aria-live="polite" aria-atomic="true" hidden>
+        <div id="decision-notice" class="decision-notice" hidden>
           <div class="decision-notice-header">
             <span aria-hidden="true">◆</span>
             <strong>POLICY ENACTED</strong>
@@ -291,7 +302,7 @@
      PRESIDENTIAL POLICY DOSSIER
      ====================================== -->
 
-        <div id="policy-dossier" class="policy-dossier-overlay" role="dialog" aria-labelledby="policy-dossier-title"
+        <div id="policy-dossier" class="policy-dossier-overlay" role="dialog" aria-modal="true" aria-labelledby="policy-dossier-title"
           hidden>
           <div class="policy-dossier-frame">
 
@@ -485,10 +496,8 @@
 
       </div>
 
-      <p id="office-message" role="status">
-        WASD or arrows to move.
-        E to interact. C to show collision areas.
-      </p>
+      <p id="office-controls">Focus the map to move with WASD or the arrow keys. Press E to interact or Esc to pause.</p>
+      <p id="office-message" role="status"></p>
     </section>
 
     <div id="app">
@@ -500,14 +509,25 @@
     <footer class="page-footer"><span>REPUBLIC OF ARDEN <span aria-hidden="true">/</span> OFFICE OF THE
         EXECUTIVE</span><span>A fictional nation. Every choice counts.</span></footer>
   </main>
+  <dialog id="pause-menu" aria-labelledby="pause-title" aria-describedby="pause-copy">
+    <h2 id="pause-title">Game paused</h2>
+    <p id="pause-copy"></p>
+    <div class="pause-actions">
+      <button class="button button-primary" type="button" data-action="continue" autofocus>Continue</button>
+      <button class="button button-secondary" type="button" data-action="briefing" hidden>Return to Briefing</button>
+      <button class="button button-secondary" type="button" data-action="restart">Restart run</button>
+      <button class="button button-secondary" type="button" data-action="menu">Choose mode</button>
+    </div>
+  </dialog>
   <dialog id="replacement-dialog" aria-labelledby="replacement-title" aria-describedby="replacement-copy">
     <h2 id="replacement-title">Replace your saved term?</h2>
     <p id="replacement-copy"></p>
-    <div class="dialog-actions"><button class="button button-secondary" type="button" data-action="cancel-replace">Keep
-        saved term</button><button class="button button-primary" type="button" data-action="confirm-replace">Replace
+    <div class="dialog-actions"><button class="button button-secondary" type="button" data-action="cancel-replace"
+        autofocus>Cancel</button><button class="button button-primary" type="button" data-action="confirm-replace">Replace
         saved term</button></div>
   </dialog>
   <div id="announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div id="office-alert-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 </body>
 
 </html>

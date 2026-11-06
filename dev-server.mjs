@@ -4,8 +4,18 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
-const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript' };
-const allowed = new Set(['/index.html', '/styles.css', '/term.css', '/js/main.js', '/js/engine.js', '/js/content.js', '/js/view.js', '/js/storage.js']);
+const types = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.png': 'image/png'
+};
+const allowed = new Set([
+  '/index.html', '/styles.css', '/term.css',
+  '/js/main.js', '/js/engine.js', '/js/content.js', '/js/view.js', '/js/storage.js',
+  '/js/office-scene.js', '/js/office-alerts.js',
+  '/assets/office.png', '/assets/prez.png', '/assets/policy-dossier.png', '/assets/policy-dossier-seal.png'
+]);
 let port = Number(process.env.PORT || 4173);
 if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('PORT must be between 1 and 65535.');
 
@@ -18,7 +28,7 @@ const server = createServer(async (request, response) => {
       return;
     }
     const content = await readFile(path.join(root, resource));
-    response.writeHead(200, { 'Content-Type': `${types[path.extname(resource)]}; charset=utf-8`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
+    response.writeHead(200, { 'Content-Type': types[path.extname(resource)], 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
     response.end(request.method === 'HEAD' ? undefined : content);
   } catch {
     response.writeHead(500, { 'Content-Type': 'text/plain' }).end('Unable to load this file.');

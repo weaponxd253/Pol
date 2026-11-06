@@ -1,5 +1,5 @@
 
-import { validateContent } from './content.js';
+import { METERS, validateContent } from './content.js';
 
 import {
   createInitialState,
@@ -16,7 +16,7 @@ import {
 
 import { loadGame, saveGame } from './storage.js';
 import { renderGame } from './view.js';
-import { OfficeScene } from './office-scene.js';
+import { governmentWarning, treasuryWarning } from './office-alerts.js';
 
 // ==========================================
 // EXISTING GOVERNMENT GAME
@@ -27,6 +27,10 @@ validateContent();
 const app = document.getElementById('app');
 const announcer = document.getElementById('announcer');
 const dialog = document.getElementById('replacement-dialog');
+const pauseMenu = document.getElementById('pause-menu');
+const pauseButton = document.getElementById('pause-open');
+const officeAlertAnnouncer = document.getElementById('office-alert-announcer');
+const skipLink = document.querySelector('.skip-link');
 const policyDossierOptions =
   document.getElementById('policy-dossier-options');
 const policyDossier =
@@ -430,6 +434,7 @@ function launch(mode, seed) {
     seed: seed || newSeed()
   });
 
+  showBriefing();
   persist();
 
   render({ focusHeading: true });
@@ -440,35 +445,56 @@ function launch(mode, seed) {
       : 'The three-turn scenario begins. Treasury 24, debt zero.';
 }
 
+function confirmChange({ title, copy, label, action }) {
+  replacement = action;
+  document.getElementById('replacement-title').textContent = title;
+  document.getElementById('replacement-copy').textContent = copy;
+  dialog.querySelector('[data-action="confirm-replace"]').textContent = label;
+  dialog.showModal();
+  syncOfficeScenePause();
+}
+
 // Confirm before replacing an existing term.
 function requestLaunch(mode, seed) {
+  const active = state?.mode === 'term' ? state : savedGame;
+  const action = () => launch(mode, seed);
 
-  const active =
-    state?.mode === 'term' ? state : savedGame;
-
-  if (
-    mode === 'term' &&
-    (
-      (active && !active.outcome) ||
-      storageStatus.replacementRequired
-    )
-  ) {
-
-    replacement = { mode, seed };
-
-    document.getElementById(
-      'replacement-copy'
-    ).textContent =
-      storageStatus.replacementRequired
-        ? 'Your stored run uses older rules or cannot be restored. Starting a fresh term replaces it with the new consequence rules. Cancel to keep the stored data.'
-        : 'This replaces your saved term at turn ' +
-        active.turn +
-        ' of 12. Keep the saved term to continue where you left off.';
-
-    dialog.showModal();
-
+  if (mode === 'term' && ((active && !active.outcome) || storageStatus.replacementRequired)) {
+    confirmChange({
+      title: 'Replace your saved term?',
+      copy: storageStatus.replacementRequired
+        ? 'Your stored run uses older rules or cannot be restored. Starting a fresh term replaces it.'
+        : `This replaces your saved term at turn ${active.turn} of 12.`,
+      label: 'Replace saved term',
+      action
+    });
+  } else if (mode === 'quick' && state?.mode === 'quick' && !state.outcome) {
+    confirmChange({
+      title: 'Restart this scenario?',
+      copy: 'Your current three-turn run will be reset.',
+      label: 'Restart scenario',
+      action
+    });
   } else {
-    launch(mode, seed);
+    action();
+  }
+}
+
+function requestModeSelection() {
+  const action = () => {
+    state = null;
+    returnToBriefing();
+  };
+
+  if (state?.mode === 'quick' && !state.outcome) {
+    confirmChange({
+      title: 'Leave this scenario?',
+      copy: 'Progress in this three-turn run will be lost.',
+      label: 'Leave scenario',
+      action
+    });
+  } else {
+    action();
   }
 }
 
@@ -657,20 +683,10 @@ function updateExpandedPresidentialHUD() {
   hudUpcomingCommitments.replaceChildren();
 
 
-  const turnUnresolved =
-    state.phase === 'event' ||
-    state.phase === 'policy';
-
-  const upcoming = [...(state.scheduledEffects || [])]
-    .filter(effect => {
-
-      const dueTurn = Number(effect.dueTurn);
-
-      return (
-        dueTurn > state.turn ||
-        (turnUnresolved && dueTurn === state.turn)
-      );
-    })
+  const dueTurn = treasuryWarning(state)?.dueTurn;
+  const unsettled = state.phase === 'event' || state.phase === 'policy';
+  const upcoming = state.scheduledEffects
+    .filter(effect => effect.dueTurn > state.turn || (unsettled && effect.dueTurn === state.turn))
     .sort((a, b) => a.dueTurn - b.dueTurn);
 
   if (upcoming.length === 0) {
@@ -705,18 +721,10 @@ function updateExpandedPresidentialHUD() {
       `Turn ${effect.dueTurn}: ` +
       `${effect.source} (${meterName} ${amount})`;
 
-    // Highlight Treasury payments due next turn.
-    if (
-      Number(effect.dueTurn) === state.turn + 1 &&
-      effect.meter === 'treasury' &&
-      Number(effect.amount) < 0
-    ) {
+    if (effect.dueTurn === dueTurn && effect.meter === 'treasury' && effect.amount < 0) {
       item.classList.add('hud-commitment-due');
-
-      item.textContent =
-        'DUE NEXT TURN · ' + item.textContent;
+      item.prepend(dueTurn === state.turn ? 'DUE THIS TURN · ' : 'DUE NEXT TURN · ');
     }
-
 
     hudUpcomingCommitments.appendChild(item);
   }
@@ -807,8 +815,7 @@ function updatePresidentialObjective() {
 
       description =
         'A new national event requires your attention. ' +
-        'Approach the advisor area and press E ' +
-        'to receive your briefing.';
+        'Open the Chief of Staff briefing to respond.';
 
     }
 
@@ -836,8 +843,7 @@ function updatePresidentialObjective() {
 
       description =
         'Your advisor briefing is complete. ' +
-        'Approach the National Policy Desk ' +
-        'and press E to review available policies.';
+        'Open the National Policy Desk to review available policies.';
 
     }
 
@@ -972,26 +978,10 @@ function showDecisionNotification(report) {
   // CALCULATE ACTUAL TURN CHANGES
   // ======================================
 
-  const meterNames = {
-    approval: 'Approval',
-    treasury: 'Treasury',
-    donors: 'Donors',
-    economy: 'Economy',
-    international: 'International',
-    stability: 'Stability'
-  };
-
-  const changes = Object.entries(meterNames)
-    .map(([key, label]) => {
-
-      const before = report.startMeters[key];
-      const after = report.meters[key];
-
-      return {
-        label,
-        amount: after - before
-      };
-    })
+  const changes = METERS.map(({ id, short }) => ({
+    label: short,
+    amount: report.meters[id] - report.startMeters[id]
+  }))
     .filter(change => change.amount !== 0)
     .sort(
       (a, b) =>
@@ -1030,6 +1020,7 @@ function showDecisionNotification(report) {
   // ======================================
 
   decisionNotice.hidden = false;
+  announcer.textContent = `Policy enacted: ${decisionNoticeTitle.textContent}. ${decisionNoticeChanges.textContent}`;
 
   // Automatically hide after five seconds.
   decisionNoticeTimer = setTimeout(() => {
@@ -1052,281 +1043,31 @@ function hideDecisionNotification() {
 }
 
 
-// ==========================================
-// PHASE 5D.1 - GOVERNMENT WARNING SYSTEM
-// ==========================================
+function updateOfficeAlerts() {
+  const active = state && !officeScreen.hidden;
+  const warning = active ? governmentWarning(state) : null;
+  const payment = active ? treasuryWarning(state) : null;
 
-function updateGovernmentAlert() {
-
-  // Alerts only appear during an active
-  // presidency inside the executive office.
-  const officeVisible =
-    document.getElementById('office-screen')
-      ?.hidden === false;
-
-  if (!state || !officeVisible) {
-    governmentAlert.hidden = true;
-    return;
+  governmentAlert.hidden = !warning;
+  governmentAlert.classList.toggle('is-critical', warning?.severity === 'critical');
+  if (warning) {
+    governmentAlertTitle.textContent = warning.title;
+    governmentAlertMessage.textContent = warning.message;
   }
 
-  let title = '';
-  let message = '';
-  let severity = '';
-
-  // ======================================
-  // GOVERNMENT COLLAPSE
-  // ======================================
-
-  // The engine is the authority on whether
-  // the administration has actually collapsed.
-  if (state.outcome === 'collapsed') {
-
-    title = 'GOVERNMENT COLLAPSE';
-
-    message =
-      'The administration has collapsed. ' +
-      'Review the final Cabinet Report ' +
-      'and presidential outcome.';
-
-    severity = 'critical';
-
-  } else {
-
-    // ======================================
-    // NATIONAL STATISTIC WARNINGS
-    // ======================================
-
-    const meterNames = {
-      approval: 'Public Approval',
-      treasury: 'National Treasury',
-      donors: 'Donor Support',
-      economy: 'National Economy',
-      international: 'International Standing',
-      stability: 'Government Stability'
-    };
-
-    // Check for statistics at or below 20.
-    const warnings = Object.entries(
-      state.meters
-    )
-      .filter(([key, value]) =>
-        key in meterNames &&
-        Number.isFinite(value) &&
-        value <= 20
-      )
-      .sort((a, b) => a[1] - b[1]);
-
-    // Show the most severe warning.
-    if (warnings.length > 0) {
-
-      const [meter, value] = warnings[0];
-
-      severity = value <= 10
-        ? 'critical'
-        : 'warning';
-
-      title = severity === 'critical'
-        ? `${meterNames[meter]} Crisis`
-        : `${meterNames[meter]} Warning`;
-
-      message =
-        `${meterNames[meter]} has fallen to ` +
-        `${value}. Review your government ` +
-        'conditions and upcoming commitments.';
-    }
+  hudCommitmentAlert.hidden = !payment;
+  hudCommitmentAlert.classList.toggle('is-critical', payment?.severity === 'critical');
+  hudCommitmentAlert.classList.toggle('is-urgent', payment?.severity === 'urgent');
+  if (payment) {
+    hudCommitmentAlertTitle.textContent = payment.title;
+    hudCommitmentAlertMessage.textContent = payment.message;
   }
 
-  // ======================================
-  // NO ACTIVE WARNING
-  // ======================================
-
-  if (!title) {
-    governmentAlert.hidden = true;
-    return;
+  const announcement = [warning, payment].filter(Boolean)
+    .map(alert => `${alert.title}. ${alert.message}`).join(' ');
+  if (officeAlertAnnouncer.textContent !== announcement) {
+    officeAlertAnnouncer.textContent = announcement;
   }
-
-  // ======================================
-  // UPDATE ALERT PANEL
-  // ======================================
-
-  // Avoid unnecessary live-region updates.
-  if (governmentAlertTitle.textContent !== title) {
-    governmentAlertTitle.textContent = title;
-  }
-
-  if (governmentAlertMessage.textContent !== message) {
-    governmentAlertMessage.textContent = message;
-  }
-
-  governmentAlert.classList.toggle(
-    'is-critical',
-    severity === 'critical'
-  );
-
-  governmentAlert.hidden = false;
-}
-
-// ==========================================
-// PHASE 5D.3 - UPCOMING TREASURY WARNINGS
-// ==========================================
-
-function updateUpcomingCommitmentAlert() {
-
-  // Check whether the executive office is visible.
-  const officeVisible =
-    document.getElementById('office-screen')
-      ?.hidden === false;
-
-  // Do not display the alert outside an active
-  // presidency or after the presidency has ended.
-  if (
-    !state ||
-    !officeVisible ||
-    state.outcome
-  ) {
-    hudCommitmentAlert.hidden = true;
-    return;
-  }
-
-  // ======================================
-  // FIND TREASURY PAYMENTS DUE NEXT TURN
-  // ======================================
-
-
-  const nextTurn = state.turn + 1;
-
-  const turnUnresolved =
-    state.phase === 'event' ||
-    state.phase === 'policy';
-
-  const treasuryPayments = (state.scheduledEffects || [])
-    .filter(effect =>
-      effect.meter === 'treasury' &&
-      Number(effect.amount) < 0
-    );
-
-  const dueThisTurn = turnUnresolved
-    ? treasuryPayments.filter(
-      effect => Number(effect.dueTurn) === state.turn
-    )
-    : [];
-
-  const dueNextTurn = treasuryPayments.filter(
-    effect => Number(effect.dueTurn) === nextTurn
-  );
-
-  // Prioritize current payments over future payments.
-  const duePayments = dueThisTurn.length > 0
-    ? dueThisTurn
-    : dueNextTurn;
-
-  const paymentTurn = dueThisTurn.length > 0
-    ? state.turn
-    : nextTurn;
-
-    if (duePayments.length === 0) {
-    hudCommitmentAlert.hidden = true;
-    return;
-}
-
-
-  // ======================================
-  // CALCULATE TOTAL UPCOMING PAYMENTS
-  // ======================================
-
-  const totalDue = duePayments.reduce(
-    (total, effect) =>
-      total + Math.abs(Number(effect.amount)),
-    0
-  );
-
-  if (totalDue <= 0) {
-    hudCommitmentAlert.hidden = true;
-    return;
-}
-
-  const currentTreasury =
-    Number(state.meters.treasury);
-
-  // Compare current Treasury against these
-  // commitments alone, not the full turn budget.
-  const remainingBuffer =
-    currentTreasury - totalDue;
-
-  const paymentCount = duePayments.length;
-
-  const paymentLabel =
-    paymentCount === 1
-      ? 'commitment'
-      : 'commitments';
-
-  // ======================================
-  // CLASSIFY THE WARNING
-  // ======================================
-
-
-  let title = dueThisTurn.length > 0
-    ? 'TREASURY PAYMENT DUE THIS TURN'
-    : 'UPCOMING TREASURY PAYMENT';
-
-  let message =
-    `Turn ${paymentTurn}: ${totalDue} Treasury ` +
-    `due from ${paymentCount} ${paymentLabel}.`;
-
-
-  let severity = 'normal';
-
-  if (remainingBuffer <= 0) {
-
-    message +=
-      ' Current Treasury would not cover ' +
-      'these payments alone. ' +
-      (dueThisTurn.length > 0 ? 'This' : 'Next') +
-      ' turn\'s income and other costs will also matter.';
-
-
-  } else if (remainingBuffer <= 10) {
-
-    severity = 'urgent';
-
-    title = 'TREASURY BUFFER WARNING';
-
-    message +=
-      ` Current Treasury minus these payments ` +
-      `would leave ${remainingBuffer}, before ` +
-      'other turn effects.';
-
-  } else {
-
-    message +=
-      ' Review upcoming commitments before ' +
-      'making additional spending decisions.';
-  }
-
-  // ======================================
-  // DISPLAY THE ALERT
-  // ======================================
-
-  // Update text only when it changes.
-  if (hudCommitmentAlertTitle.textContent !== title) {
-    hudCommitmentAlertTitle.textContent = title;
-  }
-
-  if (hudCommitmentAlertMessage.textContent !== message) {
-    hudCommitmentAlertMessage.textContent = message;
-  }
-
-  hudCommitmentAlert.classList.toggle(
-    'is-urgent',
-    severity === 'urgent'
-  );
-
-  hudCommitmentAlert.classList.toggle(
-    'is-critical',
-    severity === 'critical'
-  );
-
-  hudCommitmentAlert.hidden = false;
 }
 
 // ==========================================
@@ -1340,8 +1081,7 @@ function updatePresidentialHUD() {
     presidentialHud.hidden = true;
 
     updatePresidentialObjective();
-    updateGovernmentAlert();
-    updateUpcomingCommitmentAlert();
+    updateOfficeAlerts();
 
     return;
   }
@@ -1425,9 +1165,7 @@ function updatePresidentialHUD() {
 
   updatePresidentialObjective();
 
-  updateGovernmentAlert();
-
-  updateUpcomingCommitmentAlert();
+  updateOfficeAlerts();
 
 }
 
@@ -1487,13 +1225,8 @@ function render({ focusHeading = false } = {}) {
       ? quick ? 'OPENING CRISIS' : 'FIRST TERM'
       : 'REPUBLIC OF ARDEN';
 
-  document.querySelector(
-    '[data-action="restart"]'
-  ).hidden = !state;
-
-  document.querySelector(
-    '[data-action="menu"]'
-  ).hidden = !state;
+  pauseButton.hidden = !state || !officeScreen.hidden;
+  updateOfficeNavigation();
 
   document.getElementById('briefing-extra').textContent =
     quick
@@ -1578,9 +1311,20 @@ document.addEventListener('click', event => {
           'Your saved term is restored, including the current phase and choices.';
         return;
 
+      case 'pause':
+        openPauseMenu();
+        return;
+
+      case 'continue':
+        pauseMenu.close();
+        return;
+
+      case 'briefing':
+        returnToBriefing();
+        return;
+
       case 'menu':
-        state = null;
-        render({ focusHeading: true });
+        requestModeSelection();
         return;
 
       case 'restart':
@@ -1598,9 +1342,7 @@ document.addEventListener('click', event => {
         replacement = null;
         dialog.close();
 
-        if (pending) {
-          launch(pending.mode, pending.seed);
-        }
+        pending?.();
         return;
       }
 
@@ -1691,14 +1433,9 @@ document.addEventListener('click', event => {
   }
 });
 
-// Display the original government game.
-render();
-
 // ==========================================
 // NEW PHASER OFFICE INTEGRATION
 // ==========================================
-
-const Phaser = window.Phaser;
 
 let officeGame = null;
 
@@ -1740,200 +1477,169 @@ const advisorContinue =
 // PHASE 5C.2 - OFFICE OVERLAY MANAGER
 // ==========================================
 
-// Every interactive office overlay.
-const OFFICE_OVERLAYS = [
-  {
-    element: officeDialogue,
-    focus: officeDialogueClose
-  },
-  {
-    element: policyDossier,
-    focus: policyDossierClose
-  },
-  {
-    element: cabinetReport,
-    focus: cabinetReportClose
-  },
-  {
-    element: governmentArchives,
-    focus: governmentArchivesClose
-  }
-];
+const officeMap = document.getElementById('office-map');
+const objectiveLink = document.getElementById('office-objective-link');
+const archiveLink = document.getElementById('office-archive-link');
+const officeControls = document.getElementById('office-controls');
+const overlayBackground = document.querySelectorAll(
+  '.masthead, .skip-link, .introduction, .office-toolbar, #office-canvas, .presidential-hud, .page-footer'
+);
+const overlayClosers = new Map([
+  [officeDialogue, closeAdvisorDialogue],
+  [policyDossier, closePolicyDossier],
+  [cabinetReport, closeCabinetReport],
+  [governmentArchives, closeGovernmentArchives]
+]);
+let overlayTrigger = null;
 
-// Find the currently visible overlay.
-function getActiveOfficeOverlay() {
-
-  const active = OFFICE_OVERLAYS.find(
-    item => !item.element.hidden
-  );
-
-  return active?.element ?? null;
+function updateOfficeNavigation() {
+  const labels = {
+    event: 'Chief of Staff Briefing',
+    policy: 'National Policy Desk',
+    report: state?.outcome ? 'Final Cabinet Report' : 'Cabinet Briefing Table',
+    result: 'Final Results'
+  };
+  const label = labels[state?.phase];
+  objectiveLink.hidden = !label;
+  objectiveLink.textContent = label ?? '';
+  archiveLink.hidden = !state;
 }
 
-// Keep Phaser movement synchronized with
-// the office screen and open overlays.
+function getActiveOfficeOverlay() {
+  return [...overlayClosers.keys()].find(element => !element.hidden);
+}
+
 function syncOfficeScenePause() {
-
-  if (!officeGame) {
-    return;
-  }
-
-  const shouldPause =
-    officeScreen.hidden ||
-    getActiveOfficeOverlay() !== null;
-
-  if (
-    shouldPause &&
-    officeGame.scene.isActive('OfficeScene')
-  ) {
+  if (!officeGame) return;
+  const shouldPause = officeScreen.hidden || pauseMenu.open || dialog.open || getActiveOfficeOverlay();
+  if (shouldPause && officeGame.scene.isActive('OfficeScene')) {
     officeGame.scene.pause('OfficeScene');
-  }
-
-  if (
-    !shouldPause &&
-    officeGame.scene.isPaused('OfficeScene')
-  ) {
+  } else if (!shouldPause && officeGame.scene.isPaused('OfficeScene')) {
     officeGame.scene.resume('OfficeScene');
   }
 }
 
-// Open one overlay and pause the office.
 function openOfficeOverlay(element, focusElement) {
-
-  // Do not allow two interfaces at once.
-  if (getActiveOfficeOverlay()) {
-    return false;
-  }
-
+  if (officeScreen.hidden || pauseMenu.open || dialog.open || getActiveOfficeOverlay()) return;
+  overlayTrigger = document.activeElement;
   element.hidden = false;
-
+  overlayBackground.forEach(item => { item.inert = true; });
   syncOfficeScenePause();
-
-  focusElement?.focus();
-
-  return true;
+  focusElement.focus();
 }
 
-
-// ==========================================
-// PHASE 5C.3C - RESTORE GAME INPUT FOCUS
-// ==========================================
-
-function closeOfficeOverlay(element, focusElement) {
-
-  // Hide the currently open interface.
+function closeOfficeOverlay(element) {
   element.hidden = true;
-
-  // Restore Phaser movement when appropriate.
+  overlayBackground.forEach(item => { item.inert = false; });
   syncOfficeScenePause();
-
-  // Remove focus from the closed interface.
-  focusElement?.blur();
-
-  // Don't focus the game if we've left the office.
-  if (officeScreen.hidden) {
-    return;
+  if (!officeScreen.hidden) {
+    const target = overlayTrigger?.isConnected && overlayTrigger !== document.body
+      ? overlayTrigger : officeMap.hidden ? officeBackButton : officeMap;
+    target.focus({ preventScroll: true });
   }
-
-  // Return keyboard focus to the Phaser canvas.
-  const canvas = officeGame?.canvas;
-
-  if (canvas) {
-
-    canvas.tabIndex = 0;
-
-    canvas.focus({
-      preventScroll: true
-    });
-  }
+  overlayTrigger = null;
 }
 
-
-// Reset every office overlay when leaving
-// the executive office.
-function closeAllOfficeOverlays() {
-
-  for (const overlay of OFFICE_OVERLAYS) {
-    overlay.element.hidden = true;
-  }
-
-  resetPolicyApproval();
-
+function openPauseMenu() {
+  if (pauseMenu.open || dialog.open || getActiveOfficeOverlay() || (!state && officeScreen.hidden)) return;
+  pauseMenu.querySelector('#pause-copy').textContent = state
+    ? state.mode === 'term'
+      ? storageStatus.available ? 'Your term is saved in this browser.' : 'Saving is unavailable. You can continue in this tab.'
+      : 'Your three-turn scenario stays active while paused.'
+    : 'Continue exploring or return to the briefing.';
+  pauseMenu.querySelector('[data-action="briefing"]').hidden = officeScreen.hidden;
+  pauseMenu.querySelector('[data-action="restart"]').hidden = !state;
+  pauseMenu.querySelector('[data-action="menu"]').hidden = !state;
+  pauseMenu.showModal();
   syncOfficeScenePause();
 }
 
+pauseMenu.addEventListener('close', syncOfficeScenePause);
+dialog.addEventListener('close', syncOfficeScenePause);
 
-// Open the executive office.
-function enterOffice() {
-
-  if (!Phaser) {
-    console.error('Phaser failed to load.');
-
-    if (officeMessage) {
-      officeMessage.textContent =
-        'Phaser failed to load. Check the browser console.';
-    }
-
-    return;
-  }
-
+async function enterOffice() {
   officeScreen.hidden = false;
   app.hidden = true;
   enterOfficeButton.hidden = true;
+  pauseButton.hidden = true;
+  skipLink.href = '#office-heading';
+  skipLink.textContent = 'Skip to the Executive Office';
+  objectiveNotice.hidden = true;
 
-  officeMessage.textContent =
-    'WASD or arrow keys to move. E to interact. C to view collisions.';
+  officeScreen.scrollIntoView({ block: 'start', behavior: 'instant' });
+  updateOfficeAlerts();
 
-  // Initialize Phaser only once.
-  if (!officeGame) {
-
-    officeGame = new Phaser.Game({
-      type: Phaser.AUTO,
-      parent: 'office-game',
-      width: 960,
-      height: 720,
-      backgroundColor: '#17251f',
-      pixelArt: true,
-      roundPixels: true,
-
-      scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH
-      },
-
-      scene: [OfficeScene]
-    });
-
-  } else {
-
-    syncOfficeScenePause();
-
+  const Phaser = window.Phaser;
+  if (!Phaser) {
+    showOfficeMapFallback();
+    return;
   }
 
-  populatePolicyDossier();
-  updateGovernmentAlert();
-  updateUpcomingCommitmentAlert();
+  officeMap.hidden = false;
+  officeControls.hidden = false;
+  officeMessage.textContent = '';
+  try {
+    if (!officeGame) {
+      const { OfficeScene } = await import('./office-scene.js');
+      if (officeScreen.hidden || officeGame) return;
+      officeGame = new Phaser.Game({
+        type: Phaser.CANVAS,
+        canvas: officeMap,
+        parent: 'office-canvas',
+        width: 960,
+        height: 720,
+        backgroundColor: '#17251f',
+        pixelArt: true,
+        roundPixels: true,
+        input: { keyboard: { target: officeMap } },
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH
+        },
+        scene: [OfficeScene]
+      });
+    }
+    syncOfficeScenePause();
+    if (!pauseMenu.open && !getActiveOfficeOverlay()) {
+      officeMap.focus({ preventScroll: true });
+    }
+  } catch (error) {
+    showOfficeMapFallback();
+    console.error(error);
+  }
 }
 
+function showOfficeMapFallback() {
+  officeMap.hidden = true;
+  officeControls.hidden = true;
+  officeMessage.textContent = 'The map is unavailable. Use the office navigation buttons to visit each station.';
+  (objectiveLink.hidden ? officeBackButton : objectiveLink).focus({ preventScroll: true });
+}
 
-function returnToBriefing() {
-
-  hideDecisionNotification();
-
-  // Hide the graphical office first.
+function showBriefing() {
   officeScreen.hidden = true;
-
-  // Clear all overlays and ensure Phaser pauses.
-  closeAllOfficeOverlays();
-
-  // Restore the original strategy interface.
+  for (const element of overlayClosers.keys()) {
+    if (!element.hidden) closeOfficeOverlay(element);
+  }
+  resetPolicyApproval();
+  hideDecisionNotification();
+  objectiveNotice.hidden = true;
+  if (objectiveNoticeTimer !== null) {
+    clearTimeout(objectiveNoticeTimer);
+    objectiveNoticeTimer = null;
+  }
+  pauseMenu.close();
+  syncOfficeScenePause();
   app.hidden = false;
   enterOfficeButton.hidden = false;
-
-  // Refresh without resetting the presidency.
-  render({ focusHeading: true });
+  skipLink.href = '#phase-heading';
+  skipLink.textContent = 'Skip to your decision';
 }
 
+function returnToBriefing() {
+  showBriefing();
+  render({ focusHeading: true });
+}
 
 // ==========================================
 // RPG DIALOGUE FUNCTIONS
@@ -2238,10 +1944,7 @@ function closePolicyDossier() {
 
   resetPolicyApproval();
 
-  closeOfficeOverlay(
-    policyDossier,
-    policyDossierClose
-  );
+  closeOfficeOverlay(policyDossier);
 }
 
 
@@ -2300,19 +2003,6 @@ policyApprovalCancel.addEventListener('click', () => {
 });
 
 // ==========================================
-// CANCEL POLICY APPROVAL
-// ==========================================
-
-policyApprovalCancel.addEventListener('click', () => {
-
-  policyApprovalConfirmation.hidden = true;
-
-  policyDossierApprove.focus();
-
-});
-
-
-// ==========================================
 // CONFIRM AND ENACT POLICY
 // ==========================================
 
@@ -2350,14 +2040,7 @@ policyApprovalConfirm.addEventListener('click', () => {
 
     // Direct the player to the Cabinet Briefing Table.
     officeMessage.textContent =
-      'Policy enacted. Approach the Cabinet Briefing Table ' +
-      'and press E to review your government report.';
-
-    // Announce the successful decision.
-    announcer.textContent =
-      'Policy approved. Turn ' +
-      state.turn +
-      ' has been resolved.';
+      'Policy enacted. Open the Cabinet Briefing Table to review your report.';
 
   } catch (error) {
 
@@ -2552,14 +2235,6 @@ function populateCabinetReport() {
 
 function openCabinetReport() {
 
-  console.log('Cabinet report debug:', {
-    hasActiveGame: Boolean(state),
-    currentPhase: state?.phase,
-    hasSavedGame: Boolean(savedGame),
-    savedPhase: savedGame?.phase,
-    reportCount: state?.history?.length
-  });
-
   // Only allow reports after the turn is resolved.
   if (!state || state.phase !== 'report') {
 
@@ -2593,17 +2268,12 @@ function openCabinetReport() {
     cabinetReport,
     cabinetReportClose
   );
-  // Focus the Close button when the report opens.
-  cabinetReportClose.focus();
 
 }
 
 function closeCabinetReport() {
 
-  closeOfficeOverlay(
-    cabinetReport,
-    cabinetReportClose
-  );
+  closeOfficeOverlay(cabinetReport);
 }
 
 
@@ -2628,6 +2298,7 @@ cabinetReportNext.addEventListener('click', () => {
     // Advance using the existing simulation engine.
     // This must only happen once per completed report.
     state = advanceTurn(state);
+    hideDecisionNotification();
 
     // Save the updated presidency.
     persist();
@@ -2668,12 +2339,6 @@ cabinetReportNext.addEventListener('click', () => {
     announcer.textContent =
       `Turn ${state.turn} has begun. ` +
       'A new government event is available.';
-
-    console.log('Presidency advanced:', {
-      turn: state.turn,
-      phase: state.phase,
-      reports: state.history.length
-    });
 
   } catch (error) {
 
@@ -3004,10 +2669,7 @@ function openGovernmentArchives() {
 
 function closeGovernmentArchives() {
 
-  closeOfficeOverlay(
-    governmentArchives,
-    governmentArchivesClose
-  );
+  closeOfficeOverlay(governmentArchives);
 }
 
 
@@ -3173,10 +2835,7 @@ function openAdvisorDialogue() {
 
 function closeAdvisorDialogue() {
 
-  closeOfficeOverlay(
-    officeDialogue,
-    officeDialogueClose
-  );
+  closeOfficeOverlay(officeDialogue);
 }
 
 
@@ -3192,48 +2851,30 @@ policyDossierClose.addEventListener(
 );
 
 
-// ==========================================
-// PHASE 5C.2 - CENTRAL ESCAPE HANDLER
-// ==========================================
-
 document.addEventListener('keydown', event => {
+  if (pauseMenu.open || dialog.open) return;
 
-  if (
-    event.key !== 'Escape' ||
-    officeScreen.hidden
-  ) {
-    return;
-  }
-
-  const activeOverlay =
-    getActiveOfficeOverlay();
-
-  // No office overlay is currently open.
-  if (!activeOverlay) {
-    return;
-  }
-
-  event.preventDefault();
-
-  // Close only the currently active overlay.
-  if (activeOverlay === policyDossier) {
-
-    closePolicyDossier();
-
-  } else if (activeOverlay === cabinetReport) {
-
-    closeCabinetReport();
-
-  } else if (activeOverlay === governmentArchives) {
-
-    closeGovernmentArchives();
-
-  } else if (activeOverlay === officeDialogue) {
-
-    closeAdvisorDialogue();
+  const overlay = getActiveOfficeOverlay();
+  if (event.key === 'Escape' && !event.repeat) {
+    if (!overlay && !state && officeScreen.hidden) return;
+    event.preventDefault();
+    if (overlay === policyDossier && !policyApprovalConfirmation.hidden) {
+      policyApprovalCancel.click();
+    } else if (overlay) {
+      overlayClosers.get(overlay)();
+    } else {
+      openPauseMenu();
+    }
+  } else if (event.key === 'Tab' && overlay) {
+    const controls = [...overlay.querySelectorAll('button:not(:disabled)')]
+      .filter(button => button.getClientRects().length);
+    const edge = event.shiftKey ? controls[0] : controls.at(-1);
+    if (document.activeElement === edge) {
+      event.preventDefault();
+      (event.shiftKey ? controls.at(-1) : controls[0]).focus();
+    }
   }
 });
-
 
 // ==========================================
 // CONTINUE TO POLICIES BUTTON
@@ -3265,8 +2906,7 @@ advisorContinue.addEventListener('click', () => {
 
     // Tell the player where to go next.
     officeMessage.textContent =
-      'Briefing complete. Approach the National Policy Desk ' +
-      'and press E to review your policies.';
+      'Briefing complete. Open the National Policy Desk to review your policies.';
 
   } catch (error) {
     advisorFeedback.textContent = error.message;
@@ -3274,95 +2914,50 @@ advisorContinue.addEventListener('click', () => {
   }
 });
 
-// ==========================================
-// ESCAPE KEY HANDLER
-// ==========================================
+enterOfficeButton.addEventListener('click', enterOffice);
+officeBackButton.addEventListener('click', returnToBriefing);
+cabinetReportClose.addEventListener('click', closeCabinetReport);
+document.querySelector('.brand').addEventListener('click', event => {
+  if ((!state && officeScreen.hidden) || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+  event.preventDefault();
+  requestModeSelection();
+});
+objectiveLink.addEventListener('click', () => {
+  if (state?.phase === 'result') returnToBriefing();
+  else interactWithOffice(window.getOfficeObjectiveAction());
+});
+archiveLink.addEventListener('click', () => interactWithOffice('archives'));
 
+function interactWithOffice(action) {
+  if (officeScreen.hidden || pauseMenu.open || dialog.open || getActiveOfficeOverlay()) return;
 
-// Office button handlers.
-enterOfficeButton.addEventListener(
-  'click',
-  enterOffice
-);
-
-officeBackButton.addEventListener(
-  'click',
-  returnToBriefing
-);
-
-// Receive interactions from OfficeScene.
-window.addEventListener(
-  'government:office-action',
-  event => {
-
-    const action = event.detail.action;
-
-    // Ignore new interactions while an office
-    // dialogue or document is already open.
-    if (getActiveOfficeOverlay()) {
-      return;
-    }
-
-
-    // ======================================
-    // CHECK INTERACTION AVAILABILITY
-    // ======================================
-
-
-    // ==========================================
-    // PHASE 5C.3B - LOCKED INTERACTION FEEDBACK
-    // ==========================================
-
-    const status =
-      window.getOfficeInteractionStatus(action);
-
-    if (!status.allowed) {
-
-      // Explain why the interaction is unavailable.
-      officeMessage.textContent = status.reason;
-
-      // Also announce the reason for accessibility.
-      announcer.textContent = status.reason;
-
-      return;
-    }
-
-
-
-    switch (action) {
-
-      case 'national-policies':
-        openPolicyDossier();
-        break;
-
-      case 'exit-office':
-
-        // Return to the main strategy interface.
-        returnToBriefing();
-        break;
-
-      case 'cabinet-briefing':
-        openCabinetReport();
-
-        break;
-
-      case 'archives':
-
-        openGovernmentArchives();
-
-        break;
-
-      case 'advisors':
-
-        openAdvisorDialogue();
-        break;
-
-      default:
-
-        console.warn(
-          'Unknown office interaction:',
-          action
-        );
-    }
+  const status = window.getOfficeInteractionStatus(action);
+  if (!status.allowed) {
+    officeMessage.textContent = status.reason;
+    return;
   }
-);
+
+  if (!officeMap.hidden) officeMessage.textContent = '';
+  switch (action) {
+    case 'national-policies':
+      openPolicyDossier();
+      break;
+    case 'exit-office':
+      returnToBriefing();
+      break;
+    case 'cabinet-briefing':
+      openCabinetReport();
+      break;
+    case 'archives':
+      openGovernmentArchives();
+      break;
+    case 'advisors':
+      openAdvisorDialogue();
+      break;
+  }
+}
+
+window.addEventListener('government:office-action', event => interactWithOffice(event.detail.action));
+window.addEventListener('government:office-ready', syncOfficeScenePause);
+
+render();

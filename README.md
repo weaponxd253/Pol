@@ -12,6 +12,10 @@ npm start
 
 Open the Local URL printed in the terminal (normally http://127.0.0.1:4173). No dependency installation is needed. Use a local server rather than opening `index.html` directly because the game uses ES modules. Stop the server with Ctrl+C.
 
+Start or resume a run, then choose **Enter Executive Office**. Use the navigation buttons to open the current briefing, policy desk, Cabinet report, or Archives. On the map, move with WASD or the arrow keys and press **E** at a station. The map loads Phaser from a CDN. If the CDN is unavailable, the office buttons still work.
+
+Use **Pause** or **Esc** to stop office movement. **Esc** closes an open office panel first. From the pause menu, continue, switch views, restart, or choose a mode. Restarting an active run asks for confirmation. A full term can be resumed from mode selection.
+
 ## Verify
 
 ```sh
@@ -21,6 +25,8 @@ npm run balance
 ```
 
 Tests cover the original prototype routes, hand/deck accounting, delayed effects, repayment, escalation, election boundaries, condition timing and combined causes, colliding reviews, renewal payments, pure previews, and save restoration in every phase. The balance script compares four strategies across twenty shared seeds and writes `artifacts/balance-report.json`, including consequence activation counts. The earlier report is retained in `artifacts/balance-before-consequences.json`; scripted comparisons do not establish that every seed is winnable.
+
+For a quick browser check, fund household relief and expand public services in the three-turn scenario. In the office, check the enactment notice and the Turn 2 payment warning. Advance from the Cabinet report and check that the payment is now marked due this turn. Try **Esc** from the map, cancel a restart, then return to the briefing and confirm you are still on Turn 2.
 
 ## Files
 

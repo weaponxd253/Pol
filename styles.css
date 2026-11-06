@@ -1962,7 +1962,7 @@ h2:focus {
 
 #office-screen {
   width: 100%;
-  max-width: 1000px;
+  max-width: 960px;
   margin: 24px auto;
 }
 
@@ -1975,6 +1975,17 @@ h2:focus {
   flex-wrap: wrap;
 }
 
+.office-toolbar-actions,
+.office-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.office-navigation {
+  flex-basis: 100%;
+}
+
 #office-game {
   width: 100%;
   max-width: 960px;
@@ -1984,15 +1995,30 @@ h2:focus {
   overflow: hidden;
 }
 
+#office-canvas {
+  position: absolute;
+  inset: 0;
+  background: #17251f url('./assets/office.png') center / contain no-repeat;
+}
+
 #office-game canvas {
   display: block;
   width: 100%;
   height: auto;
 }
 
+#office-game canvas[hidden] {
+  display: none;
+}
+
+#office-controls,
 #office-message {
   margin-top: 12px;
   font-size: 14px;
+}
+
+#office-message:empty {
+  display: none;
 }
 
 
@@ -3459,8 +3485,9 @@ h2:focus {
     }
 }
 
-#office-game canvas:focus {
-    outline: none;
+#office-map:focus-visible {
+    outline: 3px solid #f1ce7d;
+    outline-offset: -4px;
 }
 
 
@@ -3709,7 +3736,78 @@ h2:focus {
     transition: opacity 0.2s ease;
 }
 
-.presidential-hud.player-near,
+.presidential-hud.player-near:not(:focus-within),
 .presidential-objective.player-near {
     opacity: 0.15;
+}
+
+@media (max-width: 900px) {
+    #office-game {
+        aspect-ratio: auto;
+        display: grid;
+        gap: 8px;
+        padding: 8px;
+    }
+
+    #office-canvas {
+        position: relative;
+        aspect-ratio: 4 / 3;
+        order: -2;
+    }
+
+    #office-game :is(.presidential-hud, .presidential-objective, .government-alert, .objective-notice, .decision-notice) {
+        position: static;
+        width: 100%;
+        max-width: none;
+        transform: none;
+        opacity: 1;
+    }
+
+    #office-game .government-alert {
+        order: -1;
+    }
+
+    #office-game .presidential-hud {
+        max-height: none;
+    }
+
+    #office-game :is(.policy-dossier-overlay, .cabinet-report-overlay, .government-archives-overlay) {
+        position: fixed;
+    }
+
+    .office-dialogue {
+        position: fixed;
+        bottom: 12px;
+        left: 12px;
+        right: 12px;
+    }
+}
+
+@media (max-width: 600px) {
+    .office-navigation .button {
+        padding-inline: 12px;
+    }
+
+    .policy-dossier-frame {
+        height: min(92dvh, 720px);
+        aspect-ratio: auto;
+        background: #f5ecd8;
+        border: 3px solid #bd9958;
+        border-radius: 8px;
+    }
+
+    .policy-dossier-seal {
+        display: none;
+    }
+
+    .policy-dossier-paper {
+        inset: 12px 8px 90px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .presidential-hud,
+    .presidential-objective {
+        transition: none;
+    }
 }
