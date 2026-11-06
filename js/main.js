@@ -1477,6 +1477,33 @@ const advisorContinue =
 // ==========================================
 
 const officeMap = document.getElementById('office-map');
+
+// ==========================================
+// PHASE 6 - RESTORE PHASER KEYBOARD FOCUS
+// ==========================================
+
+// Make the Phaser canvas keyboard-focusable.
+officeMap.tabIndex = 0;
+
+// Restore keyboard focus when the player
+// clicks inside the game canvas.
+officeMap.addEventListener('pointerdown', () => {
+
+    // Don't interfere with open menus or overlays.
+    if (
+        officeScreen.hidden ||
+        officeMap.hidden ||
+        pauseMenu.open ||
+        dialog.open ||
+        getActiveOfficeOverlay()
+    ) {
+        return;
+    }
+
+    // Return keyboard control to Phaser.
+    officeMap.focus({ preventScroll: true });
+});
+
 const officeHeading = document.getElementById('office-heading');
 const roomLink = document.getElementById('office-room-link');
 const rooms = {
