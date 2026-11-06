@@ -3,6 +3,42 @@ const IDLE_FRAMES = { down: 0, left: 4, right: 8, up: 12 };
 const WALK_SPEED = 165;
 let showCollisions = false;
 
+export function containsRoomPoint({ x, y, w, h }, px, py) {
+    return px >= x && px <= x + w && py >= y && py <= y + h;
+}
+
+export function padRoomBlock({ x, y, w, h }) {
+    return {
+        x: x - PLAYER_FEET.x,
+        y: y - PLAYER_FEET.y,
+        w: w + 2 * PLAYER_FEET.x,
+        h: h + 2 * PLAYER_FEET.y
+    };
+}
+
+export function createRoomCollisionDebug(scene, floor, blocks, interactions) {
+    const debug = scene.add.graphics().setDepth(25).setVisible(false);
+    scene.debugGraphics = debug;
+    scene.debugFeet = scene.add.graphics().setDepth(26).setVisible(false);
+
+    debug.fillStyle(0x00ff00, 0.06);
+    debug.lineStyle(3, 0xffd500, 1);
+    debug.fillRect(floor.x, floor.y, floor.w, floor.h);
+    debug.strokeRect(floor.x, floor.y, floor.w, floor.h);
+
+    debug.lineStyle(2, 0xff3333, 1);
+    debug.fillStyle(0xff3333, 0.18);
+    for (const { x, y, w, h } of blocks) {
+        debug.fillRect(x, y, w, h);
+        debug.strokeRect(x, y, w, h);
+    }
+
+    debug.lineStyle(2, 0x00ffff, 0.95);
+    for (const { x, y, w, h } of interactions) {
+        debug.strokeRect(x, y, w, h);
+    }
+}
+
 export function createRoomPlayer(scene, x, y, direction) {
     for (const [name, start] of Object.entries(IDLE_FRAMES)) {
         const key = `walk-${name}`;
@@ -106,8 +142,8 @@ export function bindRoomActions(scene, interact, activate) {
         }));
     };
     scene.events.once(CREATE, announceRoom);
-    scene.events.on(WAKE, () => {
-        activate();
+    scene.events.on(WAKE, (_systems, data) => {
+        activate(data);
         announceRoom();
     });
 }

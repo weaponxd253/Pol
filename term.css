@@ -102,3 +102,75 @@ dialog p { margin-top: 17px; color: var(--muted); font-size: 13px; line-height: 
   .result-panel .panel-bottom > p { order: 2; }
   .dialog-actions { flex-direction: column; }
 }
+.situation-console-frame {
+  width: min(96%, 760px);
+}
+
+.situation-console-content {
+  display: grid;
+  gap: 14px;
+}
+
+.situation-console-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.situation-console-controls .button,
+.situation-map .button {
+  min-height: 36px;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.situation-console-controls button[aria-pressed="true"],
+.situation-map button[aria-pressed="true"] {
+  background: #0f605b;
+  border-color: #0f605b;
+  color: #fff;
+}
+
+.situation-map {
+  position: relative;
+  min-height: 152px;
+  aspect-ratio: 8 / 3;
+  overflow: hidden;
+  border: 2px solid #529a89;
+  border-radius: 8px;
+  background-color: #133831;
+  background-image: linear-gradient(#ffffff15 1px, transparent 1px), linear-gradient(90deg, #ffffff15 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.situation-map svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  fill: #215d54;
+  stroke: #6ab8a7;
+  stroke-width: 2;
+}
+
+.situation-map .situation-map-route {
+  fill: none;
+  stroke: #e6cc8f;
+  stroke-dasharray: 6 5;
+}
+
+.situation-map .button {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.situation-map [data-situation-region="arden"] { left: 22%; top: 38%; }
+.situation-map [data-situation-region="partners"] { left: 76%; top: 38%; }
+.situation-map [data-situation-region="supply"] { left: 50%; top: 77%; }
+
+#situation-summary h4 { margin: 0 0 6px; font-size: 19px; }
+#situation-summary p { margin: 0 0 8px; }
+#situation-summary dl { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+#situation-summary dl div { padding: 8px 10px; background: #e5ede0; border-radius: 5px; }
+#situation-summary dd { margin: 0; font-weight: 700; }
+#situation-summary ul { padding-inline-start: 20px; margin: 10px 0 0; }
+#situation-summary li + li { margin-top: 8px; }

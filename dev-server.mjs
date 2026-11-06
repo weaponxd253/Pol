@@ -15,8 +15,12 @@ const allowed = new Set([
   '/js/main.js', '/js/engine.js', '/js/content.js', '/js/view.js', '/js/storage.js',
   '/js/office-scene.js', '/js/office-alerts.js', '/js/government-corridor-scene.js',
   '/js/corridor-layout.js', '/js/room-controls.js',
+  '/js/cabinet-room-scene.js', '/js/cabinet-room-layout.js',
+  '/js/situation-room-scene.js', '/js/situation-room-layout.js', '/js/situation-briefing.js',
+  '/js/press-room-scene.js', '/js/press-room-layout.js',
   '/assets/office.png', '/assets/prez.png', '/assets/policy-dossier.png', '/assets/policy-dossier-seal.png',
-  '/assets/government_corridor.png', '/assets/chief_of_staff.png'
+  '/assets/government_corridor.png', '/assets/chief_of_staff.png', '/assets/cabinet_room.png',
+  '/assets/situation_room.png', '/assets/press_briefing_room.png'
 ]);
 let port = Number(process.env.PORT || 4173);
 if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('PORT must be between 1 and 65535.');

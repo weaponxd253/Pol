@@ -67,7 +67,11 @@
           <button class="button button-secondary" type="button" data-action="pause">Pause</button>
         </div>
         <nav class="office-navigation" aria-label="Office navigation">
-          <button id="office-room-link" class="button button-secondary" type="button" hidden></button>
+          <button id="office-room-link" class="button button-secondary" type="button" data-room-link hidden></button>
+          <button id="office-cabinet-link" class="button button-secondary" type="button" data-room-link hidden></button>
+          <button class="button button-secondary" type="button" data-room-link hidden></button>
+          <button class="button button-secondary" type="button" data-room-link hidden></button>
+          <button id="situation-stations-link" class="button button-primary" type="button" hidden>Situation Room Stations</button>
           <button id="office-objective-link" class="button button-primary" type="button" hidden></button>
           <button id="office-archive-link" class="button button-secondary" type="button" hidden>
             Government Archives
@@ -251,6 +255,40 @@
             <span>TURN IMPACT</span>
 
             <p id="decision-notice-changes"></p>
+          </div>
+        </div>
+
+        <div id="situation-console" class="cabinet-report-overlay" role="dialog" aria-modal="true"
+          aria-labelledby="situation-console-title" hidden>
+          <div class="cabinet-report-frame situation-console-frame">
+            <header class="cabinet-report-header">
+              <p>REPUBLIC OF ARDEN</p>
+              <h3 id="situation-console-title">Situation Room</h3>
+            </header>
+            <div class="cabinet-report-content situation-console-content">
+              <div class="situation-console-controls" role="group" aria-label="Situation Room stations">
+                <button class="button button-secondary" type="button" data-situation-section="emergency" aria-pressed="true">Emergency Briefing</button>
+                <button class="button button-secondary" type="button" data-situation-section="map" aria-pressed="false">Strategic Map</button>
+                <button class="button button-secondary" type="button" data-situation-section="diplomacy" aria-pressed="false">Diplomacy</button>
+                <button class="button button-secondary" type="button" data-situation-section="intelligence" aria-pressed="false">Intelligence</button>
+                <button class="button button-secondary" type="button" data-situation-section="security" aria-pressed="false">National Security</button>
+              </div>
+              <div id="situation-map" class="situation-map" role="group" aria-label="Select a region of the fictional strategic map" hidden>
+                <svg viewBox="0 0 640 240" preserveAspectRatio="none" aria-hidden="true">
+                  <path d="M15 83 81 43 153 30 207 53 234 106 192 143 153 134 120 176 55 147Z" />
+                  <path d="M360 78 422 27 528 30 616 67 601 120 539 140 466 121 424 149 384 125Z" />
+                  <path class="situation-map-route" d="M143 90Q315 6 487 92M143 90Q202 207 322 183T487 92" />
+                </svg>
+                <button class="button button-secondary" type="button" data-situation-region="arden" aria-pressed="true">Arden</button>
+                <button class="button button-secondary" type="button" data-situation-region="partners" aria-pressed="false">Regional Partners</button>
+                <button class="button button-secondary" type="button" data-situation-region="supply" aria-pressed="false">Supply Routes</button>
+              </div>
+              <section id="situation-summary" aria-label="Station briefing" aria-live="polite"></section>
+            </div>
+            <footer class="cabinet-report-footer situation-console-controls">
+              <button id="situation-next" class="button button-primary" type="button" hidden></button>
+              <button id="situation-close" class="button button-secondary" type="button">Close Stations</button>
+            </footer>
           </div>
         </div>
 

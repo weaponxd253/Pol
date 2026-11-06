@@ -14,7 +14,9 @@ Open the Local URL printed in the terminal (normally http://127.0.0.1:4173). No 
 
 Start or resume a run, then choose **Enter Executive Office**. Use the navigation buttons to open the current briefing, policy desk, Cabinet report, or Archives. On the map, move with WASD or the arrow keys and press **E** at a station. The map loads Phaser from a CDN. If the CDN is unavailable, the office buttons still work.
 
-Use the office door or the room button to enter the Government Corridor. Return through the center doors or the **Enter Executive Office** button. Press **C** in either room to toggle the collision bounds, interaction zones, and the president’s foot position.
+Use the office door or the room button to enter the Government Corridor. The left door leads to the Cabinet Room, and the center doors lead back to the Executive Office. Leave the Cabinet Room through its south passage. The navigation buttons also connect these rooms. Press **C** on the map to toggle collision bounds, interaction zones, and the president’s foot position.
+
+The corridor’s top-right door leads to the Press Briefing Room’s south aisle. Leave through that aisle to return to the same corridor door. The corridor’s south passage connects to the Situation Room’s north opening. Inside the Situation Room, press **E** at a marked station or choose **Situation Room Stations** for emergency briefings, the strategic map, diplomacy, intelligence, and national security. The stations use the current run’s data and open the existing response, policy, and report screens when those actions are available.
 
 Use **Pause** or **Esc** to stop office movement. **Esc** closes an open office panel first. From the pause menu, continue, switch views, restart, or choose a mode. Restarting an active run asks for confirmation. A full term can be resumed from mode selection.
 

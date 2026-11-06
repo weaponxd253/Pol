@@ -17,6 +17,10 @@ import {
 import { loadGame, saveGame } from './storage.js';
 import { renderGame } from './view.js';
 import { governmentWarning, treasuryWarning } from './office-alerts.js';
+import { SITUATION_STATIONS } from './situation-room-layout.js';
+import { getSituationBriefing } from './situation-briefing.js';
+
+const situationSections = new Map(SITUATION_STATIONS.map(station => [station.action, station.id]));
 
 // ==========================================
 // EXISTING GOVERNMENT GAME
@@ -235,12 +239,8 @@ let replacement = null;
 
 window.getOfficeInteractionStatus = function (action) {
 
-  if (action === 'exit-office' || action === 'enter-office') {
+  if (roomTravelActions.has(action) || situationSections.has(action)) {
     return { allowed: true, reason: '' };
-  }
-
-  if (action === 'cabinet-room' || action === 'situation-room') {
-    return { allowed: false, reason: 'This room is currently closed.' };
   }
 
   // Government activities require an active game.
@@ -301,6 +301,13 @@ window.getOfficeInteractionStatus = function (action) {
 window.getOfficeContextHint = function (action) {
   if (action === 'exit-office') return 'Explore the hallway outside the office.';
   if (action === 'enter-office') return 'Return to your briefing stations.';
+  if (action === 'cabinet-room') return 'Explore the Cabinet meeting room.';
+  if (action === 'exit-cabinet-room') return 'Leave through the south passage.';
+  if (action === 'press-briefing-room') return 'Arrive at the south entrance.';
+  if (action === 'exit-press-briefing') return 'Return to the corridor’s right-hand door.';
+  if (action === 'situation-room') return 'Arrive through the north opening.';
+  if (action === 'exit-situation-north') return 'Return to the corridor’s south passage.';
+  if (situationSections.has(action)) return 'Open the Situation Room stations.';
 
   if (!state) {
     return 'Start or resume a presidency first.';
@@ -1505,13 +1512,46 @@ officeMap.addEventListener('pointerdown', () => {
 });
 
 const officeHeading = document.getElementById('office-heading');
-const roomLink = document.getElementById('office-room-link');
+const roomLinks = document.querySelectorAll('[data-room-link]');
 const rooms = {
-  OfficeScene: { label: 'Executive Office', next: 'GovernmentCorridorScene', action: 'exit-office' },
-  GovernmentCorridorScene: { label: 'Government Corridor', next: 'OfficeScene', action: 'enter-office' }
+  OfficeScene: {
+    label: 'Executive Office',
+    exits: { 'exit-office': 'GovernmentCorridorScene' }
+  },
+  GovernmentCorridorScene: {
+    label: 'Government Corridor',
+    exits: {
+      'enter-office': 'OfficeScene', 'cabinet-room': 'CabinetRoomScene',
+      'press-briefing-room': 'PressBriefingRoomScene', 'situation-room': 'SituationRoomScene'
+    }
+  },
+  CabinetRoomScene: {
+    label: 'Cabinet Room',
+    exits: { 'exit-cabinet-room': 'GovernmentCorridorScene' }
+  },
+  SituationRoomScene: {
+    label: 'Situation Room',
+    exits: { 'exit-situation-north': 'GovernmentCorridorScene' }
+  },
+  PressBriefingRoomScene: {
+    label: 'Press Briefing Room',
+    exits: { 'exit-press-briefing': 'GovernmentCorridorScene' }
+  }
 };
+const roomTravelActions = new Set(Object.values(rooms).flatMap(room => Object.keys(room.exits)));
 let activeRoomKey = null;
 let roomTransitionPending = false;
+const situationStationsLink = document.getElementById('situation-stations-link');
+const situationConsole = document.getElementById('situation-console');
+const situationMap = document.getElementById('situation-map');
+const situationSummary = document.getElementById('situation-summary');
+const situationNext = document.getElementById('situation-next');
+const situationClose = document.getElementById('situation-close');
+const situationSectionButtons = situationConsole.querySelectorAll('[data-situation-section]');
+const situationRegionButtons = situationMap.querySelectorAll('[data-situation-region]');
+let situationSection = 'emergency';
+let situationRegion = 'arden';
+
 const objectiveLink = document.getElementById('office-objective-link');
 const archiveLink = document.getElementById('office-archive-link');
 const officeControls = document.getElementById('office-controls');
@@ -1522,7 +1562,8 @@ const overlayClosers = new Map([
   [officeDialogue, closeAdvisorDialogue],
   [policyDossier, closePolicyDossier],
   [cabinetReport, closeCabinetReport],
-  [governmentArchives, closeGovernmentArchives]
+  [governmentArchives, closeGovernmentArchives],
+  [situationConsole, closeSituationConsole]
 ]);
 let overlayTrigger = null;
 
@@ -1561,28 +1602,34 @@ function setCurrentRoom(key) {
   officeHeading.textContent = room.label;
   officeMap.setAttribute('aria-label', `${room.label} map`);
   enterOfficeButton.textContent = `Enter ${room.label}`;
-  roomLink.textContent = `Enter ${rooms[room.next].label}`;
-  roomLink.hidden = false;
-  roomLink.disabled = false;
+  const exits = Object.entries(room.exits);
+  situationStationsLink.hidden = key !== 'SituationRoomScene';
+  roomLinks.forEach((link, index) => {
+    const [action, destination] = exits[index] ?? [];
+    link.hidden = !destination;
+    link.disabled = false;
+    link.dataset.roomLink = action ?? '';
+    link.textContent = destination ? `Enter ${rooms[destination].label}` : '';
+  });
   if (!officeScreen.hidden) {
     skipLink.textContent = `Skip to the ${room.label}`;
     officeMessage.textContent = room.label;
   }
   syncOfficeScenePause();
   if (!officeScreen.hidden && !pauseMenu.open && !dialog.open && !getActiveOfficeOverlay() &&
-      (document.activeElement === roomLink || document.activeElement === document.body)) {
+      (document.activeElement?.matches('[data-room-link]') || document.activeElement === document.body)) {
     officeMap.focus({ preventScroll: true });
   }
 }
 
 function switchRoom(action) {
-  const room = rooms[activeRoomKey];
-  if (officeMap.hidden || room?.action !== action || roomTransitionPending ||
+  const destination = rooms[activeRoomKey]?.exits[action];
+  if (officeMap.hidden || !destination || roomTransitionPending ||
       !officeGame.scene.isActive(activeRoomKey)) return;
 
   roomTransitionPending = true;
-  roomLink.disabled = true;
-  officeGame.scene.getScene(activeRoomKey).scene.switch(room.next);
+  roomLinks.forEach(link => { link.disabled = true; });
+  officeGame.scene.getScene(activeRoomKey).scene.switch(destination, { action });
 }
 
 function openOfficeOverlay(element, focusElement) {
@@ -1604,6 +1651,42 @@ function closeOfficeOverlay(element) {
     target.focus({ preventScroll: true });
   }
   overlayTrigger = null;
+}
+
+function renderSituationConsole() {
+  const briefing = getSituationBriefing(state, situationSection, situationRegion);
+  situationMap.hidden = situationSection !== 'map';
+  situationSectionButtons.forEach(button => {
+    button.setAttribute('aria-pressed', String(button.dataset.situationSection === situationSection));
+  });
+  situationRegionButtons.forEach(button => {
+    button.setAttribute('aria-pressed', String(button.dataset.situationRegion === situationRegion));
+  });
+
+  const metrics = briefing.metrics?.map(({ label, value }) =>
+    `<div><dt>${escape(label)}</dt><dd>${escape(value)}/100</dd></div>`
+  ).join('');
+  const entries = briefing.entries?.map(({ title, text }) =>
+    `<li><strong>${escape(title)}</strong><br>${escape(text)}</li>`
+  ).join('');
+  situationSummary.innerHTML = `<h4>${escape(briefing.title)}</h4><p>${escape(briefing.description)}</p>`
+    + (metrics ? `<dl>${metrics}</dl>` : '')
+    + (entries ? `<ul>${entries}</ul>` : '');
+  situationNext.hidden = !briefing.action;
+  situationNext.textContent = briefing.action?.label ?? '';
+  situationNext.dataset.situationAction = briefing.action?.id ?? '';
+}
+
+function openSituationConsole(section = 'emergency') {
+  if (activeRoomKey !== 'SituationRoomScene') return;
+  situationSection = section;
+  renderSituationConsole();
+  const button = [...situationSectionButtons].find(item => item.dataset.situationSection === section);
+  openOfficeOverlay(situationConsole, button);
+}
+
+function closeSituationConsole() {
+  closeOfficeOverlay(situationConsole);
 }
 
 function openPauseMenu() {
@@ -1649,10 +1732,16 @@ async function enterOffice() {
 
       const [
         { OfficeScene },
-        { GovernmentCorridorScene }
+        { GovernmentCorridorScene },
+        { CabinetRoomScene },
+        { SituationRoomScene },
+        { PressBriefingRoomScene }
       ] = await Promise.all([
         import('./office-scene.js'),
-        import('./government-corridor-scene.js')
+        import('./government-corridor-scene.js'),
+        import('./cabinet-room-scene.js'),
+        import('./situation-room-scene.js'),
+        import('./press-room-scene.js')
       ]);
       if (officeScreen.hidden || officeGame) return;
       officeGame = new Phaser.Game({
@@ -1671,7 +1760,10 @@ async function enterOffice() {
         },
         scene: [
           OfficeScene,
-          GovernmentCorridorScene
+          GovernmentCorridorScene,
+          CabinetRoomScene,
+          SituationRoomScene,
+          PressBriefingRoomScene
         ]
 
       });
@@ -1688,7 +1780,8 @@ async function enterOffice() {
 
 function showOfficeMapFallback() {
   officeMap.hidden = true;
-  roomLink.hidden = true;
+  roomLinks.forEach(link => { link.hidden = true; });
+  situationStationsLink.hidden = true;
   officeControls.hidden = true;
   officeMessage.textContent = 'The map is unavailable. Use the office navigation buttons to visit each station.';
   (objectiveLink.hidden ? officeBackButton : objectiveLink).focus({ preventScroll: true });
@@ -3009,7 +3102,29 @@ objectiveLink.addEventListener('click', () => {
   else interactWithOffice(window.getOfficeObjectiveAction());
 });
 archiveLink.addEventListener('click', () => interactWithOffice('archives'));
-roomLink.addEventListener('click', () => interactWithOffice(rooms[activeRoomKey]?.action));
+situationStationsLink.addEventListener('click', () => interactWithOffice('situation-emergency'));
+situationClose.addEventListener('click', closeSituationConsole);
+situationConsole.addEventListener('click', event => {
+  const button = event.target.closest('button');
+  if (button?.dataset.situationSection) {
+    situationSection = button.dataset.situationSection;
+  } else if (button?.dataset.situationRegion) {
+    situationRegion = button.dataset.situationRegion;
+  } else {
+    return;
+  }
+  renderSituationConsole();
+});
+situationNext.addEventListener('click', () => {
+  const action = situationNext.dataset.situationAction;
+  if (!action) return;
+  closeSituationConsole();
+  if (action === 'final-results') returnToBriefing();
+  else interactWithOffice(action);
+});
+roomLinks.forEach(link => {
+  link.addEventListener('click', () => interactWithOffice(link.dataset.roomLink));
+});
 officeMap.addEventListener('blur', () => {
   if (activeRoomKey) officeGame.scene.getScene(activeRoomKey).input.keyboard.resetKeys();
 });
@@ -3024,15 +3139,17 @@ function interactWithOffice(action) {
   }
 
   if (!officeMap.hidden) officeMessage.textContent = '';
+  const section = situationSections.get(action);
+  if (section) {
+    openSituationConsole(section);
+    return;
+  }
+
   switch (action) {
     case 'national-policies':
       openPolicyDossier();
       break;
 
-    case 'exit-office':
-    case 'enter-office':
-      switchRoom(action);
-      break;
     case 'cabinet-briefing':
       openCabinetReport();
       break;
@@ -3042,6 +3159,8 @@ function interactWithOffice(action) {
     case 'advisors':
       openAdvisorDialogue();
       break;
+    default:
+      switchRoom(action);
   }
 }
 

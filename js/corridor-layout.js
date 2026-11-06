@@ -1,7 +1,10 @@
-import { PLAYER_FEET } from './room-controls.js';
+import { containsRoomPoint, padRoomBlock } from './room-controls.js';
 
 // Coordinates are measured against the corridor artwork at 960 × 720.
 export const CORRIDOR_ENTRANCE = { x: 480, y: 254 };
+export const CABINET_CORRIDOR_ENTRANCE = { x: 150, y: 254 };
+export const PRESS_CORRIDOR_ENTRANCE = { x: 811, y: 254 };
+export const CORRIDOR_SOUTH_ENTRANCE = { x: 480, y: 625 };
 export const CORRIDOR_FLOOR = { x: 12, y: 214, w: 936, h: 500 };
 
 const solids = [
@@ -27,28 +30,25 @@ const solids = [
     { x: 615, y: 547, w: 42, h: 20 }
 ];
 
-export const CORRIDOR_BLOCKS = solids.map(({ x, y, w, h }) => ({
-    x: x - PLAYER_FEET.x,
-    y: y - PLAYER_FEET.y,
-    w: w + 2 * PLAYER_FEET.x,
-    h: h + 2 * PLAYER_FEET.y
-}));
+export const CORRIDOR_BLOCKS = solids.map(padRoomBlock);
 
 export const CORRIDOR_DOORS = [
-    { x: 105, y: 208, w: 89, h: 70, name: 'Cabinet Room', action: 'cabinet-room' },
+    { x: 105, y: 208, w: 89, h: 70, name: 'Cabinet Room', label: 'Enter Cabinet Room', action: 'cabinet-room' },
     { x: 434, y: 208, w: 90, h: 70, name: 'Executive Office', label: 'Enter Executive Office', action: 'enter-office' },
-    { x: 766, y: 208, w: 90, h: 70, name: 'Situation Room', action: 'situation-room' }
+    { x: 766, y: 208, w: 90, h: 70, name: 'Press Briefing Room', label: 'Enter Press Briefing Room', action: 'press-briefing-room' }
 ];
 
-function contains({ x, y, w, h }, px, py) {
-    return px >= x && px <= x + w && py >= y && py <= y + h;
-}
+export const CORRIDOR_INTERACTIONS = [...CORRIDOR_DOORS, {
+    x: 370, y: 650, w: 220, h: 64, name: 'South Passage', label: 'Enter Situation Room',
+    action: 'situation-room'
+}];
 
 export function canWalkCorridor(x, y) {
-    return contains(CORRIDOR_FLOOR, x, y) && !CORRIDOR_BLOCKS.some(block => contains(block, x, y));
+    return containsRoomPoint(CORRIDOR_FLOOR, x, y) &&
+        !CORRIDOR_BLOCKS.some(block => containsRoomPoint(block, x, y));
 }
 
 export function getCorridorDoor(x, y) {
     if (!canWalkCorridor(x, y)) return null;
-    return CORRIDOR_DOORS.find(door => contains(door, x, y)) ?? null;
+    return CORRIDOR_INTERACTIONS.find(door => containsRoomPoint(door, x, y)) ?? null;
 }
