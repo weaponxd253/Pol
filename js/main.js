@@ -19,6 +19,7 @@ import { renderGame } from './view.js';
 import { governmentWarning, treasuryWarning } from './office-alerts.js';
 import { SITUATION_STATIONS } from './situation-room-layout.js';
 import { getSituationBriefing } from './situation-briefing.js';
+import { getRoomNpcs } from './npc-content.js';
 
 const situationSections = new Map(SITUATION_STATIONS.map(station => [station.action, station.id]));
 
@@ -239,7 +240,7 @@ let replacement = null;
 
 window.getOfficeInteractionStatus = function (action) {
 
-  if (roomTravelActions.has(action) || situationSections.has(action)) {
+  if (roomTravelActions.has(action) || situationSections.has(action) || roomNpcFor(action)) {
     return { allowed: true, reason: '' };
   }
 
@@ -308,6 +309,8 @@ window.getOfficeContextHint = function (action) {
   if (action === 'situation-room') return 'Arrive through the north opening.';
   if (action === 'exit-situation-north') return 'Return to the corridor’s south passage.';
   if (situationSections.has(action)) return 'Open the Situation Room stations.';
+  const npc = roomNpcFor(action);
+  if (npc) return npc.hint;
 
   if (!state) {
     return 'Start or resume a presidency first.';
@@ -1513,6 +1516,12 @@ officeMap.addEventListener('pointerdown', () => {
 
 const officeHeading = document.getElementById('office-heading');
 const roomLinks = document.querySelectorAll('[data-room-link]');
+const roomNpcLinks = document.getElementById('room-npc-links');
+const roomNpcDialogue = document.getElementById('room-npc-dialogue');
+const roomNpcName = document.getElementById('room-npc-name');
+const roomNpcMessage = document.getElementById('room-npc-message');
+const roomNpcFigures = document.getElementById('room-npc-figures');
+const roomNpcClose = document.getElementById('room-npc-close');
 const rooms = {
   OfficeScene: {
     label: 'Executive Office',
@@ -1563,7 +1572,8 @@ const overlayClosers = new Map([
   [policyDossier, closePolicyDossier],
   [cabinetReport, closeCabinetReport],
   [governmentArchives, closeGovernmentArchives],
-  [situationConsole, closeSituationConsole]
+  [situationConsole, closeSituationConsole],
+  [roomNpcDialogue, closeRoomNpcDialogue]
 ]);
 let overlayTrigger = null;
 
@@ -1604,6 +1614,16 @@ function setCurrentRoom(key) {
   enterOfficeButton.textContent = `Enter ${room.label}`;
   const exits = Object.entries(room.exits);
   situationStationsLink.hidden = key !== 'SituationRoomScene';
+  const npcs = getRoomNpcs(key);
+  roomNpcLinks.replaceChildren(...npcs.map(npc => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'button button-secondary';
+    button.dataset.npcAction = npc.action;
+    button.textContent = `Speak with ${npc.name}`;
+    return button;
+  }));
+  roomNpcLinks.hidden = !npcs.length;
   roomLinks.forEach((link, index) => {
     const [action, destination] = exits[index] ?? [];
     link.hidden = !destination;
@@ -1651,6 +1671,25 @@ function closeOfficeOverlay(element) {
     target.focus({ preventScroll: true });
   }
   overlayTrigger = null;
+}
+
+function roomNpcFor(action) {
+  return getRoomNpcs(activeRoomKey).find(npc => npc.action === action);
+}
+
+function openRoomNpcDialogue(npc) {
+  const { message, figures } = npc.briefing(state);
+  roomNpcName.textContent = npc.name;
+  roomNpcMessage.textContent = message;
+  roomNpcFigures.innerHTML = (figures ?? []).map(([label, value]) =>
+    `<div><dt>${escape(label)}</dt><dd>${escape(value)}</dd></div>`
+  ).join('');
+  roomNpcFigures.hidden = !figures?.length;
+  openOfficeOverlay(roomNpcDialogue, roomNpcClose);
+}
+
+function closeRoomNpcDialogue() {
+  closeOfficeOverlay(roomNpcDialogue);
 }
 
 function renderSituationConsole() {
@@ -1782,6 +1821,7 @@ function showOfficeMapFallback() {
   officeMap.hidden = true;
   roomLinks.forEach(link => { link.hidden = true; });
   situationStationsLink.hidden = true;
+  roomNpcLinks.hidden = true;
   officeControls.hidden = true;
   officeMessage.textContent = 'The map is unavailable. Use the office navigation buttons to visit each station.';
   (objectiveLink.hidden ? officeBackButton : objectiveLink).focus({ preventScroll: true });
@@ -3030,6 +3070,12 @@ document.addEventListener('keydown', event => {
   if (pauseMenu.open || dialog.open) return;
 
   const overlay = getActiveOfficeOverlay();
+  if (overlay === roomNpcDialogue && roomNpcDialogue.contains(event.target) &&
+      event.key.toLowerCase() === 'e' && !event.repeat && !event.ctrlKey && !event.metaKey && !event.altKey) {
+    event.preventDefault();
+    closeRoomNpcDialogue();
+    return;
+  }
   if (event.key === 'Escape' && !event.repeat) {
     if (!overlay && !state && officeScreen.hidden) return;
     event.preventDefault();
@@ -3102,6 +3148,11 @@ objectiveLink.addEventListener('click', () => {
   else interactWithOffice(window.getOfficeObjectiveAction());
 });
 archiveLink.addEventListener('click', () => interactWithOffice('archives'));
+roomNpcLinks.addEventListener('click', event => {
+  const action = event.target.closest('button')?.dataset.npcAction;
+  if (action) interactWithOffice(action);
+});
+roomNpcClose.addEventListener('click', closeRoomNpcDialogue);
 situationStationsLink.addEventListener('click', () => interactWithOffice('situation-emergency'));
 situationClose.addEventListener('click', closeSituationConsole);
 situationConsole.addEventListener('click', event => {
@@ -3139,6 +3190,11 @@ function interactWithOffice(action) {
   }
 
   if (!officeMap.hidden) officeMessage.textContent = '';
+  const npc = roomNpcFor(action);
+  if (npc) {
+    openRoomNpcDialogue(npc);
+    return;
+  }
   const section = situationSections.get(action);
   if (section) {
     openSituationConsole(section);

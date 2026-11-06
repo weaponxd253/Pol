@@ -174,3 +174,24 @@ dialog p { margin-top: 17px; color: var(--muted); font-size: 13px; line-height: 
 #situation-summary dd { margin: 0; font-weight: 700; }
 #situation-summary ul { padding-inline-start: 20px; margin: 10px 0 0; }
 #situation-summary li + li { margin-top: 8px; }
+.room-npc-links,
+.room-npc-figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.room-npc-figures {
+  margin: 12px 0;
+}
+
+.room-npc-figures div {
+  padding: 6px 10px;
+  border: 1px solid #c5a66b;
+  border-radius: 5px;
+}
+
+.room-npc-figures dd {
+  margin: 0;
+  font-weight: 700;
+}

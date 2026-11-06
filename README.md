@@ -20,6 +20,8 @@ The corridor’s top-right door leads to the Press Briefing Room’s south aisle
 
 Use **Pause** or **Esc** to stop office movement. **Esc** closes an open office panel first. From the pause menu, continue, switch views, restart, or choose a mode. Restarting an active run asks for confirmation. A full term can be resumed from mode selection.
 
+Press **E** near the Finance Secretary in the Cabinet Room, or use the room’s **Speak with Finance Secretary** button, to review the current budget and commitments. Staff definitions in `js/npc-content.js` specify each character’s room, sprite, position, and briefing. The corridor’s Chief of Staff uses the same system.
+
 ## Verify
 
 ```sh

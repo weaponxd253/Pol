@@ -18,9 +18,10 @@ const allowed = new Set([
   '/js/cabinet-room-scene.js', '/js/cabinet-room-layout.js',
   '/js/situation-room-scene.js', '/js/situation-room-layout.js', '/js/situation-briefing.js',
   '/js/press-room-scene.js', '/js/press-room-layout.js',
+  '/js/room-npcs.js', '/js/npc-content.js',
   '/assets/office.png', '/assets/prez.png', '/assets/policy-dossier.png', '/assets/policy-dossier-seal.png',
   '/assets/government_corridor.png', '/assets/chief_of_staff.png', '/assets/cabinet_room.png',
-  '/assets/situation_room.png', '/assets/press_briefing_room.png'
+  '/assets/situation_room.png', '/assets/press_briefing_room.png', '/assets/finance_secretary.png'
 ]);
 let port = Number(process.env.PORT || 4173);
 if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('PORT must be between 1 and 65535.');

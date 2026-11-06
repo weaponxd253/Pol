@@ -1,5 +1,5 @@
 export const PLAYER_FEET = { x: 11, y: 6 };
-const IDLE_FRAMES = { down: 0, left: 4, right: 8, up: 12 };
+export const IDLE_FRAMES = { down: 0, left: 4, right: 8, up: 12 };
 const WALK_SPEED = 165;
 let showCollisions = false;
 
