@@ -20,6 +20,8 @@ import { governmentWarning, treasuryWarning } from './office-alerts.js';
 import { SITUATION_STATIONS } from './situation-room-layout.js';
 import { getSituationBriefing } from './situation-briefing.js';
 import { getRoomNpcs } from './npc-content.js';
+import { getNpcDialogue } from './npc-dialogue.js';
+import { getPresidentialObjective } from './office-objectives.js';
 
 const situationSections = new Map(SITUATION_STATIONS.map(station => [station.action, station.id]));
 
@@ -799,128 +801,7 @@ function updatePresidentialObjective() {
     return;
   }
 
-  let title = '';
-  let description = '';
-  let location = '';
-
-  // ======================================
-  // EVENT PHASE
-  // ======================================
-
-  if (state.phase === 'event') {
-
-    if (state.selectedResponseId) {
-
-      title = 'Complete Your Briefing';
-
-      description =
-        'Your response has been selected. ' +
-        'Return to the Chief of Staff briefing ' +
-        'and continue to the policy phase.';
-
-    } else {
-
-      title = 'Meet with Chief of Staff';
-
-      description =
-        'A new national event requires your attention. ' +
-        'Open the Chief of Staff briefing to respond.';
-
-    }
-
-    location = 'Advisor Meeting Area';
-  }
-
-  // ======================================
-  // POLICY PHASE
-  // ======================================
-
-  else if (state.phase === 'policy') {
-
-    if (state.selectedPolicyId) {
-
-      title = 'Approve Selected Policy';
-
-      description =
-        'You have selected a government policy. ' +
-        'Review its projected effects at the ' +
-        'National Policy Desk and approve it.';
-
-    } else {
-
-      title = 'Review National Policies';
-
-      description =
-        'Your advisor briefing is complete. ' +
-        'Open the National Policy Desk to review available policies.';
-
-    }
-
-    location = 'National Policy Desk';
-  }
-
-  // ======================================
-  // REPORT PHASE
-  // ======================================
-
-
-  else if (state.phase === 'report') {
-
-    if (state.outcome) {
-
-      title = 'Review Final Cabinet Report';
-
-      description =
-        'Your administration has reached its conclusion. ' +
-        'Visit the Cabinet Briefing Table to review ' +
-        'the final consequences and your presidential outcome.';
-
-    } else {
-
-      title = 'Review Cabinet Results';
-
-      description =
-        'Your policy has been enacted. ' +
-        'Visit the Cabinet Briefing Table to review ' +
-        'the results and advance your presidency.';
-    }
-
-    location = 'Cabinet Briefing Table';
-  }
-
-
-  // ======================================
-  // FINAL RESULT
-  // ======================================
-
-  else if (state.phase === 'result') {
-
-    title = 'Review Presidential Legacy';
-
-    description =
-      'Your presidency has concluded. ' +
-      'Review the final results of your administration.';
-
-    location = 'Final Results';
-  }
-
-  // ======================================
-  // FALLBACK
-  // ======================================
-
-  else {
-
-    title = 'Presidential Duties';
-
-    description =
-      'Review the current state of your administration.';
-
-    location = 'Executive Office';
-  }
-
-  // ======================================
-  // UPDATE THE OBJECTIVE PANEL
-  // ======================================
+  const { title, description, location } = getPresidentialObjective(state);
 
   objectiveTitle.textContent = title;
 
@@ -1519,6 +1400,12 @@ const roomLinks = document.querySelectorAll('[data-room-link]');
 const roomNpcLinks = document.getElementById('room-npc-links');
 const roomNpcDialogue = document.getElementById('room-npc-dialogue');
 const roomNpcName = document.getElementById('room-npc-name');
+const roomNpcPhase = document.getElementById('room-npc-phase');
+const roomNpcAlert = document.getElementById('room-npc-alert');
+const roomNpcChoices = document.getElementById('room-npc-choices');
+const roomNpcTopics = document.getElementById('room-npc-topics');
+const roomNpcEntries = document.getElementById('room-npc-entries');
+let activeRoomNpc = null;
 const roomNpcMessage = document.getElementById('room-npc-message');
 const roomNpcFigures = document.getElementById('room-npc-figures');
 const roomNpcClose = document.getElementById('room-npc-close');
@@ -1677,18 +1564,42 @@ function roomNpcFor(action) {
   return getRoomNpcs(activeRoomKey).find(npc => npc.action === action);
 }
 
-function openRoomNpcDialogue(npc) {
-  const { message, figures } = npc.briefing(state);
-  roomNpcName.textContent = npc.name;
-  roomNpcMessage.textContent = message;
-  roomNpcFigures.innerHTML = (figures ?? []).map(([label, value]) =>
+function renderRoomNpcAnswer(briefing) {
+  roomNpcTopics.querySelectorAll('button').forEach(button => {
+    button.setAttribute('aria-pressed', String(button.dataset.npcTopic === briefing.selected));
+  });
+  roomNpcMessage.textContent = briefing.message;
+  roomNpcFigures.innerHTML = (briefing.figures ?? []).map(([label, value]) =>
     `<div><dt>${escape(label)}</dt><dd>${escape(value)}</dd></div>`
   ).join('');
-  roomNpcFigures.hidden = !figures?.length;
-  openOfficeOverlay(roomNpcDialogue, roomNpcClose);
+  roomNpcFigures.hidden = !briefing.figures?.length;
+  roomNpcEntries.innerHTML = (briefing.entries ?? []).map(({ title, text }) =>
+    `<li><strong>${escape(title)}</strong><br>${escape(text)}</li>`
+  ).join('');
+  roomNpcEntries.hidden = !briefing.entries?.length;
+}
+
+function openRoomNpcDialogue(npc) {
+  activeRoomNpc = npc;
+  const briefing = getNpcDialogue(npc, state);
+  roomNpcName.textContent = npc.name;
+  roomNpcPhase.textContent = briefing.phase ?? '';
+  roomNpcPhase.hidden = !briefing.phase;
+  roomNpcAlert.hidden = !briefing.alert;
+  roomNpcAlert.dataset.severity = briefing.alert?.severity ?? '';
+  roomNpcAlert.innerHTML = briefing.alert
+    ? `<strong>${escape(briefing.alert.title)}</strong><p>${escape(briefing.alert.message)}</p>`
+    : '';
+  roomNpcChoices.hidden = !briefing.topics.length;
+  roomNpcTopics.innerHTML = briefing.topics.map(({ id, label }) =>
+    `<button type="button" class="button button-secondary" data-npc-topic="${escape(id)}">${escape(label)}</button>`
+  ).join('');
+  renderRoomNpcAnswer(briefing);
+  openOfficeOverlay(roomNpcDialogue, roomNpcTopics.querySelector('button') ?? roomNpcClose);
 }
 
 function closeRoomNpcDialogue() {
+  activeRoomNpc = null;
   closeOfficeOverlay(roomNpcDialogue);
 }
 
@@ -3153,6 +3064,10 @@ roomNpcLinks.addEventListener('click', event => {
   if (action) interactWithOffice(action);
 });
 roomNpcClose.addEventListener('click', closeRoomNpcDialogue);
+roomNpcTopics.addEventListener('click', event => {
+  const topic = event.target.closest('button')?.dataset.npcTopic;
+  if (topic && activeRoomNpc) renderRoomNpcAnswer(getNpcDialogue(activeRoomNpc, state, topic));
+});
 situationStationsLink.addEventListener('click', () => interactWithOffice('situation-emergency'));
 situationClose.addEventListener('click', closeSituationConsole);
 situationConsole.addEventListener('click', event => {

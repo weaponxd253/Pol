@@ -1,6 +1,10 @@
 import { METERS, getScenario } from './content.js';
 
-export function governmentWarning(state) {
+export function meterWarningSeverity(value) {
+  return value <= 10 ? 'critical' : value <= 20 ? 'warning' : null;
+}
+
+export function governmentWarning(state, monitoredMeters) {
   if (state.outcome === 'collapsed') {
     const causes = state.history.at(-1)?.failures.map(failure => failure.failure).join(' ');
     const destination = state.phase === 'report' ? 'the final Cabinet Report' : 'Final Results';
@@ -14,11 +18,11 @@ export function governmentWarning(state) {
   if (state.outcome) return null;
 
   const warnings = METERS.map(meter => ({ ...meter, value: state.meters[meter.id] }))
-    .filter(meter => meter.value <= 20)
+    .filter(meter => (!monitoredMeters || monitoredMeters.includes(meter.id)) && meterWarningSeverity(meter.value))
     .sort((a, b) => a.value - b.value);
   if (!warnings.length) return null;
 
-  const critical = warnings[0].value <= 10;
+  const critical = meterWarningSeverity(warnings[0].value) === 'critical';
   return {
     severity: critical ? 'critical' : 'warning',
     title: critical ? 'Government crisis' : 'Government warning',
@@ -26,19 +30,25 @@ export function governmentWarning(state) {
   };
 }
 
-export function treasuryWarning(state) {
-  if (state.outcome) return null;
-
+export function treasuryPaymentsDueSoon(state) {
+  if (state.outcome) return [];
   const firstUnsettledTurn = state.phase === 'report' ? state.turn + 1 : state.turn;
   const lastTurn = Math.min(state.turn + 1, getScenario(state.mode).turns);
-  const payments = state.scheduledEffects.filter(effect =>
+  const groups = new Map();
+  for (const effect of state.scheduledEffects.filter(effect =>
     effect.meter === 'treasury' && effect.amount < 0 &&
     effect.dueTurn >= firstUnsettledTurn && effect.dueTurn <= lastTurn
-  );
-  if (!payments.length) return null;
+  )) {
+    if (!groups.has(effect.dueTurn)) groups.set(effect.dueTurn, []);
+    groups.get(effect.dueTurn).push(effect);
+  }
+  return [...groups].sort(([a], [b]) => a - b);
+}
 
-  const dueTurn = Math.min(...payments.map(effect => effect.dueTurn));
-  const due = payments.filter(effect => effect.dueTurn === dueTurn);
+export function treasuryWarning(state, targetTurn) {
+  const groups = treasuryPaymentsDueSoon(state);
+  const [dueTurn, due] = (targetTurn === undefined ? groups[0] : groups.find(([turn]) => turn === targetTurn)) ?? [];
+  if (!due) return null;
   const total = due.reduce((sum, effect) => sum - effect.amount, 0);
   const buffer = state.meters.treasury - total;
   const severity = buffer <= 0 ? 'critical' : buffer <= 10 ? 'urgent' : 'normal';

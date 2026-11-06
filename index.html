@@ -294,11 +294,20 @@
         </div>
 
         <div id="room-npc-dialogue" class="office-dialogue" role="dialog" aria-modal="true"
-          aria-labelledby="room-npc-name" aria-describedby="room-npc-message" hidden>
+          aria-labelledby="room-npc-name" aria-describedby="room-npc-alert room-npc-message" hidden>
           <div class="office-dialogue-content">
             <h3 id="room-npc-name"></h3>
-            <p id="room-npc-message"></p>
-            <dl id="room-npc-figures" class="room-npc-figures" hidden></dl>
+            <p id="room-npc-phase" class="room-npc-phase" hidden></p>
+            <div id="room-npc-alert" class="room-npc-alert" hidden></div>
+            <div id="room-npc-choices" hidden>
+              <p>President, what would you like to review?</p>
+              <div id="room-npc-topics" class="room-npc-topics" role="group" aria-label="Conversation topics"></div>
+            </div>
+            <div class="room-npc-answer" aria-live="polite" aria-atomic="true">
+              <p id="room-npc-message"></p>
+              <dl id="room-npc-figures" class="room-npc-figures" hidden></dl>
+              <ul id="room-npc-entries" class="room-npc-entries" hidden></ul>
+            </div>
             <button id="room-npc-close" class="button button-secondary" type="button" aria-keyshortcuts="E Escape">Close conversation</button>
           </div>
         </div>

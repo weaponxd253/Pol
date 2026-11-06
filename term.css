@@ -175,6 +175,7 @@ dialog p { margin-top: 17px; color: var(--muted); font-size: 13px; line-height: 
 #situation-summary ul { padding-inline-start: 20px; margin: 10px 0 0; }
 #situation-summary li + li { margin-top: 8px; }
 .room-npc-links,
+.room-npc-topics,
 .room-npc-figures {
   display: flex;
   flex-wrap: wrap;
@@ -194,4 +195,50 @@ dialog p { margin-top: 17px; color: var(--muted); font-size: 13px; line-height: 
 .room-npc-figures dd {
   margin: 0;
   font-weight: 700;
+}
+
+.room-npc-phase {
+  font-weight: 600;
+}
+
+.room-npc-alert {
+  background: #604020;
+  border: 1px solid #e0b879;
+  border-radius: 6px;
+  padding: 9px 12px;
+  margin: 10px 0;
+  color: #fff3da;
+}
+
+.room-npc-alert[data-severity="critical"] {
+  background: #6b2626;
+  border-color: #f4a7a0;
+}
+
+.office-dialogue .room-npc-alert p {
+  margin: 4px 0 0;
+}
+
+.room-npc-topics .button {
+  min-height: 40px;
+  padding: 7px 12px;
+}
+
+.room-npc-topics button[aria-pressed="true"] {
+  background: #f6dfa5;
+  border-color: #c5a66b;
+  color: #183d32;
+}
+
+.room-npc-answer {
+  margin: 12px 0;
+}
+
+.room-npc-entries {
+  padding-inline-start: 20px;
+  margin: 8px 0;
+}
+
+.room-npc-entries li + li {
+  margin-top: 8px;
 }

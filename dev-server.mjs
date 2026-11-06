@@ -18,7 +18,7 @@ const allowed = new Set([
   '/js/cabinet-room-scene.js', '/js/cabinet-room-layout.js',
   '/js/situation-room-scene.js', '/js/situation-room-layout.js', '/js/situation-briefing.js',
   '/js/press-room-scene.js', '/js/press-room-layout.js',
-  '/js/room-npcs.js', '/js/npc-content.js',
+  '/js/room-npcs.js', '/js/npc-content.js', '/js/npc-dialogue.js', '/js/office-objectives.js',
   '/assets/office.png', '/assets/prez.png', '/assets/policy-dossier.png', '/assets/policy-dossier-seal.png',
   '/assets/government_corridor.png', '/assets/chief_of_staff.png', '/assets/cabinet_room.png',
   '/assets/situation_room.png', '/assets/press_briefing_room.png', '/assets/finance_secretary.png',
