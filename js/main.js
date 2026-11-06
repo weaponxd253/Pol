@@ -1512,11 +1512,30 @@ function getActiveOfficeOverlay() {
 function syncOfficeScenePause() {
   if (!officeGame) return;
   const shouldPause = officeScreen.hidden || pauseMenu.open || dialog.open || getActiveOfficeOverlay();
-  if (shouldPause && officeGame.scene.isActive('OfficeScene')) {
-    officeGame.scene.pause('OfficeScene');
-  } else if (!shouldPause && officeGame.scene.isPaused('OfficeScene')) {
-    officeGame.scene.resume('OfficeScene');
+
+
+  const roomScenes = [
+    'OfficeScene',
+    'GovernmentCorridorScene'
+  ];
+
+  for (const sceneKey of roomScenes) {
+
+    if (
+      shouldPause &&
+      officeGame.scene.isActive(sceneKey)
+    ) {
+      officeGame.scene.pause(sceneKey);
+    }
+
+    if (
+      !shouldPause &&
+      officeGame.scene.isPaused(sceneKey)
+    ) {
+      officeGame.scene.resume(sceneKey);
+    }
   }
+
 }
 
 function openOfficeOverlay(element, focusElement) {
@@ -1580,7 +1599,14 @@ async function enterOffice() {
   officeMessage.textContent = '';
   try {
     if (!officeGame) {
-      const { OfficeScene } = await import('./office-scene.js');
+
+      const [
+        { OfficeScene },
+        { GovernmentCorridorScene }
+      ] = await Promise.all([
+        import('./office-scene.js'),
+        import('./government-corridor-scene.js')
+      ]);
       if (officeScreen.hidden || officeGame) return;
       officeGame = new Phaser.Game({
         type: Phaser.CANVAS,
@@ -1596,7 +1622,11 @@ async function enterOffice() {
           mode: Phaser.Scale.FIT,
           autoCenter: Phaser.Scale.CENTER_BOTH
         },
-        scene: [OfficeScene]
+        scene: [
+          OfficeScene,
+          GovernmentCorridorScene
+        ]
+
       });
     }
     syncOfficeScenePause();
@@ -2942,9 +2972,36 @@ function interactWithOffice(action) {
     case 'national-policies':
       openPolicyDossier();
       break;
-    case 'exit-office':
-      returnToBriefing();
+
+    case 'exit-office': {
+
+      // If Phaser is available, travel to the corridor.
+      if (
+        officeGame &&
+        !officeMap.hidden &&
+        officeGame.scene.isActive('OfficeScene')
+      ) {
+
+        const currentScene =
+          officeGame.scene.getScene('OfficeScene');
+
+        currentScene.scene.switch(
+          'GovernmentCorridorScene'
+        );
+
+        officeMessage.textContent =
+          'Government Corridor. Explore the hallway ' +
+          'or return through the upper-center doors.';
+
+      } else {
+
+        // Preserve the Phase 5 fallback behavior.
+        returnToBriefing();
+      }
+
       break;
+    }
+
     case 'cabinet-briefing':
       openCabinetReport();
       break;
