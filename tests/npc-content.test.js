@@ -33,21 +33,21 @@ test('staff stand on accessible floor in their assigned rooms, clear of doors an
 
 test('the Finance Secretary uses the run’s budget and does not mutate decisions', () => {
     const initial = createInitialState();
-    assert.match(getNpcDialogue(finance, initial).message, /baseline/);
+    assert.match(getNpcDialogue(finance, initial, 'treasury').message, /baseline/);
     assert.match(Object.fromEntries(getNpcDialogue(finance, initial).figures).Treasury, /24\/100/);
 
     const policy = selectPolicy(beginPolicyPhase(selectResponse(initial, 'relief')), 'services');
     const original = structuredClone(policy);
-    const projection = getNpcDialogue(finance, policy);
+    const projection = getNpcDialogue(finance, policy, 'treasury');
     assert.match(projection.message, /projected budget/);
     assert.equal(Object.fromEntries(projection.figures)['Net budget'], '-1');
     assert.deepEqual(policy, original);
 
     const report = resolveTurn(policy);
-    const settled = getNpcDialogue(finance, report);
+    const settled = getNpcDialogue(finance, report, 'treasury');
     assert.match(settled.message, /settled the budget/);
     assert.match(Object.fromEntries(settled.figures).Treasury, new RegExp(`^${report.meters.treasury}/100`));
-    assert.equal(Object.fromEntries(getNpcDialogue(finance, advanceTurn(report)).figures)['Scheduled payments'], 3);
+    assert.equal(Object.fromEntries(getNpcDialogue(finance, advanceTurn(report), 'treasury').figures)['Scheduled payments'], 3);
 });
 
 function settle(state, response, policy) {

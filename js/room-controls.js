@@ -20,6 +20,7 @@ export function createRoomCollisionDebug(scene, floor, blocks, interactions) {
     const debug = scene.add.graphics().setDepth(25).setVisible(false);
     scene.debugGraphics = debug;
     scene.debugFeet = scene.add.graphics().setDepth(26).setVisible(false);
+    scene.debugNpcs = scene.add.graphics().setDepth(25).setVisible(false);
 
     debug.fillStyle(0x00ff00, 0.06);
     debug.lineStyle(3, 0xffd500, 1);
@@ -151,6 +152,7 @@ export function bindRoomActions(scene, interact, activate) {
 function showRoomDebug(scene) {
     scene.debugGraphics.setVisible(showCollisions);
     scene.debugFeet.setVisible(showCollisions);
+    scene.npcs?.drawDebug();
     drawRoomFeet(scene);
 }
 

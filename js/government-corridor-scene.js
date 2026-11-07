@@ -29,7 +29,11 @@ export class GovernmentCorridorScene extends window.Phaser.Scene {
     create() {
         this.add.image(WIDTH / 2, HEIGHT / 2, 'government-corridor').setDisplaySize(WIDTH, HEIGHT);
         createRoomPlayer(this, CORRIDOR_ENTRANCE.x, CORRIDOR_ENTRANCE.y, 'down');
-        this.npcs = createRoomNpcs(this);
+        this.npcs = createRoomNpcs(this, {
+            canWalk: canWalkCorridor,
+            entrances: [CORRIDOR_ENTRANCE, ...Object.values(CORRIDOR_ARRIVALS)],
+            protectedZones: CORRIDOR_INTERACTIONS
+        });
         this.hint = this.add.text(WIDTH / 2, HEIGHT - 8, '', {
             fontFamily: 'Arial, sans-serif',
             fontSize: '14px',
@@ -40,7 +44,7 @@ export class GovernmentCorridorScene extends window.Phaser.Scene {
         }).setOrigin(0.5, 1).setDepth(30);
 
         createRoomCollisionDebug(this, CORRIDOR_FLOOR, CORRIDOR_BLOCKS, CORRIDOR_INTERACTIONS);
-        this.npcs.drawDebug(this.debugGraphics);
+        this.npcs.drawDebug();
         this.updatePrompt();
         bindRoomActions(this,
             () => sendRoomAction(this.getInteraction()),
@@ -58,7 +62,7 @@ export class GovernmentCorridorScene extends window.Phaser.Scene {
 
     getInteraction() {
         const { x, y } = this.player;
-        return this.npcs.nearby(x, y) ?? getCorridorDoor(x, y);
+        return getCorridorDoor(x, y) ?? this.npcs.nearby(x, y);
     }
 
     updatePrompt() {
@@ -70,7 +74,7 @@ export class GovernmentCorridorScene extends window.Phaser.Scene {
 
     update(_time, delta) {
         moveRoomPlayer(this, delta);
-        this.npcs.updateDepth(this.player);
+        this.npcs.update(delta, this.player);
         drawRoomFeet(this);
         this.updatePrompt();
         updateRoomHud(this.player);
