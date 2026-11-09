@@ -1,7 +1,8 @@
 import { METERS, getScenario } from './content.js';
 import { calculateTurn, forecastBudget } from './engine.js';
 import { governmentWarning, meterWarningSeverity, treasuryPaymentsDueSoon, treasuryWarning } from './office-alerts.js';
-import { getPresidentialObjective } from './office-objectives.js';
+import { debtFinancingThreshold, financeCondition, financeObjective } from './finance-dialogue.js';
+import { officialCondition, officialObjective, officialOutcome, previousPolicyMessage } from './official-dialogue.js';
 
 const meterNames = Object.fromEntries(METERS.map(({ id, label }) => [id, label]));
 const signed = amount => amount > 0 ? `+${amount}` : String(amount);
@@ -71,10 +72,7 @@ function paymentsBriefing(state) {
 function debtBriefing(state) {
     const report = state.history.at(-1);
     const change = report ? report.debt - report.startDebt : 0;
-    const higherFees = getScenario(state.mode).events.some(event => event.responses.some(response =>
-        (response.debtRule && state.debt >= response.debtRule.threshold) ||
-        response.conditions?.some(rule => rule.metric === 'debt' && rule.comparison === 'gte' && state.debt >= rule.threshold)
-    ));
+    const higherFees = state.debt >= debtFinancingThreshold(state);
     return {
         message: higherFees
             ? 'Debt at this level can increase financing costs during some events.'
@@ -118,43 +116,38 @@ function decisionBriefing(state, npc) {
     };
 }
 
-function objectiveBriefing(state) {
-    const { title, description, location } = getPresidentialObjective(state);
-    return {
-        message: description,
-        figures: [['Current objective', title], ['Destination', location]]
-    };
-}
-
 const topics = {
+    status: ['How are things going?', (state, npc) =>
+        outlook(state, npc.monitors, officialCondition(state, npc))],
+    finances: ['How are things going?', state => ({
+        ...financeCondition(state),
+        figures: [['Treasury', meterReading(state, 'treasury')], ['Debt', state.debt],
+            ['Interest at current debt', Math.ceil(state.debt * 0.05)]]
+    })],
+    'finance-objective': ['What needs attention this turn?', financeObjective],
     condition: ['Government condition', (state, npc) =>
-        outlook(state, npc.monitors, 'These are the current readings across the government.')],
-    objective: ['Current objective', objectiveBriefing],
+        outlook(state, npc.monitors, officialCondition(state, npc))],
+    objective: ['What needs attention this turn?', officialObjective],
     treasury: ['Discuss Treasury', treasuryBriefing],
     payments: ['Review Upcoming Payments', paymentsBriefing],
     debt: ['Discuss National Debt', debtBriefing],
-    security: ['National security', state =>
-        outlook(state, ['stability', 'international'], state.meters.stability < 30
-            ? 'Low Stability can increase the cost of responding to a disruption. Review the National Security station for the current assessment.'
-            : 'The National Security station has our current readiness assessment.')],
-    foreign: ['Foreign tensions', state =>
-        outlook(state, ['international', 'stability'], ['event', 'policy'].includes(state.phase) && state.currentEvent?.category.startsWith('International')
-            ? `The current international briefing is ${state.currentEvent.title}.`
-            : 'International Standing tracks Arden’s diplomatic position. The Strategic Map shows the current regional outlook.')],
-    confidence: ['Public confidence', state =>
-        outlook(state, ['approval'], 'Public Approval shows how the electorate is responding.')],
-    reputation: ['Government reputation', state =>
-        outlook(state, ['approval', 'donors'], 'Public support and donor confidence show how the government is regarded.')],
+    security: ['National security', (state, npc) =>
+        outlook(state, ['stability', 'international'], officialCondition(state, npc))],
+    foreign: ['Foreign tensions', (state, npc) =>
+        outlook(state, ['international', 'stability'], officialCondition(state, npc))],
+    confidence: ['Public confidence', (state, npc) =>
+        outlook(state, ['approval'], officialCondition(state, npc))],
+    reputation: ['Government reputation', (state, npc) =>
+        outlook(state, ['approval', 'donors'], officialCondition(state, npc))],
     decisions: ['Recent decisions', decisionBriefing],
     directions: ['Ask for directions', () => ({
         message: 'The Cabinet Room is on the left, the Executive Office is in the center, and the Press Briefing Room is on the right. Take the south passage to reach the Situation Room.'
     })],
-    meeting: ['Meeting reminders', objectiveBriefing],
-    notices: ['Government notices', state => {
+    meeting: ['Meeting reminders', officialObjective],
+    notices: ['Government notices', (state, npc) => {
         const payment = treasuryWarning(state);
         return {
-            message: state.phase === 'event' ? `The current briefing is ${state.currentEvent.title}.`
-                : getPresidentialObjective(state).description,
+            message: officialCondition(state, npc),
             entries: payment?.severity === 'normal' ? [{ title: 'Treasury schedule', text: payment.message }] : []
         };
     }]
@@ -173,8 +166,8 @@ export function getNpcDialogue(npc, state, requestedTopic) {
         const failures = METERS.filter(meter => state.meters[meter.id] === 0);
         return {
             phase, alert, topics: [],
-            message: failures.length ? `${failures.map(meter => meter.label).join(', ')} reached zero.`
-                : 'The administration has reached a critical outcome.',
+            message: [failures.length ? `${failures.map(meter => meter.label).join(', ')} reached zero.`
+                : 'The administration has reached a critical outcome.', officialOutcome(state, npc)].join(' '),
             figures: failures.map(meter => [meter.label, '0/100'])
         };
     }
@@ -186,9 +179,16 @@ export function getNpcDialogue(npc, state, requestedTopic) {
         ?? alerts.find(item => item?.severity === 'urgent')
         ?? governmentWarning(state, npc.monitors.length ? npc.monitors : undefined);
     const selected = npc.topics.includes(requestedTopic) ? requestedTopic : npc.topics[0];
+    const answer = topics[selected][1](state, npc);
+    if (state.outcome && ['finances', 'finance-objective'].includes(selected)) {
+        answer.message = officialOutcome(state, npc);
+    }
+    if (selected === 'finances' && !state.outcome) {
+        answer.message = [answer.message, previousPolicyMessage(state, npc)].filter(Boolean).join(' ');
+    }
     return {
         phase, alert, selected,
         topics: npc.topics.map(id => ({ id, label: topics[id][0] })),
-        ...topics[selected][1](state, npc)
+        ...answer
     };
 }

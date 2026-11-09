@@ -25,7 +25,9 @@ export class CabinetRoomScene extends window.Phaser.Scene {
         this.add.image(WIDTH / 2, HEIGHT / 2, 'cabinet-room').setDisplaySize(WIDTH, HEIGHT);
         const { x, y } = CABINET_ROOM_ENTRANCE;
         createRoomPlayer(this, x, y, 'up');
-        this.npcs = createRoomNpcs(this);
+        this.npcs = createRoomNpcs(this, {
+            canWalk: canWalkCabinetRoom, entrances: [CABINET_ROOM_ENTRANCE], protectedZones: [CABINET_ROOM_EXIT]
+        });
 
         this.hint = this.add.text(WIDTH / 2, HEIGHT - 8, '', {
             fontFamily: 'Arial, sans-serif',
@@ -37,7 +39,7 @@ export class CabinetRoomScene extends window.Phaser.Scene {
         }).setOrigin(0.5, 1).setDepth(30);
 
         createRoomCollisionDebug(this, CABINET_ROOM_FLOOR, CABINET_ROOM_BLOCKS, [CABINET_ROOM_EXIT]);
-        this.npcs.drawDebug(this.debugGraphics);
+        this.npcs.drawDebug();
         this.updatePrompt();
         bindRoomActions(this,
             () => sendRoomAction(this.getInteraction()),
@@ -54,7 +56,7 @@ export class CabinetRoomScene extends window.Phaser.Scene {
 
     getInteraction() {
         const { x, y } = this.player;
-        return this.npcs.nearby(x, y) ?? getCabinetRoomExit(x, y);
+        return getCabinetRoomExit(x, y) ?? this.npcs.nearby(x, y);
     }
 
     updatePrompt() {
@@ -65,7 +67,7 @@ export class CabinetRoomScene extends window.Phaser.Scene {
 
     update(_time, delta) {
         moveRoomPlayer(this, delta);
-        this.npcs.updateDepth(this.player);
+        this.npcs.update(delta, this.player);
         drawRoomFeet(this);
         this.updatePrompt();
         updateRoomHud(this.player);

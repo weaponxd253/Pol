@@ -25,7 +25,9 @@ export class SituationRoomScene extends window.Phaser.Scene {
         this.add.image(WIDTH / 2, HEIGHT / 2, 'situation-room').setDisplaySize(WIDTH, HEIGHT);
         const { x, y } = SITUATION_ENTRANCE;
         createRoomPlayer(this, x, y, 'down');
-        this.npcs = createRoomNpcs(this);
+        this.npcs = createRoomNpcs(this, {
+            canWalk: canWalkSituationRoom, entrances: [SITUATION_ENTRANCE], protectedZones: SITUATION_INTERACTIONS
+        });
 
         this.hint = this.add.text(WIDTH / 2, HEIGHT - 8, '', {
             fontFamily: 'Arial, sans-serif',
@@ -43,7 +45,7 @@ export class SituationRoomScene extends window.Phaser.Scene {
         }
 
         createRoomCollisionDebug(this, SITUATION_ROOM_FLOOR, SITUATION_BLOCKS, SITUATION_INTERACTIONS);
-        this.npcs.drawDebug(this.debugGraphics);
+        this.npcs.drawDebug();
         this.updateStationPrompt();
         bindRoomActions(this,
             () => sendRoomAction(this.getInteraction()),
@@ -71,7 +73,7 @@ export class SituationRoomScene extends window.Phaser.Scene {
 
     update(_time, delta) {
         moveRoomPlayer(this, delta);
-        this.npcs.updateDepth(this.player);
+        this.npcs.update(delta, this.player);
         drawRoomFeet(this);
         this.updateStationPrompt();
         updateRoomHud(this.player);

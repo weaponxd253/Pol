@@ -1393,6 +1393,7 @@ const roomNpcChoices = document.getElementById('room-npc-choices');
 const roomNpcTopics = document.getElementById('room-npc-topics');
 const roomNpcEntries = document.getElementById('room-npc-entries');
 let activeRoomNpc = null;
+let activeRoomNpcBehavior = null;
 const roomNpcMessage = document.getElementById('room-npc-message');
 const roomNpcFigures = document.getElementById('room-npc-figures');
 const roomNpcClose = document.getElementById('room-npc-close');
@@ -1488,6 +1489,7 @@ function syncOfficeScenePause() {
   const manager = officeGame.scene;
   const shouldPause = officeScreen.hidden || pauseMenu.open || dialog.open || getActiveOfficeOverlay();
   if (shouldPause && manager.isActive(activeRoomKey)) {
+    manager.getScene(activeRoomKey).npcs?.pause();
     manager.pause(activeRoomKey);
   } else if (!shouldPause && manager.isPaused(activeRoomKey)) {
     manager.resume(activeRoomKey);
@@ -1556,6 +1558,11 @@ function showOfficeOverlay(element, focusElement) {
 }
 
 function closeOfficeOverlay(element) {
+  if (element === roomNpcDialogue) {
+    activeRoomNpcBehavior?.endConversation();
+    activeRoomNpcBehavior = null;
+    activeRoomNpc = null;
+  }
   element.hidden = true;
   overlayBackground.forEach(item => { item.inert = false; });
   syncOfficeScenePause();
@@ -1587,7 +1594,10 @@ function renderRoomNpcAnswer(briefing) {
 }
 
 function openRoomNpcDialogue(npc) {
+  if (officeScreen.hidden || pauseMenu.open || dialog.open || getActiveOfficeOverlay()) return;
   activeRoomNpc = npc;
+  activeRoomNpcBehavior = officeGame?.scene.getScene(activeRoomKey).npcs ?? null;
+  activeRoomNpcBehavior?.beginConversation(npc.action);
   const briefing = getNpcDialogue(npc, state);
   roomNpcName.textContent = npc.name;
   roomNpcPhase.textContent = briefing.phase ?? '';
@@ -1606,7 +1616,6 @@ function openRoomNpcDialogue(npc) {
 }
 
 function closeRoomNpcDialogue() {
-  activeRoomNpc = null;
   closeOfficeOverlay(roomNpcDialogue);
 }
 
