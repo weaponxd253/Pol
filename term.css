@@ -242,3 +242,216 @@ dialog p { margin-top: 17px; color: var(--muted); font-size: 13px; line-height: 
 .room-npc-entries li + li {
   margin-top: 8px;
 }
+
+.assembly-overlay {
+  position: fixed;
+}
+
+.assembly-frame {
+  width: min(94%, 840px);
+  max-height: 94vh;
+  max-height: 94dvh;
+}
+
+.assembly-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px clamp(12px, 4vw, 24px);
+  text-align: left;
+  background: #153f34;
+}
+
+.assembly-header img {
+  flex: none;
+  object-fit: contain;
+}
+
+.assembly-header h3 {
+  margin: 2px 0 0;
+  font-size: clamp(23px, 5vw, 32px);
+  line-height: 1.15;
+}
+
+.assembly-header p {
+  margin: 0;
+  color: #ecd197;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.assembly-content {
+  padding: clamp(12px, 4vw, 20px);
+  overscroll-behavior: contain;
+  line-height: 1.45;
+}
+
+.assembly-content:focus-visible {
+  outline: 2px solid #835f23;
+  outline-offset: -3px;
+}
+
+.assembly-mandate {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 12px 14px;
+  background: #e8eadc;
+  border: 1px solid #b4c1ab;
+  border-radius: 6px;
+}
+
+.assembly-content p {
+  margin: 0;
+}
+
+.assembly-label {
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.assembly-president {
+  font: bold 1.2rem Georgia, serif;
+}
+
+.assembly-majority-status {
+  font-weight: 750;
+  color: #664719;
+}
+
+.assembly-mandate > div:last-child {
+  font-size: 0.85rem;
+}
+
+.assembly-content section {
+  margin: 16px 0 0;
+}
+
+.assembly-content h4 {
+  line-height: 1.2;
+}
+
+.assembly-figures {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.assembly-figures > div {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: start;
+  padding: 8px;
+  background: #fffaed;
+  border: 1px solid #ddcb9e;
+  border-radius: 5px;
+}
+
+.assembly-figures dt {
+  font-size: 0.78rem;
+  line-height: 1.2;
+}
+
+.assembly-figures dd {
+  margin: 0 0 4px;
+  font: bold 1.6rem/1 Georgia, serif;
+}
+
+.assembly-seat-chart {
+  position: relative;
+  padding-bottom: 21px;
+}
+
+.assembly-seat-bar {
+  display: flex;
+  height: 18px;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.assembly-seat-bar span + span {
+  box-shadow: inset 1px 0 #f5ecd8;
+}
+
+.assembly-threshold {
+  position: absolute;
+  top: 0;
+  padding-top: 20px;
+  transform: translateX(-50%);
+  color: #624617;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.assembly-threshold::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: calc(50% - 1px);
+  width: 2px;
+  height: 23px;
+  background: #fff5d6;
+  box-shadow: 0 0 0 1px #573d17;
+}
+
+.assembly-party-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.assembly-party {
+  padding: 10px 12px;
+  background: #fffaed;
+  border: 1px solid #ddcb9e;
+  border-inline-start: 5px solid var(--party-color);
+  border-radius: 5px;
+  font-size: 0.84rem;
+}
+
+.assembly-party-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--party-color);
+}
+
+.assembly-party-heading h5 {
+  margin: 0;
+  font: bold 1rem Georgia, serif;
+}
+
+.assembly-party-heading strong {
+  flex: none;
+  color: #263c32;
+}
+
+.assembly-party p + p {
+  margin-top: 5px;
+}
+
+.assembly-party ul {
+  margin: 2px 0 0;
+  padding-inline-start: 18px;
+}
+
+.assembly-footer {
+  padding: 8px 12px;
+  font-size: 0.8rem;
+}
+
+.assembly-footer > span {
+  display: block;
+}
+
+@media (max-width: 580px) {
+  .assembly-party-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

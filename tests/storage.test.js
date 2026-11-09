@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState, selectResponse, beginPolicyPhase, selectPolicy, resolveTurn, advanceTurn } from '../js/engine.js';
-import { SAVE_KEY, loadGame, saveGame } from '../js/storage.js';
+import { SAVE_KEY, SAVE_VERSION, loadGame, saveGame } from '../js/storage.js';
 import { choose, play } from '../scripts/strategies.mjs';
 
 function memoryStorage() {
@@ -22,9 +22,44 @@ test('every phase and selection restores the exact hand, event terms, commitment
   const completed = play('ARDEN-1');
   snapshots.push({ ...completed, phase: 'report' }, completed);
   for (const snapshot of snapshots) {
+    assert.deepEqual(snapshot.assembly, snapshots[0].assembly);
     assert.equal(saveGame(snapshot, store).ok, true);
     assert.deepEqual(loadGame(store).state, snapshot);
   }
+});
+
+test('pre-Assembly saves restore the original term and upgrade on the next save', () => {
+  const store = memoryStorage();
+  const state = play('ARDEN-1');
+  saveGame(state, store);
+  const oldSave = JSON.parse(store.getItem(SAVE_KEY));
+  delete oldSave.state.assembly;
+  oldSave.saveVersion = 1;
+  const original = JSON.stringify(oldSave);
+  store.setItem(SAVE_KEY, original);
+
+  const migrated = loadGame(store).state;
+  assert.deepEqual(migrated, state);
+  assert.equal(store.getItem(SAVE_KEY), original);
+  saveGame(migrated, store);
+  assert.equal(JSON.parse(store.getItem(SAVE_KEY)).saveVersion, SAVE_VERSION);
+  assert.deepEqual(loadGame(store).state, state);
+});
+
+test('Assembly seat and record edits cannot bypass deterministic save validation', () => {
+  const store = memoryStorage();
+  saveGame(createInitialState({ mode: 'term' }), store);
+  const saved = store.getItem(SAVE_KEY);
+  const seatEdit = JSON.parse(saved);
+  seatEdit.state.assembly.parties[0].seats += 5;
+  seatEdit.state.assembly.parties[1].seats -= 5;
+  store.setItem(SAVE_KEY, JSON.stringify(seatEdit));
+  assert.equal(loadGame(store).replacementRequired, true);
+
+  const recordEdit = JSON.parse(saved);
+  recordEdit.state.assembly.legislativeRecords.push({ id: 'unrecorded-bill' });
+  store.setItem(SAVE_KEY, JSON.stringify(recordEdit));
+  assert.equal(loadGame(store).replacementRequired, true);
 });
 
 test('save corruption and incompatible versions are rejected without overwriting stored data', () => {

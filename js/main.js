@@ -271,13 +271,8 @@ window.getOfficeInteractionStatus = function (action) {
   }
 
   // National Policy Desk
-  if (action === 'national-policies') {
-    return {
-      allowed: state.phase === 'policy',
-      reason: state.phase === 'event'
-        ? 'Finish your Chief of Staff briefing first.'
-        : 'No policy decision is available right now.'
-    };
+  if (action === 'national-policies' || action === 'assembly') {
+    return { allowed: true, reason: '' };
   }
 
   // Cabinet Briefing Table
@@ -332,17 +327,9 @@ window.getOfficeContextHint = function (action) {
         : 'No new briefing available.';
 
     case 'national-policies':
-      if (state.phase === 'event') {
-        return 'Finish your Chief of Staff briefing first.';
-      }
-
-      if (state.phase === 'policy') {
-        return state.selectedPolicyId
-          ? 'Review the forecast and approve your policy.'
-          : 'Choose a policy to review its impact.';
-      }
-
-      return 'No new policy decisions available.';
+      return state.phase === 'policy'
+        ? 'Review your policies or the National Assembly.'
+        : 'Review the National Assembly and its parties.';
 
     case 'cabinet-briefing':
       if (state.phase === 'report') {
@@ -1450,6 +1437,12 @@ let situationRegion = 'arden';
 
 const objectiveLink = document.getElementById('office-objective-link');
 const archiveLink = document.getElementById('office-archive-link');
+const assemblyLink = document.getElementById('office-assembly-link');
+const policyDossierAssembly = document.getElementById('policy-dossier-assembly');
+const assemblyOverview = document.getElementById('assembly-overview');
+const assemblyContent = document.getElementById('assembly-content');
+const assemblyClose = document.getElementById('assembly-close');
+let assemblyFromDossier = false;
 const officeControls = document.getElementById('office-controls');
 const overlayBackground = document.querySelectorAll(
   '.masthead, .skip-link, .introduction, .office-toolbar, #office-canvas, .presidential-hud, .page-footer'
@@ -1457,6 +1450,7 @@ const overlayBackground = document.querySelectorAll(
 const overlayClosers = new Map([
   [officeDialogue, closeAdvisorDialogue],
   [policyDossier, closePolicyDossier],
+  [assemblyOverview, closeAssemblyOverview],
   [cabinetReport, closeCabinetReport],
   [governmentArchives, closeGovernmentArchives],
   [situationConsole, closeSituationConsole],
@@ -1475,6 +1469,14 @@ function updateOfficeNavigation() {
   objectiveLink.hidden = !label;
   objectiveLink.textContent = label ?? '';
   archiveLink.hidden = !state;
+  updateAssemblyNavigation();
+}
+
+function updateAssemblyNavigation() {
+  const room = officeMap.hidden ? 'OfficeScene' : activeRoomKey ?? 'OfficeScene';
+  const atDesk = room === 'OfficeScene';
+  assemblyLink.hidden = !state || !(room === 'CabinetRoomScene' || (atDesk && state.phase !== 'policy'));
+  assemblyLink.textContent = atDesk ? 'Policy Desk · National Assembly' : 'National Assembly';
 }
 
 function getActiveOfficeOverlay() {
@@ -1496,6 +1498,7 @@ function setCurrentRoom(key) {
   activeRoomKey = key;
   roomTransitionPending = false;
   const room = rooms[key];
+  updateAssemblyNavigation();
   officeHeading.textContent = room.label;
   officeMap.setAttribute('aria-label', `${room.label} map`);
   enterOfficeButton.textContent = `Enter ${room.label}`;
@@ -1542,6 +1545,10 @@ function switchRoom(action) {
 function openOfficeOverlay(element, focusElement) {
   if (officeScreen.hidden || pauseMenu.open || dialog.open || getActiveOfficeOverlay()) return;
   overlayTrigger = document.activeElement;
+  showOfficeOverlay(element, focusElement);
+}
+
+function showOfficeOverlay(element, focusElement) {
   element.hidden = false;
   overlayBackground.forEach(item => { item.inert = true; });
   syncOfficeScenePause();
@@ -1730,6 +1737,7 @@ async function enterOffice() {
 
 function showOfficeMapFallback() {
   officeMap.hidden = true;
+  updateAssemblyNavigation();
   roomLinks.forEach(link => { link.hidden = true; });
   situationStationsLink.hidden = true;
   roomNpcLinks.hidden = true;
@@ -2069,6 +2077,77 @@ function closePolicyDossier() {
   closeOfficeOverlay(policyDossier);
 }
 
+
+function openAssemblyOverview(fromDossier = false) {
+  const { parties, totalSeats, majoritySeats, presidentialPartyId } = state.assembly;
+  const president = parties.find(party => party.id === presidentialPartyId);
+  const seatsShort = majoritySeats - president.seats;
+  const majorityStatus = seatsShort > 0 ? 'No Assembly majority' : 'Assembly majority';
+  const majorityDetail = seatsShort > 0
+    ? `The president’s party is ${seatsShort} ${seatsShort === 1 ? 'seat' : 'seats'} short of a majority.`
+    : 'The president’s party holds enough seats for a majority.';
+
+  assemblyContent.innerHTML = `
+    <div class="assembly-mandate">
+      <div>
+        <p class="assembly-label">Presidential party</p>
+        <p class="assembly-president">${escape(president.name)}</p>
+      </div>
+      <div>
+        <p class="assembly-majority-status">${majorityStatus}</p>
+        <p>${majorityDetail}</p>
+      </div>
+    </div>
+    <section class="assembly-seats" aria-labelledby="assembly-seats-title">
+      <h4 id="assembly-seats-title">Chamber composition</h4>
+      <dl class="assembly-figures">
+        <div><dt>Total seats</dt><dd>${totalSeats}</dd></div>
+        <div><dt>Seats for a majority</dt><dd>${majoritySeats}</dd></div>
+        <div><dt>President’s party seats</dt><dd>${president.seats}</dd></div>
+      </dl>
+      <div class="assembly-seat-chart" aria-hidden="true">
+        <div class="assembly-seat-bar">
+          ${parties.map(party => `<span style="flex: ${party.seats}; background: ${party.color}"></span>`).join('')}
+        </div>
+        <span class="assembly-threshold" style="left: ${100 * majoritySeats / totalSeats}%">Majority</span>
+      </div>
+    </section>
+    <section class="assembly-profiles" aria-labelledby="assembly-profiles-title">
+      <h4 id="assembly-profiles-title">Party profiles</h4>
+      <div class="assembly-party-grid">
+        ${parties.map(party => `
+          <article class="assembly-party" style="--party-color: ${party.color}">
+            <div class="assembly-party-heading">
+              <h5>${escape(party.name)}</h5>
+              <strong>${party.seats} seats</strong>
+            </div>
+            <p class="assembly-label">${escape(party.status)}</p>
+            <p>${escape(party.description)}</p>
+            <p class="assembly-label">Policy priorities</p>
+            <ul>${party.priorities.map(priority => `<li>${escape(priority)}</li>`).join('')}</ul>
+          </article>`).join('')}
+      </div>
+    </section>`;
+
+  assemblyFromDossier = fromDossier;
+  assemblyClose.textContent = fromDossier ? 'Back to Policy Dossier' : 'Close Assembly';
+  if (fromDossier) {
+    policyDossier.hidden = true;
+    showOfficeOverlay(assemblyOverview, assemblyContent);
+  } else {
+    openOfficeOverlay(assemblyOverview, assemblyContent);
+  }
+  assemblyContent.scrollTop = 0;
+}
+
+function closeAssemblyOverview() {
+  if (assemblyFromDossier) {
+    assemblyOverview.hidden = true;
+    showOfficeOverlay(policyDossier, policyDossierAssembly);
+  } else {
+    closeOfficeOverlay(assemblyOverview);
+  }
+}
 
 policyDossierApprove.addEventListener('click', () => {
 
@@ -2973,6 +3052,9 @@ policyDossierClose.addEventListener(
 );
 
 
+assemblyClose.addEventListener('click', closeAssemblyOverview);
+policyDossierAssembly.addEventListener('click', () => openAssemblyOverview(true));
+
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && event.repeat && (pauseMenu.open || dialog.open)) {
     event.preventDefault();
@@ -2998,8 +3080,8 @@ document.addEventListener('keydown', event => {
       openPauseMenu();
     }
   } else if (event.key === 'Tab' && overlay) {
-    const controls = [...overlay.querySelectorAll('button:not(:disabled)')]
-      .filter(button => button.getClientRects().length);
+    const controls = [...overlay.querySelectorAll('button:not(:disabled), [tabindex="0"]')]
+      .filter(control => control.getClientRects().length);
     const edge = event.shiftKey ? controls[0] : controls.at(-1);
     if (document.activeElement === edge) {
       event.preventDefault();
@@ -3059,6 +3141,7 @@ objectiveLink.addEventListener('click', () => {
   else interactWithOffice(window.getOfficeObjectiveAction());
 });
 archiveLink.addEventListener('click', () => interactWithOffice('archives'));
+assemblyLink.addEventListener('click', () => interactWithOffice('assembly'));
 roomNpcLinks.addEventListener('click', event => {
   const action = event.target.closest('button')?.dataset.npcAction;
   if (action) interactWithOffice(action);
@@ -3118,7 +3201,11 @@ function interactWithOffice(action) {
 
   switch (action) {
     case 'national-policies':
-      openPolicyDossier();
+      if (state.phase === 'policy') openPolicyDossier();
+      else openAssemblyOverview();
+      break;
+    case 'assembly':
+      openAssemblyOverview();
       break;
 
     case 'cabinet-briefing':

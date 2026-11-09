@@ -1,4 +1,5 @@
 import { METERS, getScenario, CONTENT_VERSION, RULES_VERSION } from './content.js';
+import { createAssembly } from './assembly.js';
 
 const bound = value => Math.max(0, Math.min(100, value));
 const requirePhase = (state, phase) => {
@@ -97,6 +98,7 @@ export function createInitialState({ mode = 'quick', seed = 'ARDEN' } = {}) {
   const state = {
     mode, seed: normalizedSeed, rngState: generator.state(), rulesVersion: RULES_VERSION, contentVersion: CONTENT_VERSION,
     turn: 1, phase: 'event',
+    assembly: createAssembly(),
     meters: { approval: 60, treasury: scenario.treasury, donors: 60, economy: 60, international: 60, stability: 60 },
     debt: 0, selectedResponseId: null, selectedPolicyId: null,
     eventDeck, currentEvent: null, policyDeck, hand,

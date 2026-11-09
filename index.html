@@ -74,6 +74,7 @@
           <button id="situation-stations-link" class="button button-primary" type="button" hidden>Situation Room Stations</button>
           <div id="room-npc-links" class="room-npc-links" role="group" aria-label="Room staff" hidden></div>
           <button id="office-objective-link" class="button button-primary" type="button" hidden></button>
+          <button id="office-assembly-link" class="button button-secondary" type="button" hidden>National Assembly</button>
           <button id="office-archive-link" class="button button-secondary" type="button" hidden>
             Government Archives
           </button>
@@ -425,6 +426,10 @@
 
               <div class="policy-dossier-footer-actions">
 
+                <button id="policy-dossier-assembly" type="button">
+                  National Assembly
+                </button>
+
                 <button id="policy-dossier-approve" type="button" disabled>
                   Approve Policy
                 </button>
@@ -438,6 +443,25 @@
             </div>
 
 
+          </div>
+        </div>
+
+        <div id="assembly-overview" class="cabinet-report-overlay assembly-overlay" role="dialog" aria-modal="true"
+          aria-labelledby="assembly-title" hidden>
+          <div class="cabinet-report-frame assembly-frame">
+            <header class="cabinet-report-header assembly-header">
+              <img src="./assets/policy-dossier-seal.png" alt="" width="52" height="52">
+              <div>
+                <p>REPUBLIC OF ARDEN · LEGISLATIVE BRIEF</p>
+                <h3 id="assembly-title">National Assembly</h3>
+              </div>
+            </header>
+            <div id="assembly-content" class="cabinet-report-content assembly-content" role="region"
+              aria-label="Assembly composition and party profiles" tabindex="0"></div>
+            <footer class="cabinet-report-footer assembly-footer">
+              <span>First-term seat allocation</span>
+              <button id="assembly-close" class="button button-secondary" type="button">Close Assembly</button>
+            </footer>
           </div>
         </div>
 

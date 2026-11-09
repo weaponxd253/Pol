@@ -2328,8 +2328,8 @@ h2:focus {
   letter-spacing: 1px;
 }
 
-/* Dossier close button. */
-#policy-dossier-close {
+/* Dossier navigation buttons. */
+:is(#policy-dossier-close, #policy-dossier-assembly) {
   padding: 9px 15px;
 
   background: #e9d6a3;
@@ -2343,7 +2343,7 @@ h2:focus {
   cursor: pointer;
 }
 
-#policy-dossier-close:hover {
+:is(#policy-dossier-close, #policy-dossier-assembly):hover {
   background: #ffffff;
 }
 

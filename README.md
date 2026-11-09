@@ -22,6 +22,8 @@ Use **Pause** or **Esc** to stop office movement. **Esc** closes an open office 
 
 Press **E** near the Finance Secretary in the Cabinet Room, or use the room’s **Speak with Finance Secretary** button, to review the current budget and commitments. Staff definitions in `js/npc-content.js` specify each character’s room, sprite, position, and briefing. The corridor’s Chief of Staff uses the same system.
 
+Visit the **National Policy Desk** for the Assembly overview. During policy review, select **National Assembly** in the Policy Dossier. The Cabinet Room also has a **National Assembly** shortcut. The president’s Arden National Union holds 46 of 100 seats, five short of a majority. Seats stay fixed throughout the first term.
+
 ## Verify
 
 ```sh

@@ -19,6 +19,26 @@ function run(choices) {
 
 test('content has valid, unique IDs and meter effects', () => assert.doesNotThrow(validateContent));
 
+test('the Assembly has a fixed first-term allocation and stable party IDs', () => {
+  const { assembly } = createInitialState();
+  assert.equal(assembly.totalSeats, 100);
+  assert.equal(assembly.majoritySeats, 51);
+  assert.deepEqual(assembly.parties.map(party => party.id), [
+    'arden-national-union', 'civic-reform-alliance', 'regional-independence-coalition', 'social-commons-party'
+  ]);
+  assert.equal(assembly.parties.reduce((total, party) => total + party.seats, 0), 100);
+  const president = assembly.parties.find(party => party.id === assembly.presidentialPartyId);
+  assert.equal(president.status, 'governing');
+  assert.equal(president.seats, 46);
+  assert.deepEqual(assembly.legislativeRecords, []);
+
+  const finished = run([['relief', 'services'], ['settlement', 'bonds'], ['oversight', 'cuts']]);
+  assert.deepEqual(finished.assembly, assembly);
+  const restarted = createInitialState({ mode: 'term', seed: 'NEW-TERM' });
+  assert.deepEqual(restarted.assembly, assembly);
+  assert.notEqual(restarted.assembly.legislativeRecords, assembly.legislativeRecords);
+});
+
 test('popular route pays both service bills and retains debt', () => {
   const state = run([['relief', 'services'], ['settlement', 'bonds'], ['oversight', 'cuts']]);
   assert.equal(state.outcome, 'survived');
