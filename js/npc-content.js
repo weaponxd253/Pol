@@ -9,7 +9,7 @@ const roomNpcs = {
         x: 270, y: 370, direction: 'down',
         talkRadius: 85, collisionRadius: 18,
         monitors: ['approval', 'treasury', 'donors', 'economy', 'international', 'stability'],
-        topics: ['status', 'condition', 'objective', 'decisions']
+        topics: ['status', 'condition', 'objective', 'decisions', 'legislative-support']
     }, {
         action: 'npc-government-aide',
         name: 'Government Aide',
@@ -35,7 +35,7 @@ const roomNpcs = {
         x: 555, y: 520, direction: 'down',
         talkRadius: 85, collisionRadius: 18,
         monitors: ['treasury', 'economy', 'debt'],
-        topics: ['finances', 'treasury', 'payments', 'debt', 'finance-objective', 'decisions']
+        topics: ['finances', 'treasury', 'payments', 'debt', 'finance-objective', 'decisions', 'legislative-finance']
     }],
     SituationRoomScene: [{
         action: 'npc-defense-secretary',

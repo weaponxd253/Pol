@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createInitialState, selectResponse, beginPolicyPhase, selectPolicy, resolveTurn, advanceTurn } from '../js/engine.js';
 import { SAVE_KEY, SAVE_VERSION, loadGame, saveGame } from '../js/storage.js';
 import { choose, play } from '../scripts/strategies.mjs';
+import { BILLS, saveBillDraft, submitBill } from '../js/legislation.js';
 
 function memoryStorage() {
   const data = new Map();
@@ -44,6 +45,47 @@ test('pre-Assembly saves restore the original term and upgrade on the next save'
   saveGame(migrated, store);
   assert.equal(JSON.parse(store.getItem(SAVE_KEY)).saveVersion, SAVE_VERSION);
   assert.deepEqual(loadGame(store).state, state);
+});
+
+test('Assembly foundation saves resume with an empty agenda', () => {
+  const store = memoryStorage();
+  const state = play('ARDEN-1');
+  saveGame(state, store);
+  const saved = JSON.parse(store.getItem(SAVE_KEY));
+  saved.saveVersion = 2;
+  store.setItem(SAVE_KEY, JSON.stringify(saved));
+  assert.deepEqual(loadGame(store).state, state);
+});
+
+test('saved proposals and editable drafts survive turn replay, including historical filing dates', () => {
+  const store = memoryStorage();
+  const [first, second] = BILLS;
+  let state = createInitialState({ mode: 'term', seed: 'ARDEN-1' });
+  state = saveBillDraft(state, first.id, 'comprehensive');
+  const { responseId, policyId } = choose(state);
+  state = advanceTurn(resolveTurn(selectPolicy(beginPolicyPhase(selectResponse(state, responseId)), policyId)));
+  state = submitBill(state, first.id);
+  state = saveBillDraft(state, second.id, 'limited');
+  saveGame(state, store);
+  assert.deepEqual(loadGame(store).state, state);
+  assert.deepEqual(loadGame(store).state.assembly.legislativeRecords, [
+    { billId: first.id, scopeId: 'comprehensive', draftedTurn: 1, submittedTurn: 2 },
+    { billId: second.id, scopeId: 'limited', draftedTurn: 2, submittedTurn: null }
+  ]);
+
+  const original = store.getItem(SAVE_KEY);
+  for (const edit of [
+    records => records.push(records[0]),
+    records => { records[0].submittedTurn = 3; },
+    records => { records[0].draftedTurn = 2; records[0].submittedTurn = 1; },
+    records => { records[0].scopeId = 'unknown-scope'; },
+    records => { records[0].effects = { treasury: 20 }; }
+  ]) {
+    const altered = JSON.parse(original);
+    edit(altered.state.assembly.legislativeRecords);
+    store.setItem(SAVE_KEY, JSON.stringify(altered));
+    assert.equal(loadGame(store).replacementRequired, true);
+  }
 });
 
 test('Assembly seat and record edits cannot bypass deterministic save validation', () => {

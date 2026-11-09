@@ -32,6 +32,8 @@ NPC collisions follow compact foot shapes so the president can walk behind a cha
 
 Visit the **National Policy Desk** for the Assembly overview. During policy review, select **National Assembly** in the Policy Dossier. The Cabinet Room also has a **National Assembly** shortcut. The president’s Arden National Union holds 46 of 100 seats, five short of a majority. Seats stay fixed throughout the first term.
 
+In a full term, open the **Legislative Agenda** from the desk to compare six bills at limited, standard, or comprehensive scope. Save a draft, then ask the Cabinet Room’s Finance Secretary to **Review Legislative Drafts**. Return to the agenda and confirm **Submit to Assembly** to lock the scope. The corridor’s Chief of Staff can **Assess Submitted Bills** and identify likely backers. Drafts and proposals autosave with the term. Projected effects are timed from possible enactment, and a filed proposal awaits Assembly consideration.
+
 ## Verify
 
 ```sh

@@ -22,6 +22,8 @@ import { getSituationBriefing } from './situation-briefing.js';
 import { getRoomNpcs } from './npc-content.js';
 import { getNpcDialogue } from './npc-dialogue.js';
 import { getPresidentialObjective } from './office-objectives.js';
+import { BILLS, saveBillDraft, submitBill } from './legislation.js';
+import { legislativeAgendaMarkup } from './legislative-agenda.js';
 
 const situationSections = new Map(SITUATION_STATIONS.map(station => [station.action, station.id]));
 
@@ -275,6 +277,10 @@ window.getOfficeInteractionStatus = function (action) {
     return { allowed: true, reason: '' };
   }
 
+  if (action === 'legislative-agenda') {
+    return { allowed: state.mode === 'term', reason: 'The legislative agenda is available in the full term.' };
+  }
+
   // Cabinet Briefing Table
   if (action === 'cabinet-briefing') {
     return {
@@ -327,6 +333,11 @@ window.getOfficeContextHint = function (action) {
         : 'No new briefing available.';
 
     case 'national-policies':
+      if (state.mode === 'term') {
+        return state.phase === 'policy'
+          ? 'Review policies, the Assembly, and legislation.'
+          : 'Review the Assembly and legislative agenda.';
+      }
       return state.phase === 'policy'
         ? 'Review your policies or the National Assembly.'
         : 'Review the National Assembly and its parties.';
@@ -1444,6 +1455,18 @@ const assemblyOverview = document.getElementById('assembly-overview');
 const assemblyContent = document.getElementById('assembly-content');
 const assemblyClose = document.getElementById('assembly-close');
 let assemblyFromDossier = false;
+const agendaLink = document.getElementById('office-agenda-link');
+const dossierAgenda = document.getElementById('policy-dossier-agenda');
+const assemblyAgenda = document.getElementById('assembly-agenda');
+const assemblyAllocation = document.getElementById('assembly-allocation');
+const agenda = document.getElementById('legislative-agenda');
+const agendaBody = document.getElementById('agenda-body');
+const agendaClose = document.getElementById('agenda-close');
+const agendaFeedback = document.getElementById('agenda-feedback');
+let agendaReturn = null;
+let agendaBillId;
+let agendaScopeId;
+let agendaConfirming = false;
 const officeControls = document.getElementById('office-controls');
 const overlayBackground = document.querySelectorAll(
   '.masthead, .skip-link, .introduction, .office-toolbar, #office-canvas, .presidential-hud, .page-footer'
@@ -1452,6 +1475,7 @@ const overlayClosers = new Map([
   [officeDialogue, closeAdvisorDialogue],
   [policyDossier, closePolicyDossier],
   [assemblyOverview, closeAssemblyOverview],
+  [agenda, closeLegislativeAgenda],
   [cabinetReport, closeCabinetReport],
   [governmentArchives, closeGovernmentArchives],
   [situationConsole, closeSituationConsole],
@@ -1470,14 +1494,15 @@ function updateOfficeNavigation() {
   objectiveLink.hidden = !label;
   objectiveLink.textContent = label ?? '';
   archiveLink.hidden = !state;
-  updateAssemblyNavigation();
+  updateOfficeStationLinks();
 }
 
-function updateAssemblyNavigation() {
+function updateOfficeStationLinks() {
   const room = officeMap.hidden ? 'OfficeScene' : activeRoomKey ?? 'OfficeScene';
   const atDesk = room === 'OfficeScene';
   assemblyLink.hidden = !state || !(room === 'CabinetRoomScene' || (atDesk && state.phase !== 'policy'));
   assemblyLink.textContent = atDesk ? 'Policy Desk · National Assembly' : 'National Assembly';
+  agendaLink.hidden = !atDesk || state?.mode !== 'term';
 }
 
 function getActiveOfficeOverlay() {
@@ -1500,7 +1525,7 @@ function setCurrentRoom(key) {
   activeRoomKey = key;
   roomTransitionPending = false;
   const room = rooms[key];
-  updateAssemblyNavigation();
+  updateOfficeStationLinks();
   officeHeading.textContent = room.label;
   officeMap.setAttribute('aria-label', `${room.label} map`);
   enterOfficeButton.textContent = `Enter ${room.label}`;
@@ -1746,7 +1771,7 @@ async function enterOffice() {
 
 function showOfficeMapFallback() {
   officeMap.hidden = true;
-  updateAssemblyNavigation();
+  updateOfficeStationLinks();
   roomLinks.forEach(link => { link.hidden = true; });
   situationStationsLink.hidden = true;
   roomNpcLinks.hidden = true;
@@ -2069,6 +2094,7 @@ function openPolicyDossier() {
     return;
   }
 
+  dossierAgenda.hidden = state.mode !== 'term';
   populatePolicyDossier();
 
   openOfficeOverlay(
@@ -2139,6 +2165,8 @@ function openAssemblyOverview(fromDossier = false) {
     </section>`;
 
   assemblyFromDossier = fromDossier;
+  assemblyAgenda.hidden = state.mode !== 'term';
+  assemblyAllocation.hidden = !assemblyAgenda.hidden;
   assemblyClose.textContent = fromDossier ? 'Back to Policy Dossier' : 'Close Assembly';
   if (fromDossier) {
     policyDossier.hidden = true;
@@ -2157,6 +2185,88 @@ function closeAssemblyOverview() {
     closeOfficeOverlay(assemblyOverview);
   }
 }
+
+function renderLegislativeAgenda(focusSelector) {
+  const scrollTop = agendaBody.scrollTop;
+  agendaBody.innerHTML = legislativeAgendaMarkup(state, agendaBillId, agendaScopeId, agendaConfirming);
+  agendaBody.scrollTop = scrollTop;
+  if (focusSelector) agendaBody.querySelector(focusSelector)?.focus();
+}
+
+function selectAgendaBill(billId) {
+  agendaBillId = billId;
+  const record = state.assembly.legislativeRecords.find(item => item.billId === billId);
+  agendaScopeId = record?.scopeId ?? 'standard';
+  agendaConfirming = false;
+  agendaFeedback.textContent = '';
+}
+
+function openLegislativeAgenda(source = null, button = null) {
+  agendaReturn = source ? { source, button } : null;
+  selectAgendaBill(BILLS[0].id);
+  renderLegislativeAgenda();
+  agendaClose.textContent = source === policyDossier ? 'Back to Policy Dossier'
+    : source === assemblyOverview ? 'Back to Assembly' : 'Close Agenda';
+  if (source) {
+    source.hidden = true;
+    showOfficeOverlay(agenda, agendaBody);
+  } else {
+    openOfficeOverlay(agenda, agendaBody);
+  }
+  agendaBody.scrollTop = 0;
+}
+
+function closeLegislativeAgenda() {
+  if (agendaReturn) {
+    agenda.hidden = true;
+    showOfficeOverlay(agendaReturn.source, agendaReturn.button);
+    agendaReturn = null;
+  } else {
+    closeOfficeOverlay(agenda);
+  }
+}
+
+function cancelBillSubmission() {
+  agendaConfirming = false;
+  renderLegislativeAgenda('[data-agenda-action="submit"]');
+}
+
+agendaBody.addEventListener('click', event => {
+  const button = event.target.closest('button');
+  if (!button || button.disabled) return;
+  const { agendaBill, agendaScope, agendaAction } = button.dataset;
+  if (agendaBill) {
+    selectAgendaBill(agendaBill);
+    renderLegislativeAgenda();
+    const title = agendaBody.querySelector('#agenda-bill-title');
+    title.focus({ preventScroll: true });
+    title.closest('article').scrollIntoView({ block: 'nearest' });
+  } else if (agendaScope) {
+    agendaScopeId = agendaScope;
+    agendaConfirming = false;
+    agendaFeedback.textContent = '';
+    renderLegislativeAgenda(`[data-agenda-scope="${agendaScope}"]`);
+  } else if (agendaAction === 'catalog') {
+    agendaBody.querySelector(`[data-agenda-bill="${agendaBillId}"]`).focus();
+  } else if (agendaAction === 'submit') {
+    agendaConfirming = true;
+    renderLegislativeAgenda('[data-agenda-action="cancel"]');
+  } else if (agendaAction === 'cancel') {
+    cancelBillSubmission();
+  } else if (agendaAction === 'save' || (agendaAction === 'confirm' && agendaConfirming)) {
+    const filing = agendaAction === 'confirm';
+    try {
+      state = filing ? submitBill(state, agendaBillId) : saveBillDraft(state, agendaBillId, agendaScopeId);
+      persist();
+      agendaConfirming = false;
+      renderLegislativeAgenda(filing ? '#agenda-bill-title' : '[data-agenda-action="submit"]');
+      const message = filing ? 'Proposal filed with the Assembly.' : 'Draft saved.';
+      agendaFeedback.textContent = storageStatus.available ? message : 'Progress kept in this tab. Browser saving is unavailable.';
+    } catch (error) {
+      agendaFeedback.textContent = error.message;
+    }
+  }
+});
 
 policyDossierApprove.addEventListener('click', () => {
 
@@ -3063,6 +3173,9 @@ policyDossierClose.addEventListener(
 
 assemblyClose.addEventListener('click', closeAssemblyOverview);
 policyDossierAssembly.addEventListener('click', () => openAssemblyOverview(true));
+agendaClose.addEventListener('click', closeLegislativeAgenda);
+dossierAgenda.addEventListener('click', () => openLegislativeAgenda(policyDossier, dossierAgenda));
+assemblyAgenda.addEventListener('click', () => openLegislativeAgenda(assemblyOverview, assemblyAgenda));
 
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && event.repeat && (pauseMenu.open || dialog.open)) {
@@ -3083,6 +3196,8 @@ document.addEventListener('keydown', event => {
     event.preventDefault();
     if (overlay === policyDossier && !policyApprovalConfirmation.hidden) {
       policyApprovalCancel.click();
+    } else if (overlay === agenda && agendaConfirming) {
+      cancelBillSubmission();
     } else if (overlay) {
       overlayClosers.get(overlay)();
     } else {
@@ -3151,6 +3266,7 @@ objectiveLink.addEventListener('click', () => {
 });
 archiveLink.addEventListener('click', () => interactWithOffice('archives'));
 assemblyLink.addEventListener('click', () => interactWithOffice('assembly'));
+agendaLink.addEventListener('click', () => interactWithOffice('legislative-agenda'));
 roomNpcLinks.addEventListener('click', event => {
   const action = event.target.closest('button')?.dataset.npcAction;
   if (action) interactWithOffice(action);
@@ -3215,6 +3331,9 @@ function interactWithOffice(action) {
       break;
     case 'assembly':
       openAssemblyOverview();
+      break;
+    case 'legislative-agenda':
+      openLegislativeAgenda();
       break;
 
     case 'cabinet-briefing':

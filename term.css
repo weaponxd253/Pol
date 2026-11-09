@@ -455,3 +455,225 @@ dialog p { margin-top: 17px; color: var(--muted); font-size: 13px; line-height: 
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+#assembly-allocation[hidden] {
+  display: none;
+}
+
+#policy-dossier-agenda {
+  margin: 0 0 12px;
+}
+
+.agenda-frame {
+  width: min(94%, 980px);
+}
+
+.agenda-layout {
+  display: grid;
+  grid-template-columns: minmax(205px, 1fr) minmax(0, 2.2fr);
+  gap: 18px;
+}
+
+.agenda-layout > .agenda-catalog {
+  margin: 0;
+}
+
+.agenda-catalog > p {
+  font-size: 0.86rem;
+  margin-bottom: 10px;
+}
+
+.agenda-bills {
+  display: grid;
+  gap: 7px;
+}
+
+.agenda-bill {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 2px 8px;
+  padding: 8px 10px;
+  background: #fffaf0;
+  border: 1px solid #ddcb9e;
+  border-radius: 5px;
+  color: #193e33;
+  text-align: left;
+  cursor: pointer;
+}
+
+.agenda-bill:hover,
+.agenda-bill[aria-pressed="true"] {
+  background: #e6ebdc;
+  border-color: #61836a;
+}
+
+.agenda-bill strong {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  font: bold 1rem/1.2 Georgia, serif;
+}
+
+.agenda-bill-category,
+.agenda-status {
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.agenda-status {
+  padding: 1px 6px;
+  background: #eee8d9;
+  border-radius: 12px;
+}
+
+.agenda-status[data-status="Drafted"] {
+  background: #f0deb0;
+  color: #664719;
+}
+
+.agenda-status[data-status="Proposed"] {
+  background: #d1e7d5;
+  color: #174a35;
+}
+
+.agenda-detail {
+  padding: clamp(10px, 2vw, 16px);
+  background: #fffaed;
+  border: 1px solid #ddcb9e;
+  border-radius: 6px;
+  font-size: 0.88rem;
+}
+
+.agenda-detail h4 {
+  margin: 3px 0 6px;
+  padding: 0;
+  border: 0;
+  font-size: clamp(20px, 3vw, 25px);
+}
+
+.agenda-scopes,
+.agenda-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.agenda-scopes .button,
+.agenda-actions .button {
+  padding-inline: 10px;
+}
+
+.agenda-scopes [aria-pressed="true"] {
+  background: #e1eadc;
+  border-color: #50735e;
+  color: #194a36;
+}
+
+.agenda-detail .agenda-assessment {
+  padding: 10px 12px;
+  margin: 10px 0 0;
+  border: 1px solid #ddcb9e;
+  border-radius: 5px;
+  background: #f5efdf;
+}
+
+.agenda-assessment h5 {
+  margin: 0 0 4px;
+  font: bold 1rem Georgia, serif;
+}
+
+.agenda-assessment small {
+  display: inline-block;
+  color: #4e5a50;
+}
+
+.agenda-assessment .agenda-budget-warning {
+  margin-top: 4px;
+  color: #8d3025;
+  font-weight: 700;
+}
+
+.agenda-effects {
+  display: grid;
+  gap: 5px;
+  margin: 8px 0;
+}
+
+.agenda-effects > div {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.agenda-effects dt {
+  min-width: 90px;
+  font-weight: 700;
+}
+
+.agenda-effects dd {
+  margin: 0;
+}
+
+.agenda-effects ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.agenda-effects li {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #dcebdc;
+  color: #205039;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.agenda-effects .agenda-effect-loss {
+  background: #f5dfd3;
+  color: #802c22;
+}
+
+.agenda-detail .agenda-filing {
+  margin-top: 10px;
+}
+
+.agenda-confirm {
+  padding: 8px 10px;
+  margin-top: 8px;
+  border: 1px solid #bd9958;
+  border-radius: 5px;
+  background: #f5e8c7;
+}
+
+.agenda-actions {
+  margin-bottom: 0;
+}
+
+.agenda-catalog-back {
+  display: none;
+}
+
+#agenda-feedback {
+  margin: 0;
+}
+
+#agenda-close {
+  flex: none;
+}
+
+@media (max-width: 650px) {
+  .agenda-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .agenda-catalog-back {
+    display: inline-flex;
+    margin-bottom: 8px;
+  }
+}

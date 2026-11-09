@@ -75,6 +75,7 @@
           <div id="room-npc-links" class="room-npc-links" role="group" aria-label="Room staff" hidden></div>
           <button id="office-objective-link" class="button button-primary" type="button" hidden></button>
           <button id="office-assembly-link" class="button button-secondary" type="button" hidden>National Assembly</button>
+          <button id="office-agenda-link" class="button button-secondary" type="button" hidden>Legislative Agenda</button>
           <button id="office-archive-link" class="button button-secondary" type="button" hidden>
             Government Archives
           </button>
@@ -384,6 +385,7 @@
               <p class="policy-dossier-subtitle">
                 Review your available government policies.
               </p>
+              <button id="policy-dossier-agenda" class="button button-secondary" type="button" hidden>Legislative Agenda</button>
 
               <!-- JavaScript will generate the policy cards here -->
               <div id="policy-dossier-options" class="policy-dossier-options"></div>
@@ -459,8 +461,28 @@
             <div id="assembly-content" class="cabinet-report-content assembly-content" role="region"
               aria-label="Assembly composition and party profiles" tabindex="0"></div>
             <footer class="cabinet-report-footer assembly-footer">
-              <span>First-term seat allocation</span>
+              <span id="assembly-allocation">First-term seat allocation</span>
+              <button id="assembly-agenda" class="button button-primary" type="button" hidden>Legislative Agenda</button>
               <button id="assembly-close" class="button button-secondary" type="button">Close Assembly</button>
+            </footer>
+          </div>
+        </div>
+
+        <div id="legislative-agenda" class="cabinet-report-overlay assembly-overlay" role="dialog" aria-modal="true"
+          aria-labelledby="legislative-agenda-title" hidden>
+          <div class="cabinet-report-frame assembly-frame agenda-frame">
+            <header class="cabinet-report-header assembly-header">
+              <img src="./assets/policy-dossier-seal.png" alt="" width="52" height="52">
+              <div>
+                <p>REPUBLIC OF ARDEN · OFFICE OF THE EXECUTIVE</p>
+                <h3 id="legislative-agenda-title">Presidential Legislative Agenda</h3>
+              </div>
+            </header>
+            <div id="agenda-body" class="cabinet-report-content assembly-content" role="region"
+              aria-label="Bill catalog and Cabinet assessment" tabindex="0"></div>
+            <footer class="cabinet-report-footer assembly-footer">
+              <p id="agenda-feedback" role="status"></p>
+              <button id="agenda-close" class="button button-secondary" type="button">Close Agenda</button>
             </footer>
           </div>
         </div>

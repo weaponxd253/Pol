@@ -3,6 +3,7 @@ import { calculateTurn, forecastBudget } from './engine.js';
 import { governmentWarning, meterWarningSeverity, treasuryPaymentsDueSoon, treasuryWarning } from './office-alerts.js';
 import { debtFinancingThreshold, financeCondition, financeObjective } from './finance-dialogue.js';
 import { officialCondition, officialObjective, officialOutcome, previousPolicyMessage } from './official-dialogue.js';
+import { assessBill } from './legislation.js';
 
 const meterNames = Object.fromEntries(METERS.map(({ id, label }) => [id, label]));
 const signed = amount => amount > 0 ? `+${amount}` : String(amount);
@@ -116,6 +117,47 @@ function decisionBriefing(state, npc) {
     };
 }
 
+function legislativeFinanceBriefing(state) {
+    const entries = state.assembly.legislativeRecords.filter(record => record.submittedTurn === null).map(record => {
+        const { bill, scope, scopeLabel, treasuryIfEnacted } = assessBill(state, record.billId, record.scopeId);
+        const upfront = scope.immediate.treasury ?? 0;
+        const later = scope.later.filter(step => step.effects.treasury).map(step =>
+            `Treasury ${signed(step.effects.treasury)} ${step.afterTurns} turns after enactment.`);
+        return {
+            title: `${bill.title} · ${scopeLabel}`,
+            text: [
+                upfront ? `Treasury ${signed(upfront)} at enactment, taking it from ${state.meters.treasury} to ${treasuryIfEnacted} before turn costs and meter limits.`
+                    : 'Treasury has no upfront change.',
+                ...later,
+                treasuryIfEnacted <= 0 ? 'Current funds are too low to keep Treasury above zero at this scope.' : ''
+            ].filter(Boolean).join(' ')
+        };
+    });
+    return {
+        message: entries.length ? 'Here is the fiscal outlook for each draft, assuming it passes on its own.'
+            : 'Save a draft at the National Policy Desk and I can assess its cost.',
+        entries
+    };
+}
+
+function legislativeSupportBriefing(state) {
+    const entries = state.assembly.legislativeRecords.filter(record => record.submittedTurn !== null).map(record => {
+        const { bill, scopeLabel, likelySeats, majoritySeats, backers } = assessBill(state, record.billId, record.scopeId);
+        const seatsShort = majoritySeats - likelySeats;
+        return {
+            title: `${bill.title} · ${scopeLabel}`,
+            text: `Filed on Turn ${record.submittedTurn}. ${likelySeats} likely seats, with ${majoritySeats} needed. ` +
+                `Likely backers include ${backers.map(party => party.name).join(', ')}. ` +
+                (seatsShort > 0 ? `We would need ${seatsShort} more seats for a majority.` : 'That would be enough for a majority.')
+        };
+    });
+    return {
+        message: entries.length ? 'Here is my initial read on the Assembly’s likely response to each proposal.'
+            : 'Once you file a proposal with the Assembly, I can give you an initial read on its support.',
+        entries
+    };
+}
+
 const topics = {
     status: ['How are things going?', (state, npc) =>
         outlook(state, npc.monitors, officialCondition(state, npc))],
@@ -140,6 +182,8 @@ const topics = {
     reputation: ['Government reputation', (state, npc) =>
         outlook(state, ['approval', 'donors'], officialCondition(state, npc))],
     decisions: ['Recent decisions', decisionBriefing],
+    'legislative-finance': ['Review Legislative Drafts', legislativeFinanceBriefing],
+    'legislative-support': ['Assess Submitted Bills', legislativeSupportBriefing],
     directions: ['Ask for directions', () => ({
         message: 'The Cabinet Room is on the left, the Executive Office is in the center, and the Press Briefing Room is on the right. Take the south passage to reach the Situation Room.'
     })],
@@ -178,7 +222,8 @@ export function getNpcDialogue(npc, state, requestedTopic) {
     const alert = alerts.find(item => item?.severity === 'critical')
         ?? alerts.find(item => item?.severity === 'urgent')
         ?? governmentWarning(state, npc.monitors.length ? npc.monitors : undefined);
-    const selected = npc.topics.includes(requestedTopic) ? requestedTopic : npc.topics[0];
+    const availableTopics = npc.topics.filter(id => state.mode === 'term' || !id.startsWith('legislative-'));
+    const selected = availableTopics.includes(requestedTopic) ? requestedTopic : availableTopics[0];
     const answer = topics[selected][1](state, npc);
     if (state.outcome && ['finances', 'finance-objective'].includes(selected)) {
         answer.message = officialOutcome(state, npc);
@@ -188,7 +233,7 @@ export function getNpcDialogue(npc, state, requestedTopic) {
     }
     return {
         phase, alert, selected,
-        topics: npc.topics.map(id => ({ id, label: topics[id][0] })),
+        topics: availableTopics.map(id => ({ id, label: topics[id][0] })),
         ...answer
     };
 }

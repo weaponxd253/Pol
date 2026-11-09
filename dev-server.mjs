@@ -13,6 +13,7 @@ const types = {
 const allowed = new Set([
   '/index.html', '/styles.css', '/term.css',
   '/js/main.js', '/js/engine.js', '/js/content.js', '/js/view.js', '/js/storage.js', '/js/assembly.js',
+  '/js/legislation.js', '/js/legislative-agenda.js',
   '/js/office-scene.js', '/js/office-alerts.js', '/js/government-corridor-scene.js',
   '/js/corridor-layout.js', '/js/room-controls.js',
   '/js/cabinet-room-scene.js', '/js/cabinet-room-layout.js',
