@@ -25,6 +25,15 @@ const roomNpcs = {
         },
         monitors: ['approval', 'stability', 'treasury'],
         topics: ['status', 'directions', 'meeting', 'notices', 'decisions']
+    }, {
+        action: 'npc-coalition-leader',
+        name: 'Coalition Leader',
+        partyId: 'regional-independence-coalition',
+        hint: 'Discuss provisions for the provinces.',
+        asset: './assets/finance_secretary.png',
+        frameWidth: 256, frameHeight: 384, footY: 340, scale: 0.22, tint: 0xffc99c,
+        x: 555, y: 455, direction: 'left',
+        talkRadius: 80, collisionRadius: 18
     }],
     CabinetRoomScene: [{
         action: 'npc-finance-secretary',
@@ -36,6 +45,15 @@ const roomNpcs = {
         talkRadius: 85, collisionRadius: 18,
         monitors: ['treasury', 'economy', 'debt'],
         topics: ['finances', 'treasury', 'payments', 'debt', 'finance-objective', 'decisions', 'legislative-finance']
+    }, {
+        action: 'npc-government-whip',
+        name: 'Government Whip',
+        partyId: 'arden-national-union',
+        hint: 'Ask about caucus support and possible defections.',
+        asset: './assets/government_aide.png',
+        frameWidth: 256, frameHeight: 384, footY: 350, scale: 0.22, tint: 0xb8e9cc,
+        x: 380, y: 532, direction: 'right',
+        talkRadius: 80, collisionRadius: 18
     }],
     SituationRoomScene: [{
         action: 'npc-defense-secretary',
@@ -58,9 +76,22 @@ const roomNpcs = {
         talkRadius: 85, collisionRadius: 18,
         monitors: ['approval', 'donors'],
         topics: ['status', 'confidence', 'reputation', 'objective', 'decisions']
+    }, {
+        action: 'npc-opposition-leader',
+        name: 'Opposition Leader',
+        partyId: 'civic-reform-alliance',
+        hint: 'Discuss fiscal limits and independent oversight.',
+        asset: './assets/chief_of_staff.png',
+        frameWidth: 256, frameHeight: 384, footY: 378, scale: 0.22, tint: 0xffe4ac,
+        x: 480, y: 435, direction: 'down',
+        talkRadius: 78, collisionRadius: 18
     }]
 };
 
 export function getRoomNpcs(roomKey) {
     return roomNpcs[roomKey] ?? [];
+}
+
+export function getNegotiatorNpcs() {
+    return Object.values(roomNpcs).flat().filter(npc => npc.partyId);
 }

@@ -104,7 +104,8 @@ test('Finance reviews saved drafts and the Chief assesses filed proposals', () =
   const submitted = submitBill(drafted, infrastructure);
   assert.deepEqual(getNpcDialogue(finance, submitted, financeTopic).entries, []);
   const reading = getNpcDialogue(chief, submitted, chiefTopic).entries[0];
-  assert.match(reading.text, /46 likely seats, with 51 needed/);
-  assert.match(reading.text, /Arden National Union/);
-  assert.match(reading.text, /5 more seats/);
+  assert.match(reading.text, /39 likely seats, with 51 needed/);
+  assert.match(reading.text, /Arden National Union 39 of 46/);
+  assert.match(reading.text, /12 more seats/);
+  assert.match(reading.text, /Talia Vale.*Government Corridor.*52 seats/);
 });

@@ -677,3 +677,126 @@ dialog p { margin-top: 17px; color: var(--muted); font-size: 13px; line-height: 
     margin-bottom: 8px;
   }
 }
+
+.agenda-provisions {
+  margin: 4px 0 0;
+  padding-inline-start: 20px;
+}
+
+.legislative-meeting {
+  max-height: min(640px, calc(100% - 32px));
+  overscroll-behavior: contain;
+}
+
+.legislative-meeting .room-npc-phase,
+.legislative-meeting .negotiation-party {
+  margin: 0 0 6px;
+}
+
+.negotiation-party {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+
+.negotiation-party span {
+  padding: 2px 8px;
+  border-radius: 10px;
+  color: #173f36;
+  background: #edd9a7;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.legislative-meeting .negotiation-priorities {
+  margin: 0 0 9px;
+  color: #e5cc92;
+  font-size: 0.8rem;
+}
+
+.legislative-meeting .negotiation-bill-title {
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.negotiation-line {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+  padding: 7px 10px;
+  margin-bottom: 7px;
+  background: #1d493e;
+  border-inline-start: 3px solid #c5a66b;
+  border-radius: 4px;
+}
+
+.negotiation-line strong {
+  color: #edd9a7;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.legislative-meeting .negotiation-line p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.negotiation-bills,
+.negotiation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 10px 0;
+}
+
+.negotiation-forecast {
+  padding: 10px 12px;
+  background: #f5ecd8;
+  border: 1px solid #c5a66b;
+  border-radius: 5px;
+  color: #193e33;
+}
+
+.negotiation-forecast h4 {
+  margin: 0 0 3px;
+  font: bold 1.15rem Georgia, serif;
+}
+
+.legislative-meeting .negotiation-forecast p {
+  margin: 4px 0;
+  color: inherit;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.negotiation-actions .button-primary {
+  background: #edd9a7;
+  color: #173f36;
+}
+
+.negotiation-actions .button-primary:hover {
+  background: #fff0cd;
+}
+
+.legislative-meeting #room-negotiation-feedback {
+  margin: 4px 0;
+  color: #f3d799;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .legislative-meeting {
+    max-height: calc(100dvh - 24px);
+  }
+}
+
+@media (max-width: 580px) {
+  .negotiation-line {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+}

@@ -4,6 +4,8 @@ import { governmentWarning, meterWarningSeverity, treasuryPaymentsDueSoon, treas
 import { debtFinancingThreshold, financeCondition, financeObjective } from './finance-dialogue.js';
 import { officialCondition, officialObjective, officialOutcome, previousPolicyMessage } from './official-dialogue.js';
 import { assessBill } from './legislation.js';
+import { NEGOTIATORS } from './negotiation-content.js';
+import { assessProposal, recommendMeeting } from './negotiations.js';
 
 const meterNames = Object.fromEntries(METERS.map(({ id, label }) => [id, label]));
 const signed = amount => amount > 0 ? `+${amount}` : String(amount);
@@ -142,13 +144,24 @@ function legislativeFinanceBriefing(state) {
 
 function legislativeSupportBriefing(state) {
     const entries = state.assembly.legislativeRecords.filter(record => record.submittedTurn !== null).map(record => {
-        const { bill, scopeLabel, likelySeats, majoritySeats, backers } = assessBill(state, record.billId, record.scopeId);
+        const { bill, scopeLabel, likelySeats, majoritySeats, partySupport } = assessProposal(state, record.billId);
         const seatsShort = majoritySeats - likelySeats;
+        let recommendation = '';
+        if (seatsShort > 0 && !state.outcome) {
+            const best = recommendMeeting(state, record.billId);
+            if (best) {
+                const { partyId, amendment, preview } = best;
+                const leader = NEGOTIATORS[partyId];
+                recommendation = ` Meet ${leader.name}, the ${leader.role}, in the ${leader.location}. The ${amendment.title} could bring the estimate to ${preview.likelySeats} seats.`;
+            }
+        }
         return {
             title: `${bill.title} · ${scopeLabel}`,
             text: `Filed on Turn ${record.submittedTurn}. ${likelySeats} likely seats, with ${majoritySeats} needed. ` +
-                `Likely backers include ${backers.map(party => party.name).join(', ')}. ` +
-                (seatsShort > 0 ? `We would need ${seatsShort} more seats for a majority.` : 'That would be enough for a majority.')
+                `Likely backers include ${partySupport.filter(bloc => bloc.likelySeats > 0).map(({ party, likelySeats }) =>
+                    `${party.name} ${likelySeats} of ${party.seats}`).join(', ')}. ` +
+                (seatsShort > 0 ? `We would need ${seatsShort} more seats for a majority.` : 'That would be enough for a majority.') +
+                recommendation
         };
     });
     return {

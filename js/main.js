@@ -19,11 +19,14 @@ import { renderGame } from './view.js';
 import { governmentWarning, treasuryWarning } from './office-alerts.js';
 import { SITUATION_STATIONS } from './situation-room-layout.js';
 import { getSituationBriefing } from './situation-briefing.js';
-import { getRoomNpcs } from './npc-content.js';
+import { getNegotiatorNpcs, getRoomNpcs } from './npc-content.js';
 import { getNpcDialogue } from './npc-dialogue.js';
 import { getPresidentialObjective } from './office-objectives.js';
 import { BILLS, saveBillDraft, submitBill } from './legislation.js';
 import { legislativeAgendaMarkup } from './legislative-agenda.js';
+import { NEGOTIATORS } from './negotiation-content.js';
+import { assessNegotiation, changeAmendment } from './negotiations.js';
+import { negotiationDialogueMarkup } from './negotiation-dialogue.js';
 
 const situationSections = new Map(SITUATION_STATIONS.map(station => [station.action, station.id]));
 
@@ -1403,6 +1406,11 @@ const roomNpcAlert = document.getElementById('room-npc-alert');
 const roomNpcChoices = document.getElementById('room-npc-choices');
 const roomNpcTopics = document.getElementById('room-npc-topics');
 const roomNpcEntries = document.getElementById('room-npc-entries');
+const roomNpcAnswer = document.getElementById('room-npc-answer');
+const roomNegotiation = document.getElementById('room-negotiation');
+const roomNegotiationFeedback = document.getElementById('room-negotiation-feedback');
+let negotiationBillId = null;
+let negotiationStage = 'position';
 let activeRoomNpc = null;
 let activeRoomNpcBehavior = null;
 const roomNpcMessage = document.getElementById('room-npc-message');
@@ -1503,6 +1511,19 @@ function updateOfficeStationLinks() {
   assemblyLink.hidden = !state || !(room === 'CabinetRoomScene' || (atDesk && state.phase !== 'policy'));
   assemblyLink.textContent = atDesk ? 'Policy Desk · National Assembly' : 'National Assembly';
   agendaLink.hidden = !atDesk || state?.mode !== 'term';
+  const npcs = availableOfficeNpcs();
+  roomNpcLinks.replaceChildren(...npcs.map(npc => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'button button-secondary';
+    button.dataset.npcAction = npc.action;
+    button.textContent = `Speak with ${npc.name}`;
+    return button;
+  }));
+  roomNpcLinks.hidden = !npcs.length;
+  if (!officeMap.hidden && activeRoomKey) {
+    officeGame?.scene.getScene(activeRoomKey)?.npcs?.setNegotiatorsVisible(state?.mode === 'term');
+  }
 }
 
 function getActiveOfficeOverlay() {
@@ -1531,16 +1552,6 @@ function setCurrentRoom(key) {
   enterOfficeButton.textContent = `Enter ${room.label}`;
   const exits = Object.entries(room.exits);
   situationStationsLink.hidden = key !== 'SituationRoomScene';
-  const npcs = getRoomNpcs(key);
-  roomNpcLinks.replaceChildren(...npcs.map(npc => {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'button button-secondary';
-    button.dataset.npcAction = npc.action;
-    button.textContent = `Speak with ${npc.name}`;
-    return button;
-  }));
-  roomNpcLinks.hidden = !npcs.length;
   roomLinks.forEach((link, index) => {
     const [action, destination] = exits[index] ?? [];
     link.hidden = !destination;
@@ -1599,8 +1610,13 @@ function closeOfficeOverlay(element) {
   overlayTrigger = null;
 }
 
+function availableOfficeNpcs() {
+  if (officeMap.hidden) return state?.mode === 'term' ? getNegotiatorNpcs() : [];
+  return getRoomNpcs(activeRoomKey).filter(npc => !npc.partyId || state?.mode === 'term');
+}
+
 function roomNpcFor(action) {
-  return getRoomNpcs(activeRoomKey).find(npc => npc.action === action);
+  return availableOfficeNpcs().find(npc => npc.action === action);
 }
 
 function renderRoomNpcAnswer(briefing) {
@@ -1621,8 +1637,28 @@ function renderRoomNpcAnswer(briefing) {
 function openRoomNpcDialogue(npc) {
   if (officeScreen.hidden || pauseMenu.open || dialog.open || getActiveOfficeOverlay()) return;
   activeRoomNpc = npc;
-  activeRoomNpcBehavior = officeGame?.scene.getScene(activeRoomKey).npcs ?? null;
+  activeRoomNpcBehavior = officeMap.hidden ? null : officeGame?.scene.getScene(activeRoomKey)?.npcs ?? null;
   activeRoomNpcBehavior?.beginConversation(npc.action);
+  const isNegotiation = Boolean(npc.partyId);
+  roomNpcAnswer.hidden = isNegotiation;
+  roomNegotiation.hidden = !isNegotiation;
+  roomNegotiationFeedback.hidden = !isNegotiation;
+  roomNpcDialogue.classList.toggle('legislative-meeting', isNegotiation);
+  roomNpcDialogue.setAttribute('aria-describedby', isNegotiation ? 'room-npc-phase' : 'room-npc-alert room-npc-message');
+  if (isNegotiation) {
+    const leader = NEGOTIATORS[npc.partyId];
+    roomNpcName.textContent = `${leader.name} · ${leader.role}`;
+    roomNpcPhase.textContent = `Legislative Negotiation · Turn ${state.turn}`;
+    roomNpcPhase.hidden = false;
+    roomNpcChoices.hidden = true;
+    roomNpcAlert.hidden = true;
+    negotiationBillId = null;
+    negotiationStage = 'position';
+    roomNegotiationFeedback.textContent = '';
+    renderNegotiation();
+    openOfficeOverlay(roomNpcDialogue, roomNegotiation.querySelector('button') ?? roomNpcClose);
+    return;
+  }
   const briefing = getNpcDialogue(npc, state);
   roomNpcName.textContent = npc.name;
   roomNpcPhase.textContent = briefing.phase ?? '';
@@ -1643,6 +1679,44 @@ function openRoomNpcDialogue(npc) {
 function closeRoomNpcDialogue() {
   closeOfficeOverlay(roomNpcDialogue);
 }
+
+function renderNegotiation(restoreFocus = false) {
+  roomNegotiation.innerHTML = negotiationDialogueMarkup(state, activeRoomNpc.partyId, negotiationBillId, negotiationStage);
+  if (!restoreFocus) return;
+  const lines = roomNegotiation.querySelectorAll('.negotiation-line');
+  const target = negotiationBillId ? lines[lines.length - 1] : roomNegotiation.querySelector('button');
+  (target ?? roomNpcClose).focus();
+}
+
+roomNegotiation.addEventListener('click', event => {
+  const button = event.target.closest('button');
+  if (!button || !activeRoomNpc?.partyId) return;
+  const { meetingBill, meetingAction } = button.dataset;
+  roomNegotiationFeedback.textContent = '';
+  if (meetingBill) {
+    negotiationBillId = meetingBill;
+    negotiationStage = 'position';
+  } else if (meetingAction === 'bills') {
+    negotiationBillId = null;
+    negotiationStage = 'position';
+  } else if (meetingAction === 'adopt' || meetingAction === 'withdraw') {
+    if (negotiationStage !== 'terms') return;
+    try {
+      const { amendment } = assessNegotiation(state, negotiationBillId, activeRoomNpc.partyId);
+      state = changeAmendment(state, negotiationBillId, amendment.id, meetingAction);
+      persist();
+      negotiationStage = 'position';
+      const result = meetingAction === 'adopt' ? 'added to the filed text' : 'withdrawn from the filed text';
+      roomNegotiationFeedback.textContent = `${amendment.title} ${result}.` +
+        (storageStatus.available ? '' : ' Progress kept in this tab. Browser saving is unavailable.');
+    } catch (error) {
+      roomNegotiationFeedback.textContent = error.message;
+    }
+  } else if (meetingAction === 'terms' || meetingAction === 'position') {
+    negotiationStage = meetingAction;
+  }
+  renderNegotiation(true);
+});
 
 function renderSituationConsole() {
   const briefing = getSituationBriefing(state, situationSection, situationRegion);
@@ -1716,6 +1790,7 @@ async function enterOffice() {
   }
 
   officeMap.hidden = false;
+  updateOfficeStationLinks();
   officeControls.hidden = false;
   officeMessage.textContent = '';
   try {
@@ -1774,7 +1849,6 @@ function showOfficeMapFallback() {
   updateOfficeStationLinks();
   roomLinks.forEach(link => { link.hidden = true; });
   situationStationsLink.hidden = true;
-  roomNpcLinks.hidden = true;
   officeControls.hidden = true;
   officeMessage.textContent = 'The map is unavailable. Use the office navigation buttons to visit each station.';
   (objectiveLink.hidden ? officeBackButton : objectiveLink).focus({ preventScroll: true });

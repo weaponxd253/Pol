@@ -72,7 +72,7 @@
           <button class="button button-secondary" type="button" data-room-link hidden></button>
           <button class="button button-secondary" type="button" data-room-link hidden></button>
           <button id="situation-stations-link" class="button button-primary" type="button" hidden>Situation Room Stations</button>
-          <div id="room-npc-links" class="room-npc-links" role="group" aria-label="Room staff" hidden></div>
+          <div id="room-npc-links" class="room-npc-links" role="group" aria-label="Room conversations" hidden></div>
           <button id="office-objective-link" class="button button-primary" type="button" hidden></button>
           <button id="office-assembly-link" class="button button-secondary" type="button" hidden>National Assembly</button>
           <button id="office-agenda-link" class="button button-secondary" type="button" hidden>Legislative Agenda</button>
@@ -305,11 +305,13 @@
               <p>President, what would you like to review?</p>
               <div id="room-npc-topics" class="room-npc-topics" role="group" aria-label="Conversation topics"></div>
             </div>
-            <div class="room-npc-answer" aria-live="polite" aria-atomic="true">
+            <div id="room-npc-answer" class="room-npc-answer" aria-live="polite" aria-atomic="true">
               <p id="room-npc-message"></p>
               <dl id="room-npc-figures" class="room-npc-figures" hidden></dl>
               <ul id="room-npc-entries" class="room-npc-entries" hidden></ul>
             </div>
+            <div id="room-negotiation" hidden></div>
+            <p id="room-negotiation-feedback" role="status" hidden></p>
             <button id="room-npc-close" class="button button-secondary" type="button" aria-keyshortcuts="E Escape">Close conversation</button>
           </div>
         </div>

@@ -35,8 +35,11 @@ export function createRoomNpcs(scene, { canWalk, entrances = [], protectedZones 
         sprite: scene.add.sprite(npc.x, npc.y, npc.action, IDLE_FRAMES[npc.direction])
             .setOrigin(0.5, npc.footY / npc.frameHeight).setScale(npc.scale).setDepth(9)
     }));
+    let negotiatorsVisible = true;
+    const enabled = npc => !npc.partyId || negotiatorsVisible;
 
-    for (const { npc } of actors) {
+    for (const { npc, sprite } of actors) {
+        if (npc.tint) sprite.setTint(npc.tint);
         if (!npc.patrol) continue;
         for (const [direction, start] of Object.entries(IDLE_FRAMES)) {
             const key = `${npc.action}-walk-${direction}`;
@@ -59,7 +62,7 @@ export function createRoomNpcs(scene, { canWalk, entrances = [], protectedZones 
         if (entrances.some(point => separation(x, y, point, {
             x: size.x + PLAYER_FEET.x + CLEARANCE, y: size.y + PLAYER_FEET.y + CLEARANCE
         }) <= 1)) return false;
-        return !actors.some(other => other !== actor && separation(x, y, other.sprite, {
+        return !actors.some(other => other !== actor && enabled(other.npc) && separation(x, y, other.sprite, {
             x: size.x + footSize(other.npc).x + CLEARANCE,
             y: size.y + footSize(other.npc).y + CLEARANCE
         }) < 1);
@@ -100,10 +103,17 @@ export function createRoomNpcs(scene, { canWalk, entrances = [], protectedZones 
     }
 
     const controller = {
+        setNegotiatorsVisible(visible) {
+            negotiatorsVisible = visible;
+            for (const actor of actors) {
+                if (actor.npc.partyId) actor.sprite.setVisible(visible);
+            }
+        },
         nearby(x, y) {
             let nearest = null;
             let shortest = Infinity;
             for (const { npc, interaction, sprite } of actors) {
+                if (!enabled(npc)) continue;
                 const distance = Math.hypot(sprite.x - x, sprite.y - y);
                 if (distance <= npc.talkRadius && distance < shortest) {
                     nearest = interaction;
@@ -114,6 +124,7 @@ export function createRoomNpcs(scene, { canWalk, entrances = [], protectedZones 
         },
         blocks(x, y, from = scene.player) {
             return actors.some(({ npc, sprite }) => {
+                if (!enabled(npc)) return false;
                 const size = footSize(npc);
                 const combined = { x: size.x + PLAYER_FEET.x, y: size.y + PLAYER_FEET.y };
                 const next = separation(x, y, sprite, combined);
@@ -123,7 +134,7 @@ export function createRoomNpcs(scene, { canWalk, entrances = [], protectedZones 
             });
         },
         beginConversation(action, player = scene.player) {
-            const actor = actors.find(item => item.npc.action === action);
+            const actor = actors.find(item => enabled(item.npc) && item.npc.action === action);
             if (!actor) return false;
             controller.endConversation();
             actor.speaking = true;
@@ -166,6 +177,7 @@ export function createRoomNpcs(scene, { canWalk, entrances = [], protectedZones 
             debug.setVisible(scene.debugGraphics.visible).clear();
             if (!debug.visible) return;
             for (const { npc, sprite } of actors) {
+                if (!enabled(npc)) continue;
                 const size = footSize(npc);
                 debug.lineStyle(2, 0xff3333, 1).strokeEllipse(sprite.x, sprite.y,
                     (size.x + PLAYER_FEET.x) * 2, (size.y + PLAYER_FEET.y) * 2);

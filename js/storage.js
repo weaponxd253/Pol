@@ -1,9 +1,10 @@
 import { CONTENT_VERSION, RULES_VERSION } from './content.js';
 import { createInitialState, selectResponse, beginPolicyPhase, selectPolicy, resolveTurn, advanceTurn } from './engine.js';
 import { restoreLegislativeRecords } from './legislation.js';
+import { restoreNegotiationHistory } from './negotiations.js';
 
 export const SAVE_KEY = 'policy-maker.first-term';
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 const storageMessage = 'Saving is unavailable in this browser. You can keep playing, but progress will not survive a reload.';
 const canonical = value => JSON.stringify(value, (_key, item) => item && typeof item === 'object' && !Array.isArray(item) ? Object.fromEntries(Object.keys(item).sort().map(key => [key, item[key]])) : item);
 
@@ -23,12 +24,16 @@ export function validateSavedState(raw, saveVersion = SAVE_VERSION) {
       if (raw.selectedPolicyId) restored = selectPolicy(restored, raw.selectedPolicyId);
     }
   }
-  // Version 1 had no Assembly, and version 2 always had an empty legislative record.
-  if (saveVersion === SAVE_VERSION) {
+  // Version 1 had no Assembly, version 2 had no bills, and version 3 had no amendments.
+  if (saveVersion >= 3) {
     restored.assembly.legislativeRecords = restoreLegislativeRecords(raw.assembly?.legislativeRecords, restored.turn);
   }
-  const comparable = { ...restored };
+  if (saveVersion === SAVE_VERSION) {
+    restored.assembly.negotiationHistory = restoreNegotiationHistory(restored, raw.assembly?.negotiationHistory);
+  }
+  const comparable = { ...restored, assembly: { ...restored.assembly } };
   if (saveVersion === 1) delete comparable.assembly;
+  else if (saveVersion < SAVE_VERSION) delete comparable.assembly.negotiationHistory;
   if (canonical(comparable) !== canonical(raw)) throw new Error('The saved term does not match its recorded decisions.');
   return restored;
 }
@@ -41,7 +46,7 @@ export function loadGame(providedStorage) {
   try {
     if (text.length > 500000) throw new Error('Oversized save.');
     const saved = JSON.parse(text);
-    if (![1, 2, SAVE_VERSION].includes(saved.saveVersion) || saved.rulesVersion !== RULES_VERSION || saved.contentVersion !== CONTENT_VERSION) throw new Error('Incompatible save version.');
+    if (![1, 2, 3, SAVE_VERSION].includes(saved.saveVersion) || saved.rulesVersion !== RULES_VERSION || saved.contentVersion !== CONTENT_VERSION) throw new Error('Incompatible save version.');
     return { state: validateSavedState(saved.state, saved.saveVersion), available: true, hasStoredGame: true, replacementRequired: false, message: null };
   } catch { return { state: null, available: true, hasStoredGame: true, replacementRequired: true, message: 'The saved term is invalid or uses older rules. These consequences require a fresh term. Your stored run is kept until you choose to replace it.' }; }
 }

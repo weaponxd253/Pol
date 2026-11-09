@@ -14,13 +14,16 @@ const [defense] = getRoomNpcs('SituationRoomScene');
 const [press] = getRoomNpcs('PressBriefingRoomScene');
 
 test('staff stand on accessible floor in their assigned rooms, clear of doors and stations', () => {
-    assert.deepEqual(getRoomNpcs('GovernmentCorridorScene').map(npc => npc.name), ['Chief of Staff', 'Government Aide']);
+    assert.deepEqual(getRoomNpcs('GovernmentCorridorScene').map(npc => npc.name), ['Chief of Staff', 'Government Aide', 'Coalition Leader']);
     assert.deepEqual(getRoomNpcs('OfficeScene'), []);
     const placements = [
         ['CabinetRoomScene', 'Finance Secretary', canWalkCabinetRoom, getCabinetRoomExit],
         ['SituationRoomScene', 'Defense Secretary', canWalkSituationRoom, getSituationInteraction],
         ['PressBriefingRoomScene', 'Press Secretary', canWalkPressRoom, getPressRoomExit],
-        ['GovernmentCorridorScene', 'Government Aide', canWalkCorridor, getCorridorDoor]
+        ['GovernmentCorridorScene', 'Government Aide', canWalkCorridor, getCorridorDoor],
+        ['CabinetRoomScene', 'Government Whip', canWalkCabinetRoom, getCabinetRoomExit],
+        ['PressBriefingRoomScene', 'Opposition Leader', canWalkPressRoom, getPressRoomExit],
+        ['GovernmentCorridorScene', 'Coalition Leader', canWalkCorridor, getCorridorDoor]
     ];
     for (const [room, name, canWalk, getInteraction] of placements) {
         const { x, y } = getRoomNpcs(room).find(npc => npc.name === name);

@@ -1,5 +1,6 @@
 import { METERS } from './content.js';
 import { BILLS, BILL_SCOPES, assessBill } from './legislation.js';
+import { MAX_PROPOSAL_AMENDMENTS, assessProposal } from './negotiations.js';
 
 const statusFor = record => record?.submittedTurn != null ? 'Proposed' : record ? 'Drafted' : 'Available';
 
@@ -10,17 +11,27 @@ function effectChips(effects) {
   }).join('');
 }
 
+export function billTimelineMarkup(scope) {
+  const changes = effectChips(scope.immediate);
+  return `<dl class="agenda-effects">
+    <div><dt>At enactment</dt><dd>${changes ? `<ul>${changes}</ul>` : 'No immediate changes'}</dd></div>
+    ${scope.later.map(({ afterTurns, effects }) =>
+      `<div><dt>${afterTurns === 1 ? '1 turn later' : `${afterTurns} turns later`}</dt><dd><ul>${effectChips(effects)}</ul></dd></div>`).join('')}
+  </dl>`;
+}
+
 export function legislativeAgendaMarkup(state, billId, scopeId, confirming) {
   const records = state.assembly.legislativeRecords;
   const record = records.find(item => item.billId === billId);
   const proposed = record?.submittedTurn != null;
   const savedScope = record?.scopeId === scopeId;
-  const { bill, scope, scopeLabel, backers, likelySeats, majoritySeats, treasuryIfEnacted } = assessBill(state, billId, scopeId);
+  const forecast = proposed ? assessProposal(state, billId) : assessBill(state, billId, scopeId);
+  const { bill, scope, scopeLabel, backers, partySupport, amendments, likelySeats, majoritySeats, treasuryIfEnacted } = forecast;
   const seatsShort = majoritySeats - likelySeats;
   let filing;
   if (proposed) {
     filing = `<p class="agenda-filing"><strong>${scopeLabel} proposal filed on Turn ${record.submittedTurn}.</strong>
-      Ask the Chief of Staff in the Government Corridor for an initial reading.</p>`;
+      Ask the Chief of Staff in the Government Corridor which leaders to meet.</p>`;
   } else if (state.outcome) {
     filing = '<p class="agenda-filing">This term has ended. The agenda is available for review.</p>';
   } else {
@@ -71,23 +82,26 @@ export function legislativeAgendaMarkup(state, billId, scopeId, confirming) {
         <section class="agenda-assessment" aria-labelledby="agenda-finance-title">
           <h5 id="agenda-finance-title">Cabinet assessment</h5>
           <p>Projected changes if enacted. Delays are measured from enactment.</p>
-          <dl class="agenda-effects">
-            <div><dt>At enactment</dt><dd><ul>${effectChips(scope.immediate)}</ul></dd></div>
-            ${scope.later.map(({ afterTurns, effects }) =>
-              `<div><dt>${afterTurns} turns later</dt><dd><ul>${effectChips(effects)}</ul></dd></div>`).join('')}
-          </dl>
+          ${billTimelineMarkup(scope)}
           <p><strong>Treasury after upfront effects</strong> ${state.meters.treasury} → ${treasuryIfEnacted}
             <small>before turn costs and meter limits</small></p>
           ${treasuryIfEnacted <= 0 ? '<p class="agenda-budget-warning">Current funds cannot cover this scope while keeping Treasury above zero.</p>' : ''}
         </section>
 
         <section class="agenda-assessment" aria-labelledby="agenda-support-title">
-          <h5 id="agenda-support-title">Preliminary Assembly support</h5>
-          <p><strong>${likelySeats} likely seats</strong> · ${majoritySeats} needed for a majority
-            ${seatsShort > 0 ? `· ${seatsShort} short` : ''}</p>
-          <p>${backers.map(party => party.name).join(' · ')}</p>
+          <h5 id="agenda-support-title">${proposed ? 'Estimated Assembly support' : 'Preliminary party outlook'}</h5>
+          <p><strong>${likelySeats} ${proposed ? 'likely seats' : 'seats held by favorable parties'}</strong> · ${majoritySeats} needed for a majority
+            ${proposed && seatsShort > 0 ? `· ${seatsShort} short` : ''}</p>
+          ${proposed ? `<ul class="agenda-provisions">${partySupport.map(({ party, likelySeats }) =>
+            `<li>${party.name} · ${likelySeats} of ${party.seats} likely</li>`).join('')}</ul>`
+            : `<p>${backers.map(party => party.name).join(' · ')}</p><p>Leaders estimate individual support after filing.</p>`}
         </section>
 
+        ${proposed ? `<section class="agenda-assessment" aria-label="Agreed amendments">
+          <h5>Agreed amendments · ${amendments.length} of ${MAX_PROPOSAL_AMENDMENTS}</h5>
+          ${amendments.length ? `<ul class="agenda-provisions">${amendments.map(amendment =>
+            `<li>${amendment.title} · ${amendment.type}</li>`).join('')}</ul>` : '<p>The filed text has no amendments yet.</p>'}
+        </section>` : ''}
         ${filing}
       </article>
     </div>`;

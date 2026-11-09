@@ -50,6 +50,7 @@ export function createAssembly() {
     majoritySeats: Math.floor(totalSeats / 2) + 1,
     presidentialPartyId: 'arden-national-union',
     parties: structuredClone(parties),
-    legislativeRecords: []
+    legislativeRecords: [],
+    negotiationHistory: []
   };
 }

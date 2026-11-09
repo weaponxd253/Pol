@@ -53,6 +53,7 @@ test('Assembly foundation saves resume with an empty agenda', () => {
   saveGame(state, store);
   const saved = JSON.parse(store.getItem(SAVE_KEY));
   saved.saveVersion = 2;
+  delete saved.state.assembly.negotiationHistory;
   store.setItem(SAVE_KEY, JSON.stringify(saved));
   assert.deepEqual(loadGame(store).state, state);
 });

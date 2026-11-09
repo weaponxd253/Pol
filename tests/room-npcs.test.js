@@ -21,7 +21,8 @@ const rooms = {
 function sprite(x, y, texture, frame) {
     return { x, y, texture, frame, depth: 0,
         anims: { playing: null, play(key) { this.playing = key; }, stop() { this.playing = null; } },
-        setOrigin() { return this; }, setScale() { return this; },
+        setOrigin() { return this; }, setScale() { return this; }, setTint() { return this; },
+        setVisible(visible) { this.visible = visible; return this; },
         setDepth(value) { this.depth = value; return this; },
         setFrame(value) { this.frame = value; return this; },
         setPosition(px, py) { this.x = px; this.y = py; return this; }
@@ -45,6 +46,21 @@ function fixture(key = 'GovernmentCorridorScene', overrides = {}) {
     const tick = (count = 1, delta = 50) => { for (let i = 0; i < count; i++) npcs.update(delta); };
     return { scene, sprites, animations, npcs, aide, tick, options };
 }
+
+test('hidden party leaders do not receive interactions or block the opening scenario', () => {
+    const { npcs, sprites } = fixture();
+    const leader = sprites.find(actor => actor.texture === 'npc-coalition-leader');
+    const from = { x: leader.x - 80, y: leader.y };
+    npcs.setNegotiatorsVisible(false);
+    assert.equal(leader.visible, false);
+    assert.equal(npcs.nearby(leader.x, leader.y), null);
+    assert.equal(npcs.blocks(leader.x, leader.y, from), false);
+    assert.equal(npcs.beginConversation(leader.texture), false);
+    npcs.setNegotiatorsVisible(true);
+    assert.equal(leader.visible, true);
+    assert.equal(npcs.nearby(leader.x, leader.y).action, leader.texture);
+    assert.equal(npcs.blocks(leader.x, leader.y, from), true);
+});
 
 test('the Aide patrols a complete loop with walking frames and pauses; officials stay at their posts', () => {
     const { sprites, aide, tick, animations } = fixture();

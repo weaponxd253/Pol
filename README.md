@@ -34,6 +34,8 @@ Visit the **National Policy Desk** for the Assembly overview. During policy revi
 
 In a full term, open the **Legislative Agenda** from the desk to compare six bills at limited, standard, or comprehensive scope. Save a draft, then ask the Cabinet Room’s Finance Secretary to **Review Legislative Drafts**. Return to the agenda and confirm **Submit to Assembly** to lock the scope. The corridor’s Chief of Staff can **Assess Submitted Bills** and identify likely backers. Drafts and proposals autosave with the term. Projected effects are timed from possible enactment, and a filed proposal awaits Assembly consideration.
 
+Negotiate filed bills in person. Meet Government Whip Mara Venn in the **Cabinet Room**, Opposition Leader Elias Soren in the **Press Briefing Room**, or Coalition Leader Talia Vale in the **Government Corridor**. The Chief of Staff recommends meetings based on the bill’s current support. Use **E** near a leader or the room’s conversation button. Each proposal can carry two active amendments. Keeping an agreement into the next turn builds trust. Withdrawing a provision costs trust and closes that offer for the bill. The agenda shows the revised text’s estimated votes and effects if enacted.
+
 ## Verify
 
 ```sh
